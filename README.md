@@ -1,4 +1,4 @@
-Descartes-bi	
+Descartes-bi
 =============
 
 Descartes-bi is a database agnostic, Django based business intelligence tool.
@@ -25,20 +25,27 @@ By default the project is set up to run on a SQLite database. Run::
 
     $ python manage.py syncdb
 
-Point SOURCE_DATABASE_* to the data source from with you will extract the data for your charts:
-Example:
+In your database definitions create a 'data_source' entry from which you will extract the data for your charts:
 
-    SOURCE_DATABASE_ENGINE = 'mysql'
 
-    SOURCE_DATABASE_NAME = 'domain_users'
-
-    SOURCE_DATABASE_USER = 'it_user1'
-
-    SOURCE_DATABASE_PASSWORD = 'it_user_password'
-
-    SOURCE_DATABASE_HOST = ''
-
-    SOURCE_DATABASE_PORT = ''
+    DATABASES = {
+        'default': {
+            'ENGINE': ...
+            'NAME': ...
+            'USER': ...
+            'PASSWORD': ...
+            'HOST': ...
+            'PORT': ...
+        },
+        'data_source': {
+            'ENGINE': 'django.db.backends.<source database driver>',
+            'NAME': '<source database>',
+            'USER': '<source database user>',
+            'PASSWORD': '<source database password>',
+            'HOST': '<source database host>',
+            'PORT': '<source database port>',
+        },
+    }
 
 
 Executing
