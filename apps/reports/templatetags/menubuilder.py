@@ -25,6 +25,7 @@ from reports.models import Menuitem
 
 register = template.Library()
 
+
 def build_menu(parser, token):
     """
     {% menu menu_name %}
@@ -52,7 +53,7 @@ class get_menu_node(template.Node):
     def render(self, context):
         from reports.views import _get_allowed_object_for_user
         user = template.resolve_variable('request.user', context)
-        
+
         results = _get_allowed_object_for_user(user)
         mi_order = [mi.order for mi in results['menuitems']]
         mi_order.sort()
@@ -66,33 +67,35 @@ class get_menu_node(template.Node):
 def get_menu(parser, token):
     return get_menu_node()
 
+
 @register.filter
 def in_list(value, arg):
     return value in arg
-    
+
 
 class GetCustomAppsNode(template.Node):
     def render(self, context):
         custom_apps = getattr(settings, 'CUSTOMIZATION_APPS', [])
         context['custom_apps'] = custom_apps
-        
+
         custom_apps_data = {}
         for app in custom_apps:
             exec "import %s" % app
             try:
                 custom_apps_data[app] = eval("%s.APP_DATA" % app)
-                
+
                 if 'template_name' in custom_apps_data[app]:
                     custom_template = get_template(
                                     custom_apps_data[app]['template_name'])
                     custom_apps_data[app]['template_data'] = custom_template.render(Context(context))
             except:
                 pass
-        
-        context['custom_apps_data'] = custom_apps_data  
-    
+
+        context['custom_apps_data'] = custom_apps_data
+
         return ''
-        
+
+
 @register.tag(name='get_custom_apps')
 def get_custom_apps(parser, token):
     return GetCustomAppsNode()

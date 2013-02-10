@@ -15,28 +15,34 @@
 #    You should have received a copy of the GNU General Public License
 #    along with descartes-bi.  If not, see <http://www.gnu.org/licenses/>.
 #
+import datetime
+import os
+import re
 
-from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render_to_response, get_object_or_404
-from django.utils.translation import ugettext as _
-from django.contrib.auth.decorators import login_required
-from django.http import HttpResponseRedirect
-from django.template import Context
-from django.conf import settings
-from django.template import loader, RequestContext
 from django import http
+from django.conf import settings
+from django.contrib.auth.decorators import login_required
+from django.core.files import File
+from django.core.management.commands import reset
+from django.core.servers.basehttp import FileWrapper
+from django.http import HttpResponse, HttpResponseRedirect
+from django.shortcuts import render_to_response
+from django.template import loader, RequestContext
+
+from forms import UploadFileForm
+import runscript
+import dumpscript
 
 
-def error500(request, template_name = '500.html'):
+def error500(request, template_name='500.html'):
     #TODO: if user is admin include debug info
     t = loader.get_template(template_name)
 
     return http.HttpResponseServerError(t.render(RequestContext(request, {
-        'project_name' : settings.PROJECT_TITLE })))
+        'project_name': settings.PROJECT_TITLE})))
 
 
 def get_svn_revision(path=None):
-    import os, re
     rev = None
     entries_path = '%s/.svn/entries' % path
 
@@ -59,12 +65,12 @@ def get_svn_revision(path=None):
         return u'svn-r%s' % rev
     return u'svn-unknown'
 
-    
+
 def set_language(request):
     if request.method == "GET":
         request.session['django_language'] = request.GET.get('language', 'en')
 
-    return HttpResponseRedirect(request.META.get('HTTP_REFERER','/'))
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
 
 
 def home(request):
@@ -73,15 +79,11 @@ def home(request):
 
 
 def about(request):
-    import settings
-
-    return render_to_response('about.html', { 'revision' : get_svn_revision(settings.PROJECT_ROOT ) },
+    return render_to_response('about.html', {'revision': get_svn_revision(settings.PROJECT_ROOT)},
         context_instance=RequestContext(request))
 
 
 def get_project_root():
-    from django.conf import settings
-    import os
     """ get the project root directory """
     settings_mod = __import__(settings.SETTINGS_MODULE, {}, {}, [''])
     return os.path.dirname(os.path.abspath(settings_mod.__file__))
@@ -90,22 +92,12 @@ def get_project_root():
 @login_required
 def dbbackup(request):
 #   from django_extensions.management.commands import dumpscript
-    import os
-    import datetime
-
-    from django.core.servers.basehttp import FileWrapper
-    from django.conf import settings
-    from django.core.files import File
-
-    import tempfile
-    import dumpscript
-
     ct = datetime.datetime.now()
 
     if not (request.user.is_authenticated() and request.user.is_staff):
         raise http.Http404
 
-    models = dumpscript.get_models(['reports','replicate','auth'])
+    models = dumpscript.get_models(['reports', 'replicate', 'auth'])
 
     context = {}
 
@@ -124,7 +116,6 @@ def dbbackup(request):
 
 @login_required
 def dbrestore(request):
-    from forms import UploadFileForm
     error_message = ''
     error_title = ''
     if request.method == 'POST':
@@ -143,17 +134,12 @@ def dbrestore(request):
         form = UploadFileForm()
     return render_to_response('dbrestore.html', {
         'form': form,
-        'error_title' : error_title,
-        'error_message' : error_message
-        }, context_instance=RequestContext(request))
+        'error_title': error_title,
+        'error_message': error_message
+    }, context_instance=RequestContext(request))
 
 
 def _handle_restore_file(uploaded_file):
-    import sys
-    import os.path
-    from django.core.management.commands import reset
-    import runscript
-
     #Turn into a real file
     dest_path = "%s/scripts/%s" % (get_project_root(), uploaded_file)
     destination = open(dest_path, 'wb+')

@@ -20,30 +20,30 @@ from reports.models import FilterExtra, SerieType, \
     GroupPermissionFilterValues, UserPermissionFilterValues, \
     UserPermission, GroupPermission, Report, Serie, Filterset, Filter, \
     Menuitem, SeriesStatistic, ReportStatistic
-    
+
 from django.contrib import admin
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 from django.db.models.fields import CharField
+
 
 #clone_objects Copyright (C) 2009  Rune Bromer
 #http://www.bromer.eu/2009/05/23/a-generic-copyclone-action-for-django-11/
 def clone_objects(objects, title_fieldnames):
     def clone(from_object, title_fieldnames):
         args = dict([(fld.name, getattr(from_object, fld.name))
-                for fld in from_object._meta.fields
-                        if fld is not from_object._meta.pk])
+                     for fld in from_object._meta.fields
+                     if fld is not from_object._meta.pk])
 
         for field in from_object._meta.fields:
             if field.name in title_fieldnames:
                 if isinstance(field, CharField):
-                    args[field.name] = getattr(from_object, field.name) + \
-                                        (" (%s) " % unicode(_(u'copy')))
+                    args[field.name] = getattr(from_object, field.name) + (" (%s) " % unicode(_(u'copy')))
 
         return from_object.__class__.objects.create(**args)
 
-    if not hasattr(objects,'__iter__'):
-        objects = [ objects ]
+    if not hasattr(objects, '__iter__'):
+        objects = [objects]
 
     # We always have the objects in a list now
     objs = []
@@ -95,11 +95,11 @@ class UserPermissionFilterValuesInline(admin.StackedInline):
     model = UserPermissionFilterValues
     extra = 1
     classes = ('collapse-open',)
-    allow_add = True	
+    allow_add = True
 
 
 class UserPermissionAdmin(admin.ModelAdmin):
-    radio_fields = {'union':admin.HORIZONTAL}
+    radio_fields = {'union': admin.HORIZONTAL}
     list_display = ('user', 'get_reports')
     filter_horizontal = ('reports',)
     inlines = [
@@ -112,7 +112,7 @@ class GroupPermissionFilterValuesInline(admin.StackedInline):
     model = GroupPermissionFilterValues
     extra = 1
     classes = ('collapse-open',)
-    allow_add = True	
+    allow_add = True
 
 
 class GroupPermissionAdmin(admin.ModelAdmin):
@@ -156,16 +156,16 @@ class SerieAdmin(admin.ModelAdmin):
     order = 2
 
     fieldsets = (
-            (None, {
-                'fields': ('name', 'label', 'tick_format', 'query',
-                           'description')
-            }),
-            (_(u'Validation'), {
-                'classes': ('collapse-open',),
-                'fields': ('validated', 'validated_date', 'validated_person',
-                           'validation_description')
-            }),
-    )	
+        (None, {
+            'fields': ('name', 'label', 'tick_format', 'query',
+                       'description')
+        }),
+        (_(u'Validation'), {
+            'classes': ('collapse-open',),
+            'fields': ('validated', 'validated_date', 'validated_person',
+                       'validation_description')
+        }),
+    )
 
     actions = ['clone']
 
@@ -178,7 +178,7 @@ class SerieAdmin(admin.ModelAdmin):
             message_bit = _(u"%s series were") % queryset.count()
         self.message_user(request, _(u"%s copied.") % message_bit)
 
-    clone.short_description = _(u"Copy the selected object")	
+    clone.short_description = _(u"Copy the selected object")
 
 
 class SerieInline(admin.StackedInline):
@@ -189,7 +189,7 @@ class SerieInline(admin.StackedInline):
 
 
 class ReportAdmin(admin.ModelAdmin):
-    radio_fields = {'type':admin.VERTICAL, 'orientation':admin.HORIZONTAL}
+    radio_fields = {'type': admin.VERTICAL, 'orientation': admin.HORIZONTAL}
     list_display = ('title', 'description', 'type', 'get_series',
                     'get_parents')
     filter_horizontal = ('filtersets',)
@@ -197,9 +197,9 @@ class ReportAdmin(admin.ModelAdmin):
     search_fields_verbose = ['Title', 'Description']
     exclude = ('series',)
     inlines = [
-        SerieInline, 
+        SerieInline,
     ]
-    order = 3	
+    order = 3
 
     actions = ['clone']
 
@@ -212,12 +212,12 @@ class ReportAdmin(admin.ModelAdmin):
             message_bit = _(u"%s reports were") % queryset.count()
         self.message_user(request, _(u"%s copied.") % message_bit)
 
-    clone.short_description = _(u"Copy the selected object")	
+    clone.short_description = _(u"Copy the selected object")
 
 
 class MenuitemAdmin(admin.ModelAdmin):
     list_display = ('title', 'order', 'get_reports')
-    list_editable = ('order',)	
+    list_editable = ('order',)
     filter_horizontal = ('reports',)
     order = 4
 

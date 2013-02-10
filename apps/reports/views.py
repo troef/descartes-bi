@@ -15,20 +15,18 @@
 #    You should have received a copy of the GNU General Public License
 #    along with descartes-bi.  If not, see <http://www.gnu.org/licenses/>.
 #
+import datetime
+import re
+
 from django.db import connections
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.utils.translation import ugettext as _
-from django.conf import settings
-from django.utils.importlib import import_module
 
+from forms import FilterForm
 from models import Report, Menuitem, GroupPermission, UserPermission, User, SeriesStatistic, ReportStatistic
 from models import FILTER_TYPE_DATE, FILTER_TYPE_COMBO
-from forms import FilterForm
-
-import datetime
-import re
 
 
 def ajax_report_benchmarks(request, report_id):
@@ -38,11 +36,12 @@ def ajax_report_benchmarks(request, report_id):
     if request.user.is_staff:
         result = '<ul>'
         for s in report.series.all():
-            result += "<li>%s</li><br />" % _('"%(serie)s" = Lastest run: %(last)ss; Average: %(avg)ss') % {'serie':s.label or unicode(s), 'last':s.last_execution_time or '0', 'avg':s.avg_execution_time or '0'}
+            result += "<li>%s</li><br />" % _('"%(serie)s" = Lastest run: %(last)ss; Average: %(avg)ss') % {'serie': s.label or unicode(s), 'last': s.last_execution_time or '0', 'avg': s.avg_execution_time or '0'}
 
         result += '</ul>'
 
     return HttpResponse(result)
+
 
 def ajax_filter_form(request, report_id):
     #TODO: access control
@@ -53,23 +52,24 @@ def ajax_filter_form(request, report_id):
 
     if report not in _get_allowed_object_for_user(request.user)['reports']:
         return render_to_response('messagebox-error.html',
-        {'title':_(u'Permission error'),
-         'message':_(u"Insufficient permissions to access this area.")})
+                                  {'title': _(u'Permission error'),
+                                   'message': _(u"Insufficient permissions to access this area.")})
 
     if query:
         filter_form = FilterForm(report.filtersets.all(), request.user, query)
     else:
         filter_form = FilterForm(report.filtersets.all(), request.user)
 
-
-    return render_to_response('filter_form_subtemplate.html', {'filter_form':filter_form},
+    return render_to_response('filter_form_subtemplate.html', {'filter_form': filter_form},
         context_instance=RequestContext(request))
+
 
 def ajax_report_description(request, report_id):
     report = get_object_or_404(Report, pk=report_id)
 
     result = "<strong>%s</strong><br />%s" % (report.title, report.description or '')
     return HttpResponse(result)
+
 
 def ajax_report_validation(request, report_id):
     report = get_object_or_404(Report, pk=report_id)
@@ -90,6 +90,7 @@ def ajax_report_validation(request, report_id):
     else:
         return HttpResponse(_(u'No element of this report has been validates.'))
 
+
 def ajax_report(request, report_id):
     start_time = datetime.datetime.now()
 
@@ -97,8 +98,8 @@ def ajax_report(request, report_id):
 
     if report not in _get_allowed_object_for_user(request.user)['reports']:
         return render_to_response('messagebox-error.html',
-         {'title':_(u'Permission error'),
-          'message':_(u"Insufficient permissions to access this area.")})
+         {'title': _(u'Permission error'),
+          'message': _(u"Insufficient permissions to access this area.")})
 
     output_type = request.GET.get('output_type', 'chart')
     params = {}
@@ -110,8 +111,6 @@ def ajax_report(request, report_id):
             filter_form = FilterForm(filtersets, request.user, request.GET)
         else:
             filter_form = FilterForm(filtersets, request.user)
-
-        valid_form = filter_form.is_valid()
 
         for set in filtersets.all():
             for filter in set.filters.all():
@@ -138,20 +137,20 @@ def ajax_report(request, report_id):
     for s in report.serietype_set.all():
         query = s.serie.query
         if re.compile("[^%]%[^%(]").search(query):
-            return render_to_response('messagebox-error.html', {'title':_(u'Query error'), 'message':_(u"Single '%' found, replace with double '%%' to properly escape the SQL wildcard caracter '%'.")})
+            return render_to_response('messagebox-error.html', {'title': _(u'Query error'), 'message': _(u"Single '%' found, replace with double '%%' to properly escape the SQL wildcard caracter '%'.")})
 
         cursor = connections['data_source'].cursor()
 
         if special_params:
             for sp in special_params.keys():
-                query = re.compile('%\(' + sp +'\)s').sub(special_params[sp], query)
+                query = re.compile('%\(' + sp + '\)s').sub(special_params[sp], query)
             try:
                 serie_start_time = datetime.datetime.now()
                 cursor.execute(query, params)
             except:
                 import sys
                 (exc_type, exc_info, tb) = sys.exc_info()
-                return render_to_response('messagebox-error.html', {'title':exc_type, 'message':exc_info})
+                return render_to_response('messagebox-error.html', {'title': exc_type, 'message': exc_info})
 
         else:
             cursor.execute(query, params)
@@ -198,15 +197,15 @@ def ajax_report(request, report_id):
     data = {
         'chart_data': ','.join(series_results),
         'series_results': series_results,
-        'chart_series' : report.serietype_set.all(),
-        'chart' : report,
-        'h_axis' : h_axis,
-        'v_axis' : v_axis,
-        'ajax' : True,
-        'query' : query,
-        'params' : params,
+        'chart_series': report.serietype_set.all(),
+        'chart': report,
+        'h_axis': h_axis,
+        'v_axis': v_axis,
+        'ajax': True,
+        'query': query,
+        'params': params,
         'series_labels': labels,
-        'time_delta' : datetime.datetime.now() - start_time,
+        'time_delta': datetime.datetime.now() - start_time,
     }
 
     if output_type == 'chart':
@@ -216,10 +215,11 @@ def ajax_report(request, report_id):
         return render_to_response('single_grid.html', data,
             context_instance=RequestContext(request))
     else:
-        return render_to_response('messagebox-error.html', {'title':_(u'Error'), 'message':_(u"Unknown output type (chart, table, etc).")})
+        return render_to_response('messagebox-error.html', {'title': _(u'Error'), 'message': _(u"Unknown output type (chart, table, etc).")})
+
 
 #TODO: Improve this further
-def data_to_js_chart(data, label_format = None, orientation = 'v'):
+def data_to_js_chart(data, label_format=None, orientation='v'):
     if not data:
         return ''
 
@@ -248,7 +248,8 @@ def data_to_js_chart(data, label_format = None, orientation = 'v'):
 
     return result
 
-def data_to_js_grid(data, label_format = None):
+
+def data_to_js_grid(data, label_format=None):
     if not data:
         return ''
 
@@ -257,19 +258,20 @@ def data_to_js_grid(data, label_format = None):
 
     result = '['
     for key, value in data:
-        result += '{key:"%s", value:"%s"},' %  (key or '?', label_format % value)
+        result += '{key:"%s", value:"%s"},' % (key or '?', label_format % value)
 
     result = result[:-1]
     result += ']'
 
     return result
 
+
 def acl(request):
     aclform = ACLForm()
     return render_to_response('acl.html', {
-        'aclform' : aclform,
-        },
-        context_instance=RequestContext(request))
+        'aclform': aclform,
+    }, context_instance=RequestContext(request))
+
 
 def _get_allowed_object_for_user(user):
     reports_allowed = []
@@ -281,8 +283,8 @@ def _get_allowed_object_for_user(user):
         #staff gets all reports & menuitems
         if user.is_staff:
             return {
-                'reports':Report.objects.all(),
-                'menuitems':Menuitem.objects.all()
+                'reports': Report.objects.all(),
+                'menuitems': Menuitem.objects.all()
             }
 
         for group in user.groups.all():
@@ -297,14 +299,14 @@ def _get_allowed_object_for_user(user):
                 pass
         try:
             up = UserPermission.objects.get(user=user)
-            if up.union == 'O':  #Overwrite
+            if up.union == 'O':  # Overwrite
                 reports_allowed = []
 
-            if up.union == 'I' or up.union == 'O': #Inclusive
+            if up.union == 'I' or up.union == 'O':  # Inclusive
                 for report in up.reports.all():
                     if report not in reports_allowed:
                         reports_allowed.append(report)
-            elif up.union == 'E':  #Exclusive
+            elif up.union == 'E':  # Exclusive
                 for report in up.reports.all():
                     if report in reports_allowed:
                         reports_allowed.remove(report)
@@ -323,9 +325,10 @@ def _get_allowed_object_for_user(user):
                 menuitems_allowed.append(menuitem)
 
     return {
-        'reports':reports_allowed,
-        'menuitems':menuitems_allowed
-        }
+        'reports': reports_allowed,
+        'menuitems': menuitems_allowed
+    }
+
 
 #TODO: Define filter default value when user is doing an exclusive union
 def _get_user_filters_limits(user):
@@ -342,17 +345,17 @@ def _get_user_filters_limits(user):
             try:
                 gp = GroupPermission.objects.get(group=group)
                 for filter in gp.filters.all():
-                    if filter not in filter_limits:#.keys():
+                    if filter not in filter_limits:  # .keys():
                         filter_limits[filter] = {}
 
-                    if gp.grouppermissionfiltervalues_set.get(filter = filter).default:
-                        filter_limits[filter]['default'] = gp.grouppermissionfiltervalues_set.get(filter = filter).default
+                    if gp.grouppermissionfiltervalues_set.get(filter=filter).default:
+                        filter_limits[filter]['default'] = gp.grouppermissionfiltervalues_set.get(filter=filter).default
 
                     if filter.type == FILTER_TYPE_COMBO:
                         if 'mask' not in filter_limits[filter]:
-                            filter_limits[filter]['mask'] = list(eval(gp.grouppermissionfiltervalues_set.get(filter = filter).options, {}))
+                            filter_limits[filter]['mask'] = list(eval(gp.grouppermissionfiltervalues_set.get(filter=filter).options, {}))
                         else:
-                            for n in eval(gp.grouppermissionfiltervalues_set.get(filter = filter).options, {}):
+                            for n in eval(gp.grouppermissionfiltervalues_set.get(filter=filter).options, {}):
                                 if n not in filter_limits[filter]['mask']:
                                     filter_limits[filter]['mask'].append(n)
             except:
@@ -361,31 +364,31 @@ def _get_user_filters_limits(user):
         try:
             up = UserPermission.objects.get(user=user)
 
-            if up.union == 'O':  #Overwrite
+            if up.union == 'O':  # Overwrite
                 filter_limits = {}
 
-            if up.union == 'I' or up.union == 'O': #Inclusive
+            if up.union == 'I' or up.union == 'O':  # Inclusive
                 for filter in up.filters.all():
-                    if filter not in filter_limits:#.keys():
+                    if filter not in filter_limits:  # .keys():
                         filter_limits[filter] = {}
 
-                    if up.userpermissionfiltervalues_set.get(filter = filter).default:
-                        filter_limits[filter]['default'] = up.userpermissionfiltervalues_set.get(filter = filter).default
+                    if up.userpermissionfiltervalues_set.get(filter=filter).default:
+                        filter_limits[filter]['default'] = up.userpermissionfiltervalues_set.get(filter=filter).default
 
                     if filter.type == FILTER_TYPE_COMBO:
                         if 'mask' not in filter_limits[filter]:
-                            filter_limits[filter]['mask'] = list(eval(up.userpermissionfiltervalues_set.get(filter = filter).options, {}))
+                            filter_limits[filter]['mask'] = list(eval(up.userpermissionfiltervalues_set.get(filter=filter).options, {}))
                         else:
                         #if filter.type == 'DR':
-                            for n in eval(up.userpermissionfiltervalues_set.get(filter = filter).options, {}):
+                            for n in eval(up.userpermissionfiltervalues_set.get(filter=filter).options, {}):
                                 if n not in filter_limits[filter]['mask']:
                                     filter_limits[filter]['mask'].append(n)
 
-            elif up.union == 'E':  #Exclusive
+            elif up.union == 'E':  # Exclusive
                 for filter in up.filters.all():
                     if filter in filter_limits.keys():
                         if filter.type == FILTER_TYPE_COMBO:
-                            for n in eval(up.userpermissionfiltervalues_set.get(filter = filter).options, {}):
+                            for n in eval(up.userpermissionfiltervalues_set.get(filter=filter).options, {}):
                                 if n in filter_limits[filter]['mask']:
                                     filter_limits[filter]['mask'].remove(n)
 
@@ -395,7 +398,6 @@ def _get_user_filters_limits(user):
     except:
         #unkown user or anonymous
         pass
-
 
     #print "FILTER LIMITS: %s" % filter_limits
     return filter_limits

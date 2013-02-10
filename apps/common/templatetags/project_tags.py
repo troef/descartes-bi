@@ -20,9 +20,9 @@ from django.template import Library
 
 register = Library()
 
+
 @register.simple_tag
 def project_name():
     """Tag to return the current project's title"""
     from django.conf import settings
     return settings.PROJECT_TITLE
-    

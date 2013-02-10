@@ -21,29 +21,25 @@ THE SOFTWARE.
 """
 
 from django.core.management.base import BaseCommand
-from django.core.management.color import no_style
 from optparse import make_option
-import sys
-import os
- 
-try:
-    set
-except NameError:
-    from sets import Set as set # Python 2.3 fallback
+
 
 def ERROR(string):
-    raise Exception, string
+    raise Exception(string)
+
 
 def ERROR2(string):
-    raise Exception, string
+    raise Exception(string)
+
 
 def NOTICE(string):
-    raise Exception, string
+    raise Exception(string)
+
 
 def NOTICE2(string):
-    raise Exception, string
-    
-        
+    raise Exception(string)
+
+
 class Command(BaseCommand):
     option_list = BaseCommand.option_list + (
         make_option('--fixtures', action='store_true', dest='infixtures',
@@ -61,15 +57,12 @@ class Command(BaseCommand):
     args = "script [script ...]"
 
     def handle(self, *scripts, **options):
-        from django.db.models import get_pps
-
         #NOTICE = self.style.SQL_TABLE
         #NOTICE2 = self.style.SQL_FIELD
         #ERROR = self.style.ERROR_OUTPUT
         #ERROR2 = self.style.NOTICE
 
         subdirs = []
-
 
         if not options.get('noscripts'):
             subdirs.append('scripts')
@@ -99,7 +92,7 @@ class Command(BaseCommand):
             # TODO: add arguments to run
             try:
                 mod.run()
-            except Exception, e:
+            except Exception as e:
                 if silent:
                     return
                 if verbosity > 0:
@@ -131,7 +124,7 @@ class Command(BaseCommand):
             modules = []
             # first look in apps
             for app in get_apps():
-                app_name = app.__name__.split(".")[:-1] # + ['fixtures']
+                app_name = app.__name__.split(".")[:-1]  # + ['fixtures']
                 for subdir in subdirs:
                     mod = my_import(".".join(app_name + [subdir, script]))
                     if mod:
@@ -156,15 +149,15 @@ class Command(BaseCommand):
         for script in scripts:
             modules = find_modules_for_script(script)
             if not modules:
-                if verbosity>0 and not silent:
+                if verbosity > 0 and not silent:
                     print ERROR("No module for script '%s' found" % script)
             for mod in modules:
-                if verbosity>1:
+                if verbosity > 1:
                     print NOTICE2("Running script '%s' ..." % mod.__name__)
                 run_script(mod)
 
 # Backwards compatibility for Django r9110
-if not [opt for opt in Command.option_list if opt.dest=='verbosity']:
+if not [opt for opt in Command.option_list if opt.dest == 'verbosity']:
     Command.option_list += (
         make_option('--verbosity', '-v', action="store", dest="verbosity",
             default='1', type='choice', choices=['0', '1', '2'],
