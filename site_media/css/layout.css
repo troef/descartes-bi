@@ -5,7 +5,7 @@
 		padding:0;
 		border:0;			/* This removes the border around the viewport in old versions of IE */
 		width:100%;
-		background:#fff;
+		background:#444;
 		min-width:600px;    	/* Minimum width of layout - remove line if not required */
 						/* The min-width property does not work in old versions of Internet Explorer */
 		font-size:90%;
@@ -16,13 +16,14 @@
 		clear:both;
 /*		float:left;  - clashes with login sliding panel */
 		width:100%;
+		background-color:#c3c3c3 !important
 	}
 	#header {
 		/* border-bottom:1px solid #000; */
 	}
 	#header p,
 	#header h1,
-	#header h2 {}
+	#header h2  }
 	#header ul {
 		clear:left;
 		float:left;
@@ -31,6 +32,7 @@
 		margin:10px 0 0 0;
 		padding:0;
 	}
+	
 	/* 'widths' sub menu */
 	#layoutdims {
 		clear:both;

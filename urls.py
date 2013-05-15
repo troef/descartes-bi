@@ -20,7 +20,7 @@ from django.conf import settings
 from django.contrib import admin
 from django.utils.translation import ugettext as _
 
-admin.autodiscover()
+admin.autodiscover() 
 
 handler500 = 'common.views.error500'
 urlpatterns = patterns('',
