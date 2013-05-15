@@ -20,12 +20,26 @@ $(document).ready(function() {
 
 {% block content %}
 <div class='tc'>
-<img src="{{ MEDIA_URL }}images/project_logo.png" alt="project logo" />
+<!--img src="{{ MEDIA_URL }}images/project_logo_alt.png" alt="project logo" /-->
+
+</div>
+{% endblock %}
+
+{% block footer %}
+
 <h2><strong>{% trans 'A Web based business intelligence software' %}</strong></h2><br />
 Copyright (C) 2010  Roberto Rosario<br />
 
 <br />
-</div>
+
 {% endblock %}
 
-{% block footer %}{% endblock %}
+{% block contenttest %}
+
+	<div style="float:left;">
+		<h1 style="text-align: center; font-size: 35px; margin-top: 0px; margin-bottom: 0px;" >
+			<a href="/" style="color: white;"><img src="{{ MEDIA_URL }}images/logo2013.png" alt="project logo" /></a>
+		</h1>		
+	</div>
+	
+{% endblock %}
