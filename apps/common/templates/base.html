@@ -185,6 +185,7 @@
 					<div class="left right">
 						<h1>{% trans "Logout from aplication?" %}</h1>
 						<form action="{% url user_logout %}" method="post">
+							something here
 							<input type="submit" name="submit" value="{% trans 'Logout' %}" class="bt_register" />
 						</form>
 					</div>
@@ -261,7 +262,11 @@
 	
 		<div id="header"  >
 			<!--{% project_name %}-->			
-			{% block contenttest %}{% endblock %}
+				<div style="float:left;">
+					<h1 style="text-align: center; font-size: 35px; margin-top: 0px; margin-bottom: 0px;" >
+						<a href="/" style="color: white;"><img src="{{ MEDIA_URL }}images/logo2013.png" alt="project logo" /></a>
+					</h1>		
+				</div>
 		</div> <!-- hd -->
 
 		<div class="navigation">
@@ -355,7 +360,9 @@
 		</div>
 		</div>
 		<div class="footer">
-			{% block footer %}{% endblock %}
+			<h2><strong>{% trans 'A Web based business intelligence software' %}</strong></h2><br />
+			Copyright (C) 2010  Roberto Rosario<br />			
+			<br />
 		</div>
 	</body>
 </html>
