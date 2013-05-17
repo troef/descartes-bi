@@ -1,7 +1,7 @@
 	#header h1{padding:30px 0 0 30px}
 	
 	/* Navigation Bar */
-		.navigation{width: 100%; background: #2b2b2b; float: left; padding-left:20px}
+		.navigation{width: 100%; background: #2b2b2b; float: left; }
 		
 		.sf-menu li { background: none repeat scroll 0% 0% transparent;	}		
 		
@@ -12,15 +12,18 @@
 		    outline: 0px none;
 		}	
 		
+		
 		.sf-menu li li {
 		    background: none repeat scroll 0% 0% #2b2b2b;
 		}	
 
 	/* Left Column */
 	.leftmenu, .colleft, .col1, .chart_wrapper {background:#C3C3C3 !important}
+	.colleft{background:RGB(190,190,190)!important}
 	
-	/* Project Logo */
-	.tc{}
+	/* Project Logo HomePage*/
+	.tc .homeLogo{ position: absolute; top:40%; margin-top:-158px; left:50%; margin-left:-250px}
+	
 
 	#chart_wrapper{ 
 	  	width:100%; 
@@ -35,4 +38,6 @@
 		text-align: center;
 		padding: 10px;	
 	}
+	
+	.aboutLogo{height: 250px; margin-top: 20px;}
 	
