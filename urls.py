@@ -45,9 +45,6 @@ urlpatterns = patterns('',
 if 'ldap_groups' in settings.INSTALLED_APPS:
     urlpatterns += patterns('', (r'^ldap/', include('ldap_groups.urls')),)
 
-if 'replicate' in settings.INSTALLED_APPS:
-    urlpatterns += patterns('', (r'^replicate/', include('replicate.urls')),)
-
 if settings.DEVELOPMENT:
     urlpatterns += patterns('',
         (r'^%s-site_media/(?P<path>.*)$' % settings.PROJECT_NAME,
