@@ -25,7 +25,7 @@ admin.autodiscover()
 
 handler500 = 'common.views.error500'
 urlpatterns = patterns('',
-    (r'^admin/', admin.site.urls),
+    (r'^admin/', include(admin.site.urls)),
 
     (r'^reports/', include('reports.urls', namespace='reports')),
     (r'^grappelli/', include('grappelli.urls')),
@@ -46,6 +46,9 @@ if 'ldap_groups' in settings.INSTALLED_APPS:
     urlpatterns += patterns('', (r'^ldap/', include('ldap_groups.urls')),)
 
 if settings.DEVELOPMENT:
+    from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+    urlpatterns += staticfiles_urlpatterns()
+
     urlpatterns += patterns('',
         (r'^%s-site_media/(?P<path>.*)$' % settings.PROJECT_NAME,
             'django.views.static.serve',
