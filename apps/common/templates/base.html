@@ -69,7 +69,7 @@
                         });
                         var validation_error = $(data).find('.errorlist').html();
                         if (validation_error == null) {
-                            $('input:submit', this.parent).attr("disabled", "disabled");
+                            $('button:submit', this.parent).attr("disabled", "disabled");
                             $.ajax({
                                 type: "POST",
                                 url: path,
@@ -78,10 +78,10 @@
                                 },
                                 dataType: "html",
                                 error: function(data) {
-                                    $('input:submit', this.parent).removeAttr('disabled');
+                                    $('button:submit', this.parent).removeAttr('disabled');
                                 },
                                 success: function(data){
-                                    $('input:submit', this.parent).removeAttr('disabled');
+                                    $('button:submit', this.parent).removeAttr('disabled');
                                     //$("div#panel").slideUp("fast");
                                     //$("#toggle a").toggle();
                                     $(wrapper).load(next_url);
@@ -156,7 +156,7 @@
 
                     $("#parameters_wrapper").load("/reports/ajax/filter_form/" + report_num + '/', function() {
                         $('.rounded').corners();
-                        $('input:submit', "#parameters_form").attr("value", "{% trans 'Generate results' %}");
+                        $("#submit-text").text("{% trans 'Generate results' %}");
                     });
                     $("#current_report").val(report_num);
                     return false;
