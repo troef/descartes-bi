@@ -1,7 +1,7 @@
 # Django project settings.
 # FLAGS
 import os
-import sys 
+import sys
 
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "./"))
 sys.path.append(os.path.join(PROJECT_ROOT, 'modules'))
@@ -125,14 +125,16 @@ INSTALLED_APPS = (
     'common',
 )
 
-       
+
 TEMPLATE_CONTEXT_PROCESSORS = (
-    'django.core.context_processors.auth',
+    'django.contrib.auth.context_processors.auth',
     'django.core.context_processors.i18n',
+    'django.core.context_processors.static',
     'django.core.context_processors.media',
     'django.core.context_processors.request',
-#    'grappelli.context_processors.admin_template_path',
+    'django.contrib.messages.context_processors.messages',
 )
+
 #===== Configuration options ===============
 #--------- Grappelli ----------------
 #GRAPPELLI_ADMIN_TITLE = PROJECT_TITLE
@@ -146,7 +148,7 @@ SOURCE_DATABASE_NAME = PROJECT_NAME + '.sqlite'        # Or path to database fil
 SOURCE_DATABASE_USER = ''                       # Not used with sqlite3.
 SOURCE_DATABASE_PASSWORD = ''                   # Not used with sqlite3.
 SOURCE_DATABASE_HOST = ''                       # Set to empty string for localhost. Not used with sqlite3.
-SOURCE_DATABASE_PORT = ''    
+SOURCE_DATABASE_PORT = ''
 
 try:
     from settings_local import *
