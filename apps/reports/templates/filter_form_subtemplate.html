@@ -54,20 +54,21 @@ $('#parameters_form').submit(function(e) {
     .data-entry table tbody td { width: 100%; }
 </style>
 
-<div class="data-entry rounded" style="">
-    <form method="get" action="" id="parameters_form" >
-        <table>
+<div class="ui-widget ui-widget-content ui-corner-all">
+
+    <form method="get" action="" id="parameters_form">
+        <table style="width: 100%;">
             <thead>
                 <tr>
-                    <td colspan="10" class="rounded">
+                    <td colspan="2" class="ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all">
                         {% trans "Parameters" %}
                     </td>
                 </tr>
             </thead>
             <tfoot>
                 <tr>
-                    <td colspan="2" class="rounded" >
-                        <button type="submit" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only ui-state-hover ui-state-active" role="button" aria-disabled="false"><span class="ui-button-text" id="submit-text">{% trans 'Please wait...' %}</span></button>
+                    <td colspan="2">
+                        <button type="submit" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only ui-state-hover ui-state-active ui-priority-primary" role="button" aria-disabled="false"><span class="ui-button-text" id="submit-text">{% trans 'Please wait...' %}</span></button>
                     </td>
                 </tr>
             </tfoot>
@@ -88,7 +89,11 @@ $('#parameters_form').submit(function(e) {
                         padding: 0;
                     }
                 </style>
-                <tr><td colspan="2"><div id="date_helpers"></div></td></tr>
+                <tr>
+                    <td colspan="2">
+                        <div id="date_helpers"><hr /></div>
+                    </td>
+                </tr>
                 {{ filter_form.media|safe }}
             </tbody>
         </table>
