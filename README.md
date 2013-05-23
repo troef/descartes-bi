@@ -61,6 +61,30 @@ Creating charts
 
 Go into the admin site and start creating SQL queries to extract data from your data source DB and combine them into different charts.
 
+To do
+-----
+
+* Written documentation
+* Move database driver selection to GUI from setting.py file
+* Remove Superfish as convert menu to play HTML+CSS menu
+* Printer output support - Print CSS file
+* Add intellingent js thousand comma
+* Report timeout -> to avoid infinite "LOADING..."
+* Please "LOGIN" callout in open panel for clueless users :S
+* Plugable charting engines jqPlot/FLOT/D3
+* Angled label text
+* Stacked bars
+* Dynamic GROUP BY from ajax GUI ie: By month, year, employee
+* Dynamic enable/disable series from parameters window
+* Per user Favorites charts
+* Dashboard w/ multiple mini charts
+* New chart type - endless timeline
+* New chart type - 3d bar
+* Allow anonymous access to reports
+* Date helpers (This month, prev. month, this year, prev year, fiscal year, prev fiscal year)
+* Chart sets w/ same parameters  ie: monthly report
+* Drilldowns
+
 
 License
 -------
