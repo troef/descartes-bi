@@ -8,14 +8,13 @@ Descartes-bi is a database agnostic, Django based business intelligence tool.
 Implementation
 --------------
 
-Descartes-bi encapsulates small snnipets of SQL in pseudo-objects called series, that can later be combined to create comparative charts.  Aside from containing series, charts can also define parameters for user interaction.  Parameters (called filters) can be programmed to be restrictive using a custom permission system.
+Descartes-bi encapsulates small snipets of SQL in pseudo-objects called series, that can later be combined to create comparative charts.  Aside from containing series, charts can also define parameters for user interaction.  Parameters (called filters) can be programmed to be restrictive using a custom permission system.
 
 
-Installation
+Requirements
 ------------
 
- * Python 2.6
- * Django 1.2.5
+ * Django 1.5.1
 
 
 Setting up
