@@ -33,8 +33,7 @@ def build_menu(parser, token):
     try:
         tag_name, menu_name = token.split_contents()
     except:
-        raise template.TemplateSyntaxError, \
-         "%r tag requires exactly one argument" % token.contents.split()[0]
+        raise template.TemplateSyntaxError, "%r tag requires exactly one argument" % token.contents.split()[0]
     return MenuObject(menu_name)
 
 
@@ -85,8 +84,7 @@ class GetCustomAppsNode(template.Node):
                 custom_apps_data[app] = eval("%s.APP_DATA" % app)
 
                 if 'template_name' in custom_apps_data[app]:
-                    custom_template = get_template(
-                                    custom_apps_data[app]['template_name'])
+                    custom_template = get_template(custom_apps_data[app]['template_name'])
                     custom_apps_data[app]['template_data'] = custom_template.render(Context(context))
             except:
                 pass
