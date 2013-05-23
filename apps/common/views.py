@@ -15,20 +15,14 @@
 #    You should have received a copy of the GNU General Public License
 #    along with descartes-bi.  If not, see <http://www.gnu.org/licenses/>.
 #
-import datetime
 import os
 import re
 
 from django import http
 from django.conf import settings
-from django.contrib.auth.decorators import login_required
-from django.core.files import File
-from django.core.servers.basehttp import FileWrapper
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.template import loader, RequestContext
-
-from forms import UploadFileForm
 
 
 def error500(request, template_name='500.html'):

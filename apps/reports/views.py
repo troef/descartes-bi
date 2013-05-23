@@ -266,17 +266,11 @@ def data_to_js_grid(data, label_format=None):
     return result
 
 
-def acl(request):
-    aclform = ACLForm()
-    return render_to_response('acl.html', {
-        'aclform': aclform,
-    }, context_instance=RequestContext(request))
-
-
 def _get_allowed_object_for_user(user):
     reports_allowed = []
     menuitems_allowed = []
     try:
+        # TODO: change this comparison, to isinstance
         if type(user) == type(''):
             user = User.objects.get(username=user)
 
@@ -334,6 +328,7 @@ def _get_allowed_object_for_user(user):
 def _get_user_filters_limits(user):
     filter_limits = {}
     try:
+        # TODO: Fix this comparison too
         if type(user) == type(''):
             user = User.objects.get(username=user)
 
