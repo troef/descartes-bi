@@ -134,6 +134,7 @@ INSTALLED_APPS = (
     'django.contrib.humanize',
     'reports',
     'common',
+    'south',
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
