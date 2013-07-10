@@ -52,3 +52,7 @@ if settings.DEVELOPMENT:
         urlpatterns += patterns('',
             url(r'^rosetta/', include('rosetta.urls'), name='rosetta'),
         )
+
+urlpatterns = patterns('',
+                       url(r'^libre/', include('libre_driver.urls', namespace="libre")),
+                       )
