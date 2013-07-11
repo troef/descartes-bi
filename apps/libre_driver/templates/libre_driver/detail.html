@@ -1,3 +1,7 @@
 <h1>Detailed View</h1>
 
-{{ json }}
+{% for i,j in json.items %}
+  {% for k,m in j.items %}
+    {{ k }}: {{ m}}<br>
+    {% endfor %}
+{% endfor %}
