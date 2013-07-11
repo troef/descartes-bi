@@ -19,8 +19,16 @@
 from django.shortcuts import render
 import requests
 
+website = 'https://github.com/timeline.json'
+
 
 def IndexView(request):
     if request.method == 'GET':
-        r = requests.get('https://github.com/timeline.json')
+        r = requests.get(website)
         return render(request, 'libre_driver/index.html', {'json': r.json()})
+
+
+def DetailView(request, json_id):
+    if request.method == 'GET':
+        r = requests.get(website)
+        return render(request, 'libre_driver/detail.html', {'json': r.json()[int(json_id)]})
