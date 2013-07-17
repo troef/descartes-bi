@@ -113,6 +113,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
 )
 
 ROOT_URLCONF = 'urls'
@@ -132,8 +133,10 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.admin',
     'django.contrib.humanize',
+    'django.contrib.messages',
     'reports',
     'common',
+    'dashboard',
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (

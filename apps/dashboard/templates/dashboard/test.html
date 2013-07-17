@@ -1,0 +1,9 @@
+{% if report_list %}
+    <ul>
+    {% for rep in report_list %}
+       {{ rep.id }} :  {{ rep }}</br>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No reports are available.</p>
+{% endif %}

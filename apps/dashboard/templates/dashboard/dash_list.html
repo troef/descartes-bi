@@ -1,0 +1,30 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+         <script type="text/javascript" src="{{ MEDIA_URL }}packages/jquery-1.9.1.min.js"></script>
+        <script type="text/javascript" src="{{ MEDIA_URL }}packages/jquery-migrate-1.2.1.min.js"></script>
+        <script type="text/javascript" src="{{ MEDIA_URL }}packages/jquery-ui-1.10.3/ui/jquery-ui.js"></script>
+        <script type="text/javascript" src="{{ MEDIA_URL }}packages/jquery-corners/jquery.corners.min2.js"></script>
+        <script type="text/javascript" src="{{ MEDIA_URL }}packages/superfish-1.7.2/js/hoverIntent.js"></script>
+        <script type="text/javascript" src="{{ MEDIA_URL }}packages/superfish-1.7.2/js/superfish.js"></script>
+        <script type="text/javascript" src="{{ MEDIA_URL }}packages/superfish-1.7.2/js/supersubs.js"></script>
+        <script type="text/javascript" src="{{ MEDIA_URL }}packages/Sliding_login_panel_jquery/js/slide-min.js"></script>
+        <script type="text/javascript" src="{{ MEDIA_URL }}packages/jGrowl-1.2.0/jquery.jgrowl_minimized.js"></script>
+
+        <script type="text/javascript">
+        	 $(document).ready(function() {
+        	 	{% for sp in selected_reports %}
+        	 		$('body').append('<div id ="{{sp.rep_id.id}}" style="width:49%; float:left; border: 1px solid;"></div>')
+					$('#{{ sp.rep_id.id }}').load("http://127.0.0.1:8000/reports/ajax/report/{{sp.rep_id.id}}/?regional={{sp.id_regional}}&output_type=chart");
+        	 	{% endfor %} 
+
+        	 });
+        </script>
+     </head>
+     <body>
+
+     </body>
+</html>
