@@ -1,9 +1,10 @@
-{% if report_list %}
+
+{% if dash_list %}
     <ul>
-    {% for rep in report_list %}
-       {{ rep.id }} :  {{ rep }}</br>
+    {% for dash in dash_list %}
+    	<a id="{{dash.id}}" href="http://127.0.0.1:8000/dashboard/dash_list/{{dash.id}}">{{ dash }} </a> </br>
     {% endfor %}
     </ul>
 {% else %}
-    <p>No reports are available.</p>
+    <p>No Dashboards are available.</p>
 {% endif %}
