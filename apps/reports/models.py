@@ -17,6 +17,7 @@
 #
 
 from django.db import models
+from mptt.models import MPTTModel, TreeForeignKey
 import datetime
 
 from django.contrib.auth.models import User
@@ -27,6 +28,14 @@ FILTER_TYPE_DATE = u'DA'
 FILTER_TYPE_COMBO = u'DR'
 FILTER_TYPE_MONTH = u'MO'
 
+TYPE_MENU = 1
+TYPE_WIDGETS = 2
+
+
+TYPE_CHOICES = (
+    (TYPE_MENU, 'Menus'),
+    (TYPE_WIDGETS, 'Dashboard'),
+)
 
 class Filter(models.Model):
     FILTER_FIELD_CHOICES = (
@@ -359,3 +368,19 @@ class GroupPermissionFilterValues(models.Model):
     class Meta:
         verbose_name = _(u"group filter values limit")
         verbose_name_plural = _(u"group filter values limits")
+
+class Namespace(MPTTModel):
+    parent = TreeForeignKey('self', null=True, blank=True,
+        related_name='children')
+    label = models.CharField(max_length=32)
+    icon = models.CharField(max_length=32)
+    view_type = models.PositiveIntegerField(choices=TYPE_CHOICES, blank=True,
+        null=True)
+    view = models.ManyToManyField(Menuitem, null=True, blank=True,
+        verbose_name=_(u"menu item"))
+
+    def __unicode__(self):
+        return self.name
+
+    class MPTTMeta:
+        verbose_name = 'namespace'
