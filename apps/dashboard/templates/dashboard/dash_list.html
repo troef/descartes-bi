@@ -4,6 +4,15 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
+        <link type="text/css" href="{{ MEDIA_URL }}css/layout.css" rel="stylesheet" media="screen"/>
+        <link type="text/css" href="{{ MEDIA_URL }}css/theme_screen.css" rel="stylesheet" media="screen" />
+        <link type="text/css" href="{{ MEDIA_URL }}css/theme_print.css" rel="stylesheet" media="print" />
+        <link type="text/css" rel="stylesheet" href="{{ MEDIA_URL }}packages/jquery-ui-1.10.3/themes/smoothness/jquery-ui-1.10.3.custom.css" />
+        <link type="text/css" rel="stylesheet" href="{{ MEDIA_URL }}packages/superfish-1.7.2/css/superfish.css" media="screen" />
+        <link type="text/css" rel="stylesheet" href="{{ MEDIA_URL }}packages/Sliding_login_panel_jquery/css/slide.css" media="screen" />
+        <link type="text/css" rel="stylesheet" href="{{ MEDIA_URL }}packages/jGrowl-1.2.0/jquery.jgrowl.css" media="screen" />
+        <link type="text/css" href="{{ MEDIA_URL }}css/artemisMod.css" rel="stylesheet" media="screen"/>
+
         <script type="text/javascript" src="{{ MEDIA_URL }}packages/jquery-1.9.1.min.js"></script>
         <script type="text/javascript" src="{{ MEDIA_URL }}packages/jquery-migrate-1.2.1.min.js"></script>
         <script type="text/javascript" src="{{ MEDIA_URL }}packages/jquery-ui-1.10.3/ui/jquery-ui.js"></script>
@@ -24,7 +33,7 @@
 
         	 		var to_date{{ sp.rep_id.id }} = ("0" + (td{{ sp.rep_id.id }}.getMonth() + 1)).slice(-2) + "%2F" + ("0" + td{{ sp.rep_id.id }}.getDate()).slice(-2) + "%2F" + td{{ sp.rep_id.id }}.getFullYear();
 
-        	 		$('body').append('<div id ="{{sp.rep_id.id}}" style="width:49%; float:left; border: 1px solid;"></div>');
+        	 		$('body').append('<div class="chart" id ="{{sp.rep_id.id}}" style="width:49%; float:left; border: 1px solid;"></div>');
 
 					$('#{{ sp.rep_id.id }}').load("http://127.0.0.1:8000/reports/ajax/report/{{sp.rep_id.id}}/?regional={{sp.id_regional}}&output_type={{sp.visual_type}}&from_date="+ from_date{{ sp.rep_id.id }} + "&to_date=" + to_date{{ sp.rep_id.id }} );
         	 	{% endfor %} 
@@ -33,8 +42,15 @@
         </script>
      </head>
      <body>
-        <h1 style="text-align:center;"> {{dash_board.name}} </h1>
-     	<div id='params'></div>
-
+        <div id="header" >
+                <div style="float:left;">
+                    <h1 style="text-align: center; font-size: 35px; margin-top: 0px; margin-bottom: 0px;" >
+                        <a href="/" style="color: white;"><img src="{{ MEDIA_URL }}images/logo2013.png" alt="project logo" /></a>
+                    </h1>
+                </div>
+        </div> 
+              </br></br>
+              <h1 style="text-align:center;"> {{dash_board.name}} </h1>
+              </br></br>
      </body>
 </html>

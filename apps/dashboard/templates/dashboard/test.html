@@ -1,10 +1,25 @@
+<html>
+<script type="text/javascript" src="{{ MEDIA_URL }}packages/jquery-1.9.1.min.js"></script>
+<script type="text/javascript">
+	// $(document).ready(function(){
+ // 		 $('a').click(function(e){
+ //    		 e.preventDefault();
+ //    		 $("#dashboard").empty();
+ //    		 $("#dashboard").load($(this).attr('href'));
+ //  		});
+	// });
+
+</script>
+<body>
 
 {% if dash_list %}
-    <ul>
     {% for dash in dash_list %}
-    	<a id="{{dash.id}}" href="http://127.0.0.1:8000/dashboard/dash_list/{{dash.id}}">{{ dash }} </a> </br>
+    <a id="{{dash.id}}" href="http://127.0.0.1:8000/dashboard/dash_list/{{dash.id}}">{{ dash }} </a> </br>
     {% endfor %}
-    </ul>
 {% else %}
     <p>No Dashboards are available.</p>
 {% endif %}
+
+<div id="dashboard"></div>
+</body>
+</html>
