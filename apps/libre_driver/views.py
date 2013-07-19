@@ -32,3 +32,20 @@ def DetailView(request, json_id):
     if request.method == 'GET':
         req = requests.get(website + '{0}/?_format=json'.format(json_id))
         return render(request, 'libre_driver/detail.html', {'json': req.json()})
+
+
+def QueryView(request):
+    if request.method == 'GET':
+        url = website + '?'
+        field = ['office', 'first_name']
+        qtype = ['lt', 'contains']
+        values = ['1000', 'Ann']
+
+        #Adds the query to the url from the arrays
+        for i in range(len(field)):
+            if i != 0:
+                url += '&'
+            url += '{0}__{1}={2}'.format(field[i], qtype[i], values[i])
+
+        req = requests.get(url + '&_format=json')
+        return render(request, 'libre_driver/query.html', {'json': req.json()[0], 'url': req.url})
