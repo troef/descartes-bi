@@ -24,6 +24,8 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.template import loader, RequestContext
 
+from reports.models import Namespace
+
 
 def error500(request, template_name='500.html'):
     #TODO: if user is admin include debug info

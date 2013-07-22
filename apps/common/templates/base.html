@@ -18,6 +18,7 @@
         <link type="text/css" rel="stylesheet" href="{{ MEDIA_URL }}packages/Sliding_login_panel_jquery/css/slide.css" media="screen" />
         <link type="text/css" rel="stylesheet" href="{{ MEDIA_URL }}packages/jGrowl-1.2.0/jquery.jgrowl.css" media="screen" />
         <link type="text/css" href="{{ MEDIA_URL }}css/artemisMod.css" rel="stylesheet" media="screen"/>
+        <link type="text/css" rel="stylesheet" href="{{ MEDIA_URL }}packages/dashMenu/dashMenu.css" media="screen"/>
 
         {% block stylesheets %}{% endblock %}
 
@@ -30,7 +31,9 @@
         <script type="text/javascript" src="{{ MEDIA_URL }}packages/superfish-1.7.2/js/supersubs.js"></script>
         <script type="text/javascript" src="{{ MEDIA_URL }}packages/Sliding_login_panel_jquery/js/slide-min.js"></script>
         <script type="text/javascript" src="{{ MEDIA_URL }}packages/jGrowl-1.2.0/jquery.jgrowl_minimized.js"></script>
+        <script type="text/javascript" src="{{ MEDIA_URL }}packages/dashMenu/dashMenu.js"></script>
         <script type="text/javascript">
+
             var global_report_loading = false;
 
             jQuery.fn.log = function (msg) {
@@ -171,11 +174,11 @@
         </script>
         {% block javascript %}{% endblock %}
         <title>{% project_name %}{% block title %}{% endblock %}</title>
+
     </head>
     <body>
         <form><input id="current_report" type="hidden" value="" /></form>
     <div id="jgrowl-container" class="top-right" style="top: 50px;"></div>
-
     <!-- Login -->
     <div id="toppanel">
         <div id="panel">
@@ -185,7 +188,6 @@
                     <div class="left right">
                         <h1>{% trans "Logout from aplication?" %}</h1>
                         <form action="{% url 'user_logout' %}" method="post">
-                            something here
                             <input type="submit" name="submit" value="{% trans 'Logout' %}" class="bt_register" />
                         </form>
                     </div>
@@ -278,6 +280,7 @@
                     </ul>
                 </li>
 
+                <!-- Original Menu -->
                 {% get_menu %}
                 {% for menu_entry in menuitems_allowed %}
                 <li>
@@ -291,6 +294,7 @@
                     </ul>
                 </li>
                 {% endfor %}
+
                 {% if user.is_staff %}
                     <li><a href="#">{% trans "Configuration" %}</a>
                         <ul>
@@ -324,6 +328,7 @@
                     <!-- Column 1 start -->
                     <script type="text/javascript">
                     </script>
+
                     <noscript>
                         <div id="js_noscript">
                             <img src="{{ MEDIA_URL }}images/dialog-warning.png" alt="" />
@@ -345,7 +350,8 @@
                     </div>
 
                     <div id="chart_wrapper" >
-                        {% block content %}{% endblock %}
+                        {% block dash_menu %} {% endblock %}
+                        {% block content %} {% endblock %}
                     </div>
 
                 </div>

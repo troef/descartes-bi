@@ -21,7 +21,7 @@ from django.conf import settings
 from django.template.loader import get_template
 from django.template import Context
 
-from reports.models import Menuitem
+from reports.models import Menuitem, Namespace
 
 register = template.Library()
 
@@ -97,3 +97,16 @@ class GetCustomAppsNode(template.Node):
 @register.tag(name='get_custom_apps')
 def get_custom_apps(parser, token):
     return GetCustomAppsNode()
+
+
+class get_root_menu_node(template.Node):
+    def render(self, context):
+
+        context['root_menu'] = [i for i in Namespace.objects.all()
+                                        if i.is_root_node()]
+        return ''
+
+
+@register.tag(name='get_root_menu')
+def get_root_menu(parser, token):
+    return get_root_menu_node()

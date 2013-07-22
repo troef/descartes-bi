@@ -25,7 +25,7 @@ from django.template import RequestContext
 from django.utils.translation import ugettext as _
 
 from forms import FilterForm
-from models import Report, Menuitem, GroupPermission, UserPermission, User, SeriesStatistic, ReportStatistic
+from models import Report, Menuitem, GroupPermission, UserPermission, User, SeriesStatistic, ReportStatistic, Namespace
 from models import FILTER_TYPE_DATE, FILTER_TYPE_COMBO
 
 
@@ -396,3 +396,18 @@ def _get_user_filters_limits(user):
 
     #print "FILTER LIMITS: %s" % filter_limits
     return filter_limits
+
+
+def get_dash_menu(request, namespace_id):
+    menu_node = Namespace.objects.filter(pk=namespace_id)
+
+    for node in menu_node:
+        if node.is_leaf_node():
+            #Get Menuitem menu
+
+            pass
+        else:
+            #Get another dash menu
+            pass
+
+    return ''

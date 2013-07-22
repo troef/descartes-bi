@@ -380,7 +380,7 @@ class Namespace(MPTTModel):
         verbose_name=_(u"menu item"))
 
     def __unicode__(self):
-        return self.name
+        return self.label
 
     class MPTTMeta:
         verbose_name = 'namespace'
