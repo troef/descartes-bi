@@ -39,7 +39,7 @@ def QueryView(request):
         url = website + '?'
         field = ['office', 'first_name']
         qtype = ['lt', 'contains']
-        values = ['1000', 'Ann']
+        values = ['1000', 'John']
 
         #Adds the query to the url from the arrays
         for i in range(len(field)):
