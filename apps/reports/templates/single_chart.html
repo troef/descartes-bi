@@ -43,10 +43,10 @@ PARAMS: {{ params }}<br />
 CHART_DATA: {{ chart_data }}<br />
 {% endif %}
 
-<div class="jqPlot" id="chart1" style="height: 97%; width: 100%; margin:auto; font-size: 110%; color: black; font-color: red; float: left;">
+<div class="jqPlot" id="chart{{chart.id}}" style="height: 97%; width: 100%; margin:auto; font-size: 110%; color: black; font-color: red; float: left;">
 <script type="text/javascript">
 
-    plot1 = $.jqplot('chart1', [{{ chart_data|safe }}], {
+    plot1 = $.jqplot('chart{{chart.id}}', [{{ chart_data|safe }}], {
         title:'{{ chart.title }}',
         seriesColors: [ "#abc837", "#7A4012", "#507642", "#A37B45", "#CCCFBC", "#F3F4EC", "#FF0000", "#DFDAC7" ,"#FF6600", "#003366", "#666666"],
 
