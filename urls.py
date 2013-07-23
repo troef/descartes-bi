@@ -25,6 +25,7 @@ admin.autodiscover()
 handler500 = 'common.views.error500'
 urlpatterns = patterns('',
     (r'^admin/', include(admin.site.urls)),
+    (r'^dashboard/', include('dashboard.urls', namespace='dashboard')),
 
     (r'^reports/', include('reports.urls', namespace='reports')),
     (r'^grappelli/', include('grappelli.urls')),

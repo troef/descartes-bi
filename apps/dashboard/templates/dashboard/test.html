@@ -1,0 +1,18 @@
+<html>
+<script type="text/javascript" src="{{ MEDIA_URL }}packages/jquery-1.9.1.min.js"></script>
+<script type="text/javascript">
+
+</script>
+<body>
+
+{% if dash_list %}
+    {% for dash in dash_list %}
+    <a id="{{dash.id}}" href="http://127.0.0.1:8000/dashboard/dash_list/{{dash.id}}">{{ dash }} </a> </br>
+    {% endfor %}
+{% else %}
+    <p>No Dashboards are available.</p>
+{% endif %}
+
+<div id="dashboard"></div>
+</body>
+</html>
