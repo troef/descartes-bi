@@ -280,7 +280,10 @@
                     </ul>
                 </li>
 
-                <!-- Original Menu -->
+                {% block menu %}
+                {% endblock %}
+
+                <!-- Original Menu
                 {% get_menu %}
                 {% for menu_entry in menuitems_allowed %}
                 <li>
@@ -293,7 +296,7 @@
                         {% endfor %}
                     </ul>
                 </li>
-                {% endfor %}
+                {% endfor %} -->
 
                 {% if user.is_staff %}
                     <li><a href="#">{% trans "Configuration" %}</a>
@@ -350,7 +353,6 @@
                     </div>
 
                     <div id="chart_wrapper" >
-
                         {% block content %} {% endblock %}
                     </div>
 

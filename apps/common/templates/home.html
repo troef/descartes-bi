@@ -26,7 +26,7 @@ $(document).ready(function() {
         var itemList = new Array();
         {% get_root_menu %}
         {% for root in root_menu %}
-            itemList.push({title:"{{ root.label }}", icon:"{{ root.icon }}", hyperlink: "get_dash_menu/{{ root.pk }}"});
+            itemList.push({title:"{{ root.label }}", icon:"{{ MEDIA_URL }}packages/dashMenu/img/" + "{{ root.icon }}", hyperlink: "get_dash_menu/{{ root.pk }}"});
         {% endfor %}
 
         $(document).ready(function(e) {

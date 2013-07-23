@@ -82,16 +82,14 @@ def get_project_root():
     return os.path.dirname(os.path.abspath(settings_mod.__file__))
 
 def get_dash_menu(request, namespace_id):
-    menu_node = Namespace.objects.filter(pk=namespace_id)
+    node = Namespace.objects.get(pk=namespace_id)
 
     context = {}
 
-    for node in menu_node:
-        if node.is_leaf_node():
-            #Get Menuitem menu
-            pass
-        else:
-            context['nodes'] = node.get_children()
+    if node.is_leaf_node():
+        context['menus'] = node.view.all()
+    else:
+        context['nodes'] = node.get_children()
 
     return render_to_response('sub_dash_menu.html',
         context, context_instance=RequestContext(request))
