@@ -136,7 +136,7 @@ def ajax_report(request, report_id):
     labels = []
     for s in report.serietype_set.all():
         query = s.serie.query
-        if re.search("\\?", query):
+        if re.search("^\\?", query):
             return query_libre(query)
 
         elif re.compile("[^%]%[^%(]").search(query):
