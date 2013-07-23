@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% load i18n %}
-{% load menubuilder %}
+{% load project_tags %}
 {% block keywords %}
 	<meta name="description" content="" />
 	<meta name="keywords" content="" />
@@ -21,22 +21,18 @@ $(document).ready(function() {
 
 {% block content %}
 <div class='tc'>
-<!-- <img class="homeLogo" src="{{ MEDIA_URL }}images/project_logo_alt.png" alt="project logo" /> -->
-</div>
-{% endblock %}
-
-{% block dash_menu %}
-<div class="gobDashMenu">
+<!--<img class="homeLogo" src="{{ MEDIA_URL }}images/project_logo_alt.png" alt="project logo" /> -->
 <script type="text/javascript">
         var itemList = new Array();
         {% get_root_menu %}
-        {% for i in root_menu %}
-            itemList.push({title:"{{ i.label }}", icon:"{{ i.icon }}", hyperlink:"reports/get_dash_menu/{{ i.pk }}"});
+        {% for root in root_menu %}
+            itemList.push({title:"{{ root.label }}", icon:"{{ root.icon }}", hyperlink: "get_dash_menu/{{ root.pk }}"});
         {% endfor %}
 
         $(document).ready(function(e) {
-            fillDashMenu(itemList, ".gobDashMenu");
+            fillDashMenu(itemList, ".tc");
         });
     </script>
 </div>
 {% endblock %}
+

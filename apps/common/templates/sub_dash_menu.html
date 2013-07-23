@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block stylesheets %}
+    <style>
+        .col1 {  overflow: auto; }
+    </style>
+{% endblock %}
+
+{% block content %}
+<div class='gobDashMenu'>
+<script type="text/javascript">
+        var itemList = new Array();
+        {% for node in nodes %}
+            itemList.push({title:"{{ node.label }}", icon:"{{ node.icon }}", hyperlink:"{% url 'get_dash_menu' node.pk %}"});
+            "{% url 'get_dash_menu' node.pk %}"
+        {% endfor %}
+
+        $(document).ready(function(e) {
+            fillDashMenu(itemList, ".gobDashMenu");
+        });
+    </script>
+</div>
+{% endblock %}

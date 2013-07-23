@@ -20,7 +20,7 @@ import re
 
 from django.db import connections
 from django.http import HttpResponse
-from django.shortcuts import render_to_response, get_object_or_404
+from django.shortcuts import render_to_response, get_object_or_404, redirect
 from django.template import RequestContext
 from django.utils.translation import ugettext as _
 
@@ -398,16 +398,3 @@ def _get_user_filters_limits(user):
     return filter_limits
 
 
-def get_dash_menu(request, namespace_id):
-    menu_node = Namespace.objects.filter(pk=namespace_id)
-
-    for node in menu_node:
-        if node.is_leaf_node():
-            #Get Menuitem menu
-
-            pass
-        else:
-            #Get another dash menu
-            pass
-
-    return ''
