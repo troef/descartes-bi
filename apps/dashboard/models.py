@@ -10,6 +10,7 @@ class selected_report(models.Model):
 	to_date = models.DateField('To Date')
 	id_regional = models.PositiveSmallIntegerField('Regional ID')
 	visual_type = models.CharField(max_length=5, choices=(('chart', 'chart') , ('grid', 'grid')), default='chart')
+	refresh_rate = models.PositiveSmallIntegerField('Refresh Rate')
 
 	def __unicode__(self):
 		return self.rep_id.title + "{" + str(self.from_date) + "}" 

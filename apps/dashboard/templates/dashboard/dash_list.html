@@ -33,15 +33,21 @@
 
         	 		var to_date{{ sp.rep_id.id }} = ("0" + (td{{ sp.rep_id.id }}.getMonth() + 1)).slice(-2) + "%2F" + ("0" + td{{ sp.rep_id.id }}.getDate()).slice(-2) + "%2F" + td{{ sp.rep_id.id }}.getFullYear();
 
-        	 		$('body').append('<div class="chart" id ="{{sp.rep_id.id}}" style="width:49%; float:left; border: 1px solid;"></div>');
+        	 		$('#dashboard').append('<div class="chart" id ="{{sp.id}}" style="width:48%; float:left; border: 1px solid;"></div>');
 
-					$('#{{ sp.rep_id.id }}').load("http://127.0.0.1:8000/reports/ajax/report/{{sp.rep_id.id}}/?regional={{sp.id_regional}}&output_type={{sp.visual_type}}&from_date="+ from_date{{ sp.rep_id.id }} + "&to_date=" + to_date{{ sp.rep_id.id }} );
+
+                    setInterval( 
+                        function(){
+					       $('#{{ sp.id }}').load("http://127.0.0.1:8000/reports/ajax/report/{{sp.rep_id.id}}/?regional={{sp.id_regional}}&output_type={{sp.visual_type}}&from_date="+ from_date{{ sp.rep_id.id }} + "&to_date=" + to_date{{ sp.rep_id.id }} );
+                       }, ({{ sp.refresh_rate }} * 1000));
+
+
         	 	{% endfor %} 
 
         	 });
         </script>
      </head>
-     <body>
+     <body style="margin-left:1%; margin-right:1%;">
         <div id="header" >
                 <div style="float:left;">
                     <h1 style="text-align: center; font-size: 35px; margin-top: 0px; margin-bottom: 0px;" >
@@ -52,5 +58,7 @@
               </br></br>
               <h1 style="text-align:center;"> {{dash_board.name}} </h1>
               </br></br>
+              <div id="count" ></div>
+              <div id="dashboard" style="min-width:1200px;"></div>
      </body>
 </html>
