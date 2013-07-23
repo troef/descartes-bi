@@ -137,6 +137,7 @@ INSTALLED_APPS = (
     'common',
     'south',
     'mptt',
+    'dashboard',
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
