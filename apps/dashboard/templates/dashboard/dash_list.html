@@ -35,11 +35,15 @@
 
         	 		$('#dashboard').append('<div class="chart" id ="{{sp.id}}" style="width:48%; float:left; border: 1px solid;"></div>');
 
+                    
+                    function rep{{ sp.id }} (){
+					      $('#{{ sp.id }}').load("http://127.0.0.1:8000/reports/ajax/report/{{sp.rep_id.id}}/?regional={{sp.id_regional}}&output_type={{sp.visual_type}}&from_date="+ from_date{{ sp.rep_id.id }} + "&to_date=" + to_date{{ sp.rep_id.id }} );
+                            
+                            // var param = {% for filter in sp.filtersets.filters.all %}{{ filter.name }} + "," {% endfor %};
+                            // $('#{{ sp.id }}').append(param);
+                       }
 
-                    setInterval( 
-                        function(){
-					       $('#{{ sp.id }}').load("http://127.0.0.1:8000/reports/ajax/report/{{sp.rep_id.id}}/?regional={{sp.id_regional}}&output_type={{sp.visual_type}}&from_date="+ from_date{{ sp.rep_id.id }} + "&to_date=" + to_date{{ sp.rep_id.id }} );
-                       }, ({{ sp.refresh_rate }} * 1000));
+                    setInterval( rep{{ sp.id }}(), ({{ sp.refresh_rate }} * 1000));
 
 
         	 	{% endfor %} 
