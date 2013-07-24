@@ -6,3 +6,4 @@ settings_local.py
 *.sqlite
 /venv/
 /descartesEnv/
+.DS_Store
