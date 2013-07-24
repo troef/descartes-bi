@@ -33,16 +33,20 @@
 
         	 		var to_date{{ sp.rep_id.id }} = ("0" + (td{{ sp.rep_id.id }}.getMonth() + 1)).slice(-2) + "%2F" + ("0" + td{{ sp.rep_id.id }}.getDate()).slice(-2) + "%2F" + td{{ sp.rep_id.id }}.getFullYear();
 
-        	 		$('#dashboard').append('<div class="chart" id ="{{sp.id}}" style="width:48%; float:left; border: 1px solid;"></div>');
+        	 		$('#dashboard').append('<div class="chart" id ="{{sp.id}}" style="width:48%; float:left; border: 1px solid; color:grey;" ></div>');
 
 
-                    setInterval( 
-                        function(){
-					       $('#{{ sp.id }}').load("http://127.0.0.1:8000/reports/ajax/report/{{sp.rep_id.id}}/?regional={{sp.id_regional}}&output_type={{sp.visual_type}}&from_date="+ from_date{{ sp.rep_id.id }} + "&to_date=" + to_date{{ sp.rep_id.id }} );
-                       }, ({{ sp.refresh_rate }} * 1000));
+                    function rep{{ sp.id }} (){
+					      $('#{{ sp.id }}').load("{% url 'home_view' %}reports/ajax/report/{{sp.rep_id.id}}/?regional={{sp.id_regional}}&output_type={{sp.visual_type}}&from_date="+ from_date{{ sp.rep_id.id }} + "&to_date=" + to_date{{ sp.rep_id.id }} );
+
+                            // var param = {% for filter in sp.filtersets.filters.all %}{{ filter.name }} + "," {% endfor %};
+                            // $('#{{ sp.id }}').append(param);
+                       }
+
+                    setInterval( rep{{ sp.id }}(), ({{ sp.refresh_rate }} * 1000));
 
 
-        	 	{% endfor %} 
+        	 	{% endfor %}
 
         	 });
         </script>
@@ -54,7 +58,7 @@
                         <a href="/" style="color: white;"><img src="{{ MEDIA_URL }}images/logo2013.png" alt="project logo" /></a>
                     </h1>
                 </div>
-        </div> 
+        </div>
               </br></br>
               <h1 style="text-align:center;"> {{dash_board.name}} </h1>
               </br></br>

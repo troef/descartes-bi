@@ -37,6 +37,7 @@ urlpatterns = patterns('',
     url(r'^accounts/password_change_ok/$', 'django.contrib.auth.views.password_change_done', {'template_name': 'password_change_done.html'}),
 
     (r'^favicon\.ico$', RedirectView.as_view(url='%simages/favicon.ico' % settings.MEDIA_URL)),
+    url(r'^libre/', include('libre_driver.urls', namespace="libre")),
 )
 
 if settings.DEVELOPMENT:
