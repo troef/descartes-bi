@@ -3,6 +3,8 @@
 import os
 import sys
 
+from django.core.urlresolvers import reverse_lazy
+
 SITE_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "./"))
 sys.path.append(os.path.join(SITE_ROOT, 'modules'))
 sys.path.append(os.path.join(SITE_ROOT, 'apps'))
@@ -152,8 +154,8 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 #--------- Grappelli ----------------
 GRAPPELLI_ADMIN_TITLE = PROJECT_TITLE
 #--------- Django -------------------
-LOGIN_URL = '/login/'
-LOGIN_REDIRECT_URL = '/'
+LOGIN_URL = reverse_lazy('login_view')
+LOGIN_REDIRECT_URL = reverse_lazy('home')
 #------------------------------------
 
 try:
