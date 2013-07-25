@@ -24,7 +24,7 @@ BACKEND_CLASSES = {
     BACKEND_MYSQL: 'django.db.backends.mysql',
     BACKEND_SQLITE3: 'django.db.backends.sqlite3',
     BACKEND_ORACLE: 'django.db.backends.oracle',
-    BACKEND_LIBRE: 'apps.libre_driver.backend.libre',
+    BACKEND_LIBRE: 'libre_driver.backend',
 }
 
 
