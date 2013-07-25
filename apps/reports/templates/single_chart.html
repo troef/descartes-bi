@@ -21,14 +21,15 @@
     }
 
     #chart{{chart.id}} svg {
-      height: 500px;
+      height: 350px;
       margin: 10px;
       min-width: 100px;
-      min-height: 100px;}
+      min-height: 100px;
+    }
 </style>
 <body>
 
-  <div id="chart{{chart.id}}">
+  <div id="chart{{chart.id}}" style="margin:2px;">
     {% if chart.title %}
         <h1>{{chart.title }}</h1>
     {% endif %}

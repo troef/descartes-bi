@@ -111,6 +111,7 @@ svg {
 
 svg text {
   font: normal 12px Arial;
+  color :white;
 }
 
 svg .title {
