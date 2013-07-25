@@ -155,12 +155,6 @@ GRAPPELLI_ADMIN_TITLE = PROJECT_TITLE
 LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/'
 #------------------------------------
-SOURCE_DATABASE_ENGINE = 'sqlite3'          # 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-SOURCE_DATABASE_NAME = PROJECT_NAME + '.sqlite'        # Or path to database file if using sqlite3.
-SOURCE_DATABASE_USER = ''                       # Not used with sqlite3.
-SOURCE_DATABASE_PASSWORD = ''                   # Not used with sqlite3.
-SOURCE_DATABASE_HOST = ''                       # Set to empty string for localhost. Not used with sqlite3.
-SOURCE_DATABASE_PORT = ''
 
 try:
     from settings_local import *
