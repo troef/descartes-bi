@@ -132,6 +132,8 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.admin',
     'django.contrib.humanize',
+    'south',
+    'db_drivers',
     'reports',
     'common',
 )
