@@ -37,7 +37,7 @@ class DataSource(models.Model):
     host = models.CharField(max_length=64, blank=True, verbose_name=_('host'), help_text=_('Set to empty string for localhost. Not used with sqlite3.'))
     port = models.PositiveIntegerField(blank=True, null=True, verbose_name=_('port'))
 
-    def load_backed(self):
+    def load_backend(self):
         database_settings = {}
 
         database_settings['ENGINE'] = BACKEND_CLASSES[self.backend]
