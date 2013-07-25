@@ -4,7 +4,7 @@ from reports.models import Report , Filterset
 
 # Create your models here.
 
-class selected_report(models.Model):
+class Selected_report(models.Model):
 	rep_id = models.ForeignKey(Report)
 	filtersets = models.ForeignKey(Filterset, null=True, blank=True)
 	values = models.CharField(max_length=200)
@@ -17,12 +17,12 @@ class selected_report(models.Model):
 	def __unicode__(self):
 		return self.rep_id.title + "{ " + self.values + " }" 
 
-class dash(models.Model):
-	name = models.CharField(max_length=50)
-	selection_list = models.ManyToManyField(selected_report)
+class Dash(models.Model):
+    name = models.CharField(max_length=50)
+    selection_list = models.ManyToManyField(Selected_report)
 
-	def __unicode__(self):
-		return self.name
+    def __unicode__(self):
+        return self.name
 
 
 
