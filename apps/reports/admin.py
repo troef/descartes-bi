@@ -19,14 +19,13 @@
 from reports.models import FilterExtra, SerieType, \
     GroupPermissionFilterValues, UserPermissionFilterValues, \
     UserPermission, GroupPermission, Report, Serie, Filterset, Filter, \
-    Menuitem, SeriesStatistic, ReportStatistic, Namespace
+    Menuitem, SeriesStatistic, ReportStatistic
 
 from django.contrib import admin
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 from django.db.models.fields import CharField
 
-from mptt.admin import MPTTModelAdmin
 
 #clone_objects Copyright (C) 2009  Rune Bromer
 #http://www.bromer.eu/2009/05/23/a-generic-copyclone-action-for-django-11/
@@ -243,11 +242,6 @@ class ReportStatisticAdmin(ReadOnlyAdminFields, admin.ModelAdmin):
     actions = None
 
 
-class NamespaceAdmin(MPTTModelAdmin):
-    list_display = ('label', 'parent', 'icon', 'view_type')
-    #filter_horizontal = ('menu item',)
-
-
 admin.site.register(UserPermission, UserPermissionAdmin)
 admin.site.register(GroupPermission, GroupPermissionAdmin)
 admin.site.register(Report, ReportAdmin)
@@ -257,4 +251,3 @@ admin.site.register(Filter, FilterAdmin)
 admin.site.register(Menuitem, MenuitemAdmin)
 admin.site.register(ReportStatistic, ReportStatisticAdmin)
 admin.site.register(SeriesStatistic, SeriesStatisticAdmin)
-admin.site.register(Namespace, NamespaceAdmin)

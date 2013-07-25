@@ -24,7 +24,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.template import loader, RequestContext
 
-from reports.models import Namespace
+from common.models import Namespace
 
 
 def error500(request, template_name='500.html'):
@@ -87,7 +87,7 @@ def get_dash_menu(request, namespace_id):
     context = {}
 
     if node.is_leaf_node():
-        context['menus'] = node.view.all()
+        context['menus'] = node.view_menu.all()
     else:
         context['nodes'] = node.get_children()
 
