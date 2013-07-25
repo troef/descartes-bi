@@ -40,7 +40,8 @@
 					      //$('#{{ sp.id }}').load("{% url 'home_view' %}reports/ajax/report/{{sp.rep_id.id}}/?regional={{sp.id_regional}}&output_type={{sp.visual_type}}&from_date="+ from_date{{ sp.rep_id.id }} + "&to_date=" + to_date{{ sp.rep_id.id }} );
 
                         var param= [{% for filter in sp.filtersets.filters.all %} "{{ filter.name }}", {% endfor %} ];
-                        var values = "{{sp.values}}".split(",");
+                        var val = "{{sp.values}}".replace(/\s/g, '');
+                        var values = val.split(",");
                         if ( param.length == values.length) {
                             var link = "{% url 'home_view' %}reports/ajax/report/{{sp.rep_id.id}}/?";
                             for (var i=0; i < param.length; i++){
