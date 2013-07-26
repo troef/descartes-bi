@@ -81,13 +81,18 @@ def get_project_root():
     settings_mod = __import__(settings.SETTINGS_MODULE, {}, {}, [''])
     return os.path.dirname(os.path.abspath(settings_mod.__file__))
 
+
 def get_dash_menu(request, namespace_id):
     node = Namespace.objects.get(pk=namespace_id)
 
     context = {}
 
     if node.is_leaf_node():
-        context['menus'] = node.view_menu.all()
+        #view_type 1 - Menu, view_type 2 - Dashboard
+        if node.view_type == 1:
+            context['menus'] = node.view_menu.all()
+        else:
+            context['dash_menu'] = node.view_dash
     else:
         context['nodes'] = node.get_children()
 

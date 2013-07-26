@@ -33,3 +33,7 @@
 </li>
 {% endfor %}
 {% endblock %}
+
+{% block dash_menu %}
+    <a id="{{dash_menu.id}}" href="{% url 'dashboard:index' %}dash_list/{{dash_menu.id}}">{{ dash_menu }} </a> </br>
+{% endblock %}

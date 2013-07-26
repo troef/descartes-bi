@@ -42,11 +42,18 @@ class Namespace(MPTTModel):
         null=True)
     view_menu = models.ManyToManyField(Menuitem, null=True, blank=True,
         verbose_name=_(u"menu item"))
-    view_dash = models.ManyToManyField(Dash, null=True, blank=True,
+    view_dash = models.ForeignKey(Dash, null=True, blank=True,
         verbose_name=_(u"dash item"))
 
     def __unicode__(self):
         return self.label
+
+    #def save(self, *args, **kwargs):
+
+        ##if root, it should not have a menu/dash
+        #if not self.parent:
+            #self.view_type = None
+        #super(Namespace, self).save(*args, **kwargs)
 
     class MPTTMeta:
         verbose_name = 'namespace'
