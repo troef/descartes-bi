@@ -145,9 +145,6 @@ def ajax_report(request, report_id):
         print >>sys.stderr, s.serie.data_source.backend
 
         if special_params:
-
-            print >>sys.stderr, "Insided Special params"
-
             for sp in special_params.keys():
                 query = re.compile('%\(' + sp + '\)s').sub(special_params[sp], query)
             try:
@@ -205,9 +202,11 @@ def ajax_report(request, report_id):
         v_axis = "x"
 
     if s.serie.data_source.backend == 6:
+        import json
+
         data = {
             'chart_data': "libre",
-            'series_results': series_results,
+            'series_results': json.dumps(series_results),
             'chart_series': report.serietype_set.all(),
             'chart': report,
             'h_axis': h_axis,

@@ -21,7 +21,7 @@
     <script type="text/javascript" src="{% static 'packages/jquery.jqGrid-3.5.2/js/i18n/grid.locale-en.js' %}"></script>
     <script type="text/javascript" src="{% static 'packages/jquery.jqGrid-3.5.2/js/jquery.jqGrid.min.js' %}"></script>
 
-{% if 1 %}
+{% if 0 %}
 QUERY: {{ query }}<br />
 PARAMS: {{ params }}<br />
 CHART_DATA: {{ chart_data }}<br />
@@ -58,6 +58,7 @@ CHART_SERIES: {{ chart_series }}<br />
         });
 
         var mydata = {{ series_results|hash:forloop.counter0|safe }};
+        console.log(mydata)
         for(var i=0;i<=mydata.length;i++) {
             jQuery("#list{{ forloop.counter }}").addRowData(i+1, mydata[i]);
         }
@@ -68,7 +69,48 @@ CHART_SERIES: {{ chart_series }}<br />
 </div>
 
 {% else %}
-{{ series_results }}
+<div class="tabs" id="info-panel" style='font-size: 90%; display: none;'>
+    <ul>
+        {% for s in chart_series %}
+            <li><a href="#tabs-{{ forloop.counter }}">{% firstof s.serie.label s %}</a></li>
+        {% endfor %}
+    </ul>
+
+{% for s in chart_series %}
+
+<div id="tabs-{{ forloop.counter }}" style="width: 100%; height: 100%;">
+
+    <table id="list{{ forloop.counter }}" class="scroll" cellpadding="0" cellspacing="0" style="width: 100%; height: 100%;"></table>
+    <script type="text/javascript">
+    jQuery("#list{{ forloop.counter }}").jqGrid({
+        datatype: "local",
+        height: $("#chart_wrapper").height() - 120,
+        width: $("#chart_wrapper").width() - 40,
+        //autowidth: true,
+        rownumbers: true,
+        colNames:['{% trans "Hotel_ID" %}','{% trans "Name" %}','{% trans "Address 1" %}','{% trans "Address 2" %}','{% trans "Region" %}','{% trans "Rooms" %}', '{% trans "Telephone" %}', '{% trans "ZipCode" %}'],
+        colModel:[
+            {name:'_id'},
+            // {name:'city'},
+            {name:'name'},
+            {name:'physical_address_1'},
+            {name:'physical_address_2'},
+            {name:'region'},
+            {name:'rooms'},
+            {name:'telephone'},
+            {name:'zipcode'},
+        ]
+    });
+
+     var mydata = {{ series_results|safe }};
+     console.log(mydata)
+    for(var i=0;i<=mydata.length;i++) {
+        jQuery("#list{{ forloop.counter }}").addRowData(i+1, mydata[i]);
+    }
+    </script>
+</div>
+{% endfor %}
+
 
 {% endif %}
 
