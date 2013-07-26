@@ -5,6 +5,8 @@ import sys
 from django.core.urlresolvers import reverse_lazy
 
 SITE_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "./"))
+PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "./"))
+
 sys.path.append(os.path.join(SITE_ROOT, 'modules'))
 sys.path.append(os.path.join(SITE_ROOT, 'apps'))
 sys.path.append(os.path.join(SITE_ROOT, 'customization_apps'))

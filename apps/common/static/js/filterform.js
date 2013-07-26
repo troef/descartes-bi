@@ -1,4 +1,4 @@
-$("#parameters_form input[id*='date']").datepicker({showOn: 'button', buttonImage: '/descartes-site_media/images/calendar.gif', buttonImageOnly: true, showButtonPanel: true});
+$("#parameters_form input[id*='date']").datepicker({showOn: 'button', buttonImage: '/descartes-static/images/calendar.gif', buttonImageOnly: true, showButtonPanel: true});
 
 $("#date_helpers-off").html("\
 <ul>\

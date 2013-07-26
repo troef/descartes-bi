@@ -2,14 +2,14 @@
 {% load i18n %}
 {% load project_tags %}
 {% block keywords %}
-	<meta name="description" content="" />
-	<meta name="keywords" content="" />
+    <meta name="description" content="" />
+    <meta name="keywords" content="" />
 {% endblock %}
 {% block banner %}{% trans 'Home' %}{% endblock %}
 {% block stylesheets %}
-	<style>
-		.col1 {  overflow: auto; }
-	</style>
+    <style>
+        .col1 {  overflow: auto; }
+    </style>
 {% endblock %}
 {% block javascript %}
 <script type="text/javascript">
@@ -21,12 +21,11 @@ $(document).ready(function() {
 
 {% block content %}
 <div class='tc'>
-<!--<img class="homeLogo" src="{{ MEDIA_URL }}images/project_logo_alt.png" alt="project logo" /> -->
-<script type="text/javascript">
+    <script type="text/javascript">
         var itemList = new Array();
         {% get_root_menu %}
         {% for root in root_menu %}
-            itemList.push({title:"{{ root.label }}", icon:"{{ MEDIA_URL }}packages/dashMenu/img/" + "{{ root.icon }}", hyperlink: "get_dash_menu/{{ root.pk }}"});
+            itemList.push({title:"{{ root.label }}", icon:"{{ STATIC_URL }}packages/dashMenu/img/" + "{{ root.icon }}", hyperlink: "get_dash_menu/{{ root.pk }}"});
         {% endfor %}
 
         $(document).ready(function(e) {
