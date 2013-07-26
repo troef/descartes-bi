@@ -7,3 +7,4 @@ settings_local.py
 /venv/
 /descartesEnv/
 .DS_Store
+.project

@@ -1,7 +1,8 @@
 # Django project settings.
-# FLAGS
 import os
 import sys
+
+from django.core.urlresolvers import reverse_lazy
 
 SITE_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "./"))
 sys.path.append(os.path.join(SITE_ROOT, 'modules'))
@@ -44,7 +45,6 @@ TIME_ZONE = 'America/Puerto_Rico'
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
 #LANGUAGE_CODE = 'en-us'
-
 LANGUAGE_CODE = 'es'
 
 ugettext = lambda s: s
@@ -71,7 +71,6 @@ MEDIA_ROOT = os.path.join(SITE_ROOT, 'site_media/')
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash.
 # Examples: "http://media.lawrence.com/media/", "http://example.com/media/"
-MEDIA_URL = ''
 MEDIA_URL = '/%s-site_media/' % PROJECT_NAME
 
 # Absolute path to the directory static files should be collected to.
@@ -133,9 +132,10 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.admin',
     'django.contrib.humanize',
-    'reports',
-    'common',
     'south',
+    'common',
+    'db_drivers',
+    'reports',
     'mptt',
     'dashboard',
     'libre_driver',
@@ -154,15 +154,9 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 #--------- Grappelli ----------------
 GRAPPELLI_ADMIN_TITLE = PROJECT_TITLE
 #--------- Django -------------------
-LOGIN_URL = '/login/'
-LOGIN_REDIRECT_URL = '/'
+LOGIN_URL = reverse_lazy('login_view')
+LOGIN_REDIRECT_URL = reverse_lazy('home')
 #------------------------------------
-SOURCE_DATABASE_ENGINE = 'sqlite3'          # 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-SOURCE_DATABASE_NAME = PROJECT_NAME + '.sqlite'        # Or path to database file if using sqlite3.
-SOURCE_DATABASE_USER = ''                       # Not used with sqlite3.
-SOURCE_DATABASE_PASSWORD = ''                   # Not used with sqlite3.
-SOURCE_DATABASE_HOST = ''                       # Set to empty string for localhost. Not used with sqlite3.
-SOURCE_DATABASE_PORT = ''
 
 try:
     from settings_local import *
