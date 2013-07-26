@@ -136,13 +136,10 @@ def ajax_report(request, report_id):
     labels = []
     for s in report.serietype_set.all():
         query = s.serie.query
-        if re.search("^\\?", query):
-            return query_libre(query)
-
-        elif re.compile("[^%]%[^%(]").search(query):
+        if re.compile("[^%]%[^%(]").search(query):
             return render_to_response('messagebox-error.html', {'title': _(u'Query error'), 'message': _(u"Single '%' found, replace with double '%%' to properly escape the SQL wildcard caracter '%'.")})
 
-        cursor = connections['data_source'].cursor()
+        cursor = s.serie.data_source.load_backend().cursor()
 
         if special_params:
             for sp in special_params.keys():
@@ -399,11 +396,3 @@ def _get_user_filters_limits(user):
 
     #print "FILTER LIMITS: %s" % filter_limits
     return filter_limits
-
-
-def query_libre(query):
-    import requests, sys
-    website = 'http://localhost:8000/api/sources/test/data/'
-    req = requests.get(website + query + '&_format=json')
-    print >>sys.stderr, req.json()[0]
-    return req.json()

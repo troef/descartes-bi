@@ -11,7 +11,7 @@
 <script type="text/javascript">
         var itemList = new Array();
         {% for node in nodes %}
-            itemList.push({title:"{{ node.label }}", icon:"{{ MEDIA_URL }}packages/dashMenu/img/" + "{{ node.icon }}", hyperlink:"{% url 'get_dash_menu' node.pk %}"});
+            itemList.push({title:"{{ node.label }}", icon:"{{ STATIC_URL }}packages/dashMenu/img/" + "{{ node.icon }}", hyperlink:"{% url 'get_dash_menu' node.pk %}"});
         {% endfor %}
 
         $(document).ready(function(e) {

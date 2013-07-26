@@ -23,9 +23,12 @@ from django.contrib.auth.models import User
 from django.contrib.auth.models import Group
 from django.utils.translation import ugettext_lazy as _
 
+from db_drivers.models import DataSource
+
 FILTER_TYPE_DATE = u'DA'
 FILTER_TYPE_COMBO = u'DR'
 FILTER_TYPE_MONTH = u'MO'
+
 
 class Filter(models.Model):
     FILTER_FIELD_CHOICES = (
@@ -104,6 +107,8 @@ class FilterExtra(models.Model):
 
 
 class Serie(models.Model):
+    data_source = models.ForeignKey(DataSource, verbose_name=_('data source'))
+
     name = models.CharField(max_length=64, help_text="Internal name.  Do not use spaces or special symbols.", verbose_name=_(u"name"))
     label = models.CharField(max_length=24, null=True, blank=True, help_text="Label to be shown to the user and to be used for the legend.", verbose_name=_(u"label"))
     tick_format = models.CharField(blank=True, null=True, max_length=16, help_text="Example: Currency - '$%d.00'", verbose_name=_(u"tick format"))

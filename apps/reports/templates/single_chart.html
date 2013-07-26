@@ -1,5 +1,6 @@
 {% load simplehelpers %}
 {% load i18n %}
+{% load static %}
 {% if not chart_data %}
     {% with 'Attention' as title %}
     {% with 'There are no results for the selected parameters, choose other values.' as message %}
@@ -7,110 +8,108 @@
     {% endwith %}
     {% endwith %}
 {% else %}
+    <link href="{% static 'packages/novus-nvd3/src/nv.d3.css' %}" rel="stylesheet" type="text/css">
+    <style>
 
-
-<link href="{{ MEDIA_URL }}packages/novus-nvd3/src/nv.d3.css" rel="stylesheet" type="text/css">
-<style>
-
-    body {
-      overflow-y:scroll;
-    }
-
-    text {
-      font: 12px sans-serif;
-    }
-
-    #chart{{chart.id}} svg {
-      height: 350px;
-      margin: 10px;
-      min-width: 100px;
-      min-height: 100px;
-    }
-</style>
-<body>
-
-  <div id="chart{{chart.id}}" style="margin:2px;">
-    {% if chart.title %}
-        <h1>{{chart.title }}</h1>
-    {% endif %}
-    <svg> </svg>
-  </div>
-<script src="{{ MEDIA_URL }}packages/novus-nvd3/lib/d3.v3.js"></script>
-<script src="{{ MEDIA_URL }}packages/novus-nvd3/nv.d3.js"></script>
-<script src="{{ MEDIA_URL }}packages/novus-nvd3/src/utils.js"></script>
-<script src="{{ MEDIA_URL }}packages/novus-nvd3/src/tooltip.js"></script>
-<script src="{{ MEDIA_URL }}packages/novus-nvd3/src/models/legend.js"></script>
-<script src="{{ MEDIA_URL }}packages/novus-nvd3/src/models/axis.js"></script>
-<script src="{{ MEDIA_URL }}packages/novus-nvd3/src/models/scatter.js"></script>
-<script src="{{ MEDIA_URL }}packages/novus-nvd3/src/models/line.js"></script>
-<script src="{{ MEDIA_URL }}packages/novus-nvd3/src/models/historicalBar.js"></script>
-<script src="{{ MEDIA_URL }}packages/novus-nvd3/src/models/linePlusBarChart.js"></script>
-
-<script>
-//For testing single data point
-var data1 = '{{ series_results.0 }}';
-var data2 = '{{ series_results.1 }}';
-data1 = JSON.parse(data1.replace(/&quot;/g,'"'));
-data2 = JSON.parse(data2.replace(/&quot;/g,'"'));
-
-var testdata = [
-  {
-    // the key will give the legend names.
-    "key" :'{{ chart_series.0 }}',
-    "bar": true,
-    "values" : data1
-  } ,
-  {
-    "key" : '{{ chart_series.1 }}' ,
-    "values" : data2
-  }
-].map(function(series) {
-  series.values = series.values.map(function(d) { return {x: d[0], y: d[1] } });
-  return series;
-});
-
-
-var chart;
-
-nv.addGraph(function() {
-    chart = nv.models.linePlusBarChart()
-        .margin({top: 30, right: 60, bottom: 50, left: 70})
-        .x(function(d,i) { return i })
-        .color(d3.scale.category10().range());
-
-    chart.xAxis.tickFormat(function(d) {
-       var dx = testdata[0].values[d] && testdata[0].values[d].x || 0;
-        if (dx) {
-            // ro, make shure it prints all the x axis
-            // Include dates format
-            //dx = dx.split("-");// && dx.split("-");
-            return dx;//d3.time.format('%B %Y')(new Date(dx[0], dx[1], 0, 0, 0, 0, 0)).toString();
+        body {
+          overflow-y:scroll;
         }
-        else return '';
-      })
-      .showMaxMin(false);
 
-    chart.y1Axis
-        .tickFormat(d3.format(',f'));
+        text {
+          font: 12px sans-serif;
+        }
 
-    chart.y2Axis
-        .tickFormat(function(d) { return '$' + d3.format(',.2f')(d) });
+        #chart{{ chart.id }} svg {
+          height: 350px;
+          margin: 10px;
+          min-width: 100px;
+          min-height: 100px;
+        }
+    </style>
+    <body>
 
-    chart.bars.forceY([0]).padData(false);
-    //chart.lines.forceY([0]);
+      <div id="chart{{ chart.id }}" style="margin:2px;">
+        {% if chart.title %}
+            <h1>{{ chart.title }}</h1>
+        {% endif %}
+        <svg> </svg>
+      </div>
+    <script src="{% static 'packages/novus-nvd3/lib/d3.v3.js' %}"></script>
+    <script src="{% static 'packages/novus-nvd3/nv.d3.js' %}"></script>
+    <script src="{% static 'packages/novus-nvd3/src/utils.js' %}"></script>
+    <script src="{% static 'packages/novus-nvd3/src/tooltip.js' %}"></script>
+    <script src="{% static 'packages/novus-nvd3/src/models/legend.js' %}"></script>
+    <script src="{% static 'packages/novus-nvd3/src/models/axis.js' %}"></script>
+    <script src="{% static 'packages/novus-nvd3/src/models/scatter.js' %}"></script>
+    <script src="{% static 'packages/novus-nvd3/src/models/line.js' %}"></script>
+    <script src="{% static 'packages/novus-nvd3/src/models/historicalBar.js' %}"></script>
+    <script src="{% static 'packages/novus-nvd3/src/models/linePlusBarChart.js' %}"></script>
 
-    d3.select('#chart{{chart.id}} svg')
-        .datum(testdata)
-        .transition().duration(500).call(chart);
+    <script>
+    var testdata = [
+        {% for series_result in series_results %}
+            {
+                "values" : JSON.parse('{{ series_result|safe }}'),
+            },
+        {% endfor %}
+    ].map(function(series) {
+      series.values = series.values.map(function(d) { return {x: d[0], y: d[1] } });
+      return series;
+    });
 
-    nv.utils.windowResize(chart.update);
-    chart.dispatch.on('stateChange', function(e) { nv.log('New State:', JSON.stringify(e)); });
-    return chart;
-});
+    // Insert chart legends and set graph type into each series
+    {% for chart_serie in chart_series %}
+        testdata[{{ forloop.counter0 }}]["key"] = "{{ chart_serie }}"
 
-</script>
+        {% if chart_serie.type == 'BA' %}
+            // Is a bar type series
+            testdata[{{ forloop.counter0 }}]["bar"] = true
+        {% endif %}
 
-<div id='calculated' style="float: left;">
-    <small>{% blocktrans with time_delta.seconds as seconds and time_delta.microseconds as microseconds %}Calculated in: {{ seconds }}.{{ microseconds }} seconds.{% endblocktrans %}</small>
-</div>
+    {% endfor %}
+
+    var chart;
+
+    nv.addGraph(function() {
+        chart = nv.models.linePlusBarChart()
+            .margin({top: 30, right: 60, bottom: 50, left: 70})
+            .x(function(d,i) { return i })
+            .color(d3.scale.category10().range());
+
+        chart.xAxis.tickFormat(function(d) {
+           var dx = testdata[0].values[d] && testdata[0].values[d].x || 0;
+            if (dx) {
+                // ro, make shure it prints all the x axis
+                // Include dates format
+                //dx = dx.split("-");// && dx.split("-");
+                return dx;//d3.time.format('%B %Y')(new Date(dx[0], dx[1], 0, 0, 0, 0, 0)).toString();
+            }
+            else return '';
+          })
+          .showMaxMin(false);
+
+        // TODO: get series format from model
+        chart.y1Axis
+            .tickFormat(d3.format(',f'));
+
+        chart.y2Axis
+            .tickFormat(function(d) { return '$' + d3.format(',.2f')(d) });
+
+        chart.bars.forceY([0]).padData(false);
+        //chart.lines.forceY([0]);
+
+        d3.select('#chart{{ chart.id }} svg')
+            .datum(testdata)
+            .transition().duration(500).call(chart);
+
+        nv.utils.windowResize(chart.update);
+        chart.dispatch.on('stateChange', function(e) { nv.log('New State:', JSON.stringify(e)); });
+        return chart;
+    });
+
+    </script>
+
+    <div id='calculated' style="float: left;">
+        <small>{% blocktrans with time_delta.seconds as seconds and time_delta.microseconds as microseconds %}Calculated in: {{ seconds }}.{{ microseconds }} seconds.{% endblocktrans %}</small>
+    </div>
 {% endif %}

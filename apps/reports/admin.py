@@ -152,13 +152,15 @@ class FiltersetAdmin(admin.ModelAdmin):
 class SerieAdmin(admin.ModelAdmin):
     search_fields = ['name', 'label']
     search_fields_verbose = ['Name', 'Label']
-    list_display = ('name', 'label', 'get_params', 'get_parents', 'validated')
+    list_display = ('name', 'label', 'get_params', 'get_parents', 'get_data_source', 'validated')
     order = 2
 
     fieldsets = (
-        (None, {
-            'fields': ('name', 'label', 'tick_format', 'query',
-                       'description')
+        (_('General'), {
+            'fields': ('name', 'label')
+        }),
+        (_('Data'), {
+            'fields': ('data_source', 'tick_format', 'query', 'description')
         }),
         (_(u'Validation'), {
             'classes': ('collapse-open',),
@@ -179,6 +181,14 @@ class SerieAdmin(admin.ModelAdmin):
         self.message_user(request, _(u"%s copied.") % message_bit)
 
     clone.short_description = _(u"Copy the selected object")
+
+    def get_data_source(self, instance):
+        if hasattr(instance, 'data_source'):
+            return instance.data_source
+        else:
+            return _('None')
+
+    get_data_source.short_description = ('data source')
 
 
 class SerieInline(admin.StackedInline):
