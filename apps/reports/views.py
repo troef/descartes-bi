@@ -141,7 +141,13 @@ def ajax_report(request, report_id):
 
         cursor = s.serie.data_source.load_backend().cursor()
 
+        import sys
+        print >>sys.stderr, s.serie.data_source.backend
+
         if special_params:
+
+            print >>sys.stderr, "Insided Special params"
+
             for sp in special_params.keys():
                 query = re.compile('%\(' + sp + '\)s').sub(special_params[sp], query)
             try:
@@ -154,11 +160,15 @@ def ajax_report(request, report_id):
 
         else:
             cursor.execute(query, params)
+            print >>sys.stderr, "Executed the cursor"
             serie_start_time = datetime.datetime.now()
 
         labels.append(re.compile('aS\s(\S*)', re.IGNORECASE).findall(query))
 
-        if output_type == 'chart':
+        #Temporary fix for Libre database
+        if s.serie.data_source.backend == 6:
+            series_results = cursor.fetchall()
+        elif output_type == 'chart':
             series_results.append(data_to_js_chart(cursor.fetchall(), s.serie.tick_format, report.orientation))
         elif output_type == 'grid':
             series_results.append(data_to_js_grid(cursor.fetchall(), s.serie.tick_format))
@@ -194,19 +204,34 @@ def ajax_report(request, report_id):
         h_axis = "y"
         v_axis = "x"
 
-    data = {
-        'chart_data': ','.join(series_results),
-        'series_results': series_results,
-        'chart_series': report.serietype_set.all(),
-        'chart': report,
-        'h_axis': h_axis,
-        'v_axis': v_axis,
-        'ajax': True,
-        'query': query,
-        'params': params,
-        'series_labels': labels,
-        'time_delta': datetime.datetime.now() - start_time,
-    }
+    if s.serie.data_source.backend == 6:
+        data = {
+            'chart_data': "libre",
+            'series_results': series_results,
+            'chart_series': report.serietype_set.all(),
+            'chart': report,
+            'h_axis': h_axis,
+            'v_axis': v_axis,
+            'ajax': True,
+            'query': query,
+            'params': params,
+            'series_labels': labels,
+            'time_delta': datetime.datetime.now() - start_time,
+        }
+    else:
+        data = {
+            'chart_data': ','.join(series_results),
+            'series_results': series_results,
+            'chart_series': report.serietype_set.all(),
+            'chart': report,
+            'h_axis': h_axis,
+            'v_axis': v_axis,
+            'ajax': True,
+            'query': query,
+            'params': params,
+            'series_labels': labels,
+            'time_delta': datetime.datetime.now() - start_time,
+        }
 
     if output_type == 'chart':
         return render_to_response('single_chart.html', data,

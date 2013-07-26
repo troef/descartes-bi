@@ -21,12 +21,16 @@
     <script type="text/javascript" src="{% static 'packages/jquery.jqGrid-3.5.2/js/i18n/grid.locale-en.js' %}"></script>
     <script type="text/javascript" src="{% static 'packages/jquery.jqGrid-3.5.2/js/jquery.jqGrid.min.js' %}"></script>
 
-{% if 0 %}
+{% if 1 %}
 QUERY: {{ query }}<br />
 PARAMS: {{ params }}<br />
 CHART_DATA: {{ chart_data }}<br />
+SERIES_RESULTS: {{ series_results }}<br />
+CHART_SERIES: {{ chart_series }}<br />
 {% endif %}
 
+
+{% if not chart_data == "libre" %}
 <div class="tabs" id="info-panel" style='font-size: 90%; display: none;'>
     <ul>
         {% for s in chart_series %}
@@ -62,6 +66,12 @@ CHART_DATA: {{ chart_data }}<br />
     {% endfor %}
 
 </div>
+
+{% else %}
+{{ series_results }}
+
+{% endif %}
+
 <script type="text/javascript">
     $(".tabs").tabs();
     $('#info-panel').show();
