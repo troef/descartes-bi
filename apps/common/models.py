@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 #    Copyright (C) 2010  Roberto Rosario
 #    This file is part of descartes-bi.
@@ -18,18 +17,19 @@
 #
 
 from django.db import models
-from mptt.models import MPTTModel, TreeForeignKey
-from reports.models import Menuitem
-from dashboard.models import Dash
-
 from django.utils.translation import ugettext_lazy as _
+
+from mptt.models import MPTTModel, TreeForeignKey
+
+from dashboard.models import Dash
+from reports.models import Menuitem
 
 TYPE_MENU = 1
 TYPE_WIDGETS = 2
 
 TYPE_CHOICES = (
-    (TYPE_MENU, 'Menus'),
-    (TYPE_WIDGETS, 'Dashboard'),
+    (TYPE_MENU, _('Menus')),
+    (TYPE_WIDGETS, _('Dashboard')),
 )
 
 
@@ -41,12 +41,13 @@ class Namespace(MPTTModel):
     view_type = models.PositiveIntegerField(choices=TYPE_CHOICES, blank=True,
         null=True)
     view_menu = models.ManyToManyField(Menuitem, null=True, blank=True,
-        verbose_name=_(u"menu item"))
+        verbose_name=_('menu item'))
     view_dash = models.ManyToManyField(Dash, null=True, blank=True,
-        verbose_name=_(u"dash item"))
+        verbose_name=_('dash item'))
 
     def __unicode__(self):
         return self.label
 
-    class MPTTMeta:
-        verbose_name = 'namespace'
+    class Meta:
+        verbose_name = _('namespace')
+        verbose_name_plural = _('namespaces')
