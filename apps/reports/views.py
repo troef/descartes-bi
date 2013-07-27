@@ -203,11 +203,18 @@ def ajax_report(request, report_id):
 
     if s.serie.data_source.backend == 6:
         import json
+        model = []
+        names = []
+        for i in series_results[0]:
+            model.append({'name': i})
+            names.append(i)
 
         data = {
             'chart_data': "libre",
             'series_results': json.dumps(series_results),
             'chart_series': report.serietype_set.all(),
+            'model': json.dumps(model),
+            'names': json.dumps(names),
             'chart': report,
             'h_axis': h_axis,
             'v_axis': v_axis,

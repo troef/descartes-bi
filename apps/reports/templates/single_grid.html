@@ -27,6 +27,8 @@ PARAMS: {{ params }}<br />
 CHART_DATA: {{ chart_data }}<br />
 SERIES_RESULTS: {{ series_results }}<br />
 CHART_SERIES: {{ chart_series }}<br />
+Models: {{ model }}<br />
+Names: {{ names }}<br />
 {% endif %}
 
 
@@ -88,22 +90,13 @@ CHART_SERIES: {{ chart_series }}<br />
         width: $("#chart_wrapper").width() - 40,
         //autowidth: true,
         rownumbers: true,
-        colNames:['{% trans "Hotel_ID" %}','{% trans "Name" %}','{% trans "Address 1" %}','{% trans "Address 2" %}','{% trans "Region" %}','{% trans "Rooms" %}', '{% trans "Telephone" %}', '{% trans "ZipCode" %}'],
-        colModel:[
-            {name:'_id'},
-            // {name:'city'},
-            {name:'name'},
-            {name:'physical_address_1'},
-            {name:'physical_address_2'},
-            {name:'region'},
-            {name:'rooms'},
-            {name:'telephone'},
-            {name:'zipcode'},
-        ]
+        colNames: {{ names|safe }},
+        colModel: {{ model|safe }}
     });
-
+    console.log({{ names|safe }})
+    console.log({{ model|safe }})
      var mydata = {{ series_results|safe }};
-     console.log(mydata)
+     console.log(mydata);
     for(var i=0;i<=mydata.length;i++) {
         jQuery("#list{{ forloop.counter }}").addRowData(i+1, mydata[i]);
     }
