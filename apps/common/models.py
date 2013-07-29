@@ -18,6 +18,7 @@
 #
 
 from django.db import models
+from django.core.exceptions import ValidationError
 from mptt.models import MPTTModel, TreeForeignKey
 from reports.models import Menuitem
 from dashboard.models import Dash
@@ -48,12 +49,27 @@ class Namespace(MPTTModel):
     def __unicode__(self):
         return self.label
 
-    #def save(self, *args, **kwargs):
+    def clean(self):
+        node_parent = self.parent
+        #if parent has menu/dash, the child should not be created.
+        if node_parent:
+            if node_parent.view_type:
+                raise ValidationError("""Parent has a menu or dashboard.
+                    Please select a new parent or no parent.""")
 
-        ##if root, it should not have a menu/dash
-        #if not self.parent:
-            #self.view_type = None
-        #super(Namespace, self).save(*args, **kwargs)
+        if self.view_type:
+            #View types should match
+            if self.view_type == 1 and not hasattr(self, 'view_menu'):
+                raise ValidationError("""View type is Menu. Please
+                    select Menu.""")
+            if self.view_type == 2 and not self.view_dash:
+                raise ValidationError("""View type is Dashboard.
+                    Please select Dashboard.""")
+        else:
+            #No menu/dash w/o a view_type
+            if hasattr(self, 'view_menu') is False or self.view_dash:
+                raise ValidationError("""Please select a view type for
+                    Menu/Dashboard item.""")
 
     class MPTTMeta:
         verbose_name = 'namespace'

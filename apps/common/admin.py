@@ -17,16 +17,14 @@
 #    along with descartes-bi.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-from common.models import Namespace
-
 from django.contrib import admin
-
 from mptt.admin import MPTTModelAdmin
+
+from common.models import Namespace
 
 
 class NamespaceAdmin(MPTTModelAdmin):
     list_display = ('label', 'parent', 'icon', 'view_type')
-    #filter_horizontal = ('menu item',)
-
+    filter_horizontal = (u"view_menu",)
 
 admin.site.register(Namespace, NamespaceAdmin)

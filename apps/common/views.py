@@ -21,10 +21,11 @@ import re
 from django import http
 from django.conf import settings
 from django.http import HttpResponseRedirect
-from django.shortcuts import render_to_response
+from django.shortcuts import render_to_response, get_object_or_404
 from django.template import loader, RequestContext
 
 from common.models import Namespace
+from dashboard.models import Dash
 
 
 def error500(request, template_name='500.html'):
@@ -91,10 +92,17 @@ def get_dash_menu(request, namespace_id):
         #view_type 1 - Menu, view_type 2 - Dashboard
         if node.view_type == 1:
             context['menus'] = node.view_menu.all()
+            page = 'sub_dash_menu.html'
         else:
-            context['dash_menu'] = node.view_dash
+            dash_id = node.view_dash_id
+            dash_board = get_object_or_404(Dash, pk=dash_id)
+            selected_reports = dash_board.selection_list.all()
+            context = {'selected_reports': selected_reports,
+                'dash_board': dash_board, }
+            page = 'dashboard/dash_list.html'
     else:
         context['nodes'] = node.get_children()
+        page = 'sub_dash_menu.html'
 
-    return render_to_response('sub_dash_menu.html',
-        context, context_instance=RequestContext(request))
+    return render_to_response(page, context,
+        context_instance=RequestContext(request))
