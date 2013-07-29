@@ -1,4 +1,5 @@
 {% load i18n %}
+{% load static %}
 {% load menubuilder %}
 {% load project_tags %}
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
@@ -8,30 +9,30 @@
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
         {% block keywords %}{% endblock %}
-        <link rel="shortcut icon" type="image/png" href="{{ MEDIA_URL }}images/favicon.ico" />
+        <link rel="shortcut icon" type="image/png" href="{% static 'images/favicon.ico' %}" />
 
-        <link type="text/css" href="{{ MEDIA_URL }}css/layout.css" rel="stylesheet" media="screen"/>
-        <link type="text/css" href="{{ MEDIA_URL }}css/theme_screen.css" rel="stylesheet" media="screen" />
-        <link type="text/css" href="{{ MEDIA_URL }}css/theme_print.css" rel="stylesheet" media="print" />
-        <link type="text/css" rel="stylesheet" href="{{ MEDIA_URL }}packages/jquery-ui-1.10.3/themes/smoothness/jquery-ui-1.10.3.custom.css" />
-        <link type="text/css" rel="stylesheet" href="{{ MEDIA_URL }}packages/superfish-1.7.2/css/superfish.css" media="screen" />
-        <link type="text/css" rel="stylesheet" href="{{ MEDIA_URL }}packages/Sliding_login_panel_jquery/css/slide.css" media="screen" />
-        <link type="text/css" rel="stylesheet" href="{{ MEDIA_URL }}packages/jGrowl-1.2.0/jquery.jgrowl.css" media="screen" />
-        <link type="text/css" href="{{ MEDIA_URL }}css/artemisMod.css" rel="stylesheet" media="screen"/>
-        <link type="text/css" rel="stylesheet" href="{{ MEDIA_URL }}packages/dashMenu/dashMenu.css" media="screen"/>
+        <link type="text/css" href="{% static 'css/layout.css' %}" rel="stylesheet" media="screen"/>
+        <link type="text/css" href="{% static 'css/theme_screen.css' %}" rel="stylesheet" media="screen" />
+        <link type="text/css" href="{% static 'css/theme_print.css' %}" rel="stylesheet" media="print" />
+        <link type="text/css" rel="stylesheet" href="{% static 'packages/jquery-ui-1.10.3/themes/smoothness/jquery-ui-1.10.3.custom.css' %}" />
+        <link type="text/css" rel="stylesheet" href="{% static 'packages/superfish-1.7.2/css/superfish.css' %}" media="screen" />
+        <link type="text/css" rel="stylesheet" href="{% static 'packages/Sliding_login_panel_jquery/css/slide.css' %}" media="screen" />
+        <link type="text/css" rel="stylesheet" href="{% static 'packages/jGrowl-1.2.0/jquery.jgrowl.css' %}" media="screen" />
+        <link type="text/css" href="{% static 'css/artemisMod.css' %}" rel="stylesheet" media="screen"/>
+        <link type="text/css" rel="stylesheet" href="{% static 'packages/dashMenu/dashMenu.css' %}" media="screen"/>
 
         {% block stylesheets %}{% endblock %}
 
-        <script type="text/javascript" src="{{ MEDIA_URL }}packages/jquery-1.9.1.min.js"></script>
-        <script type="text/javascript" src="{{ MEDIA_URL }}packages/jquery-migrate-1.2.1.min.js"></script>
-        <script type="text/javascript" src="{{ MEDIA_URL }}packages/jquery-ui-1.10.3/ui/jquery-ui.js"></script>
-        <script type="text/javascript" src="{{ MEDIA_URL }}packages/jquery-corners/jquery.corners.min2.js"></script>
-        <script type="text/javascript" src="{{ MEDIA_URL }}packages/superfish-1.7.2/js/hoverIntent.js"></script>
-        <script type="text/javascript" src="{{ MEDIA_URL }}packages/superfish-1.7.2/js/superfish.js"></script>
-        <script type="text/javascript" src="{{ MEDIA_URL }}packages/superfish-1.7.2/js/supersubs.js"></script>
-        <script type="text/javascript" src="{{ MEDIA_URL }}packages/Sliding_login_panel_jquery/js/slide-min.js"></script>
-        <script type="text/javascript" src="{{ MEDIA_URL }}packages/jGrowl-1.2.0/jquery.jgrowl_minimized.js"></script>
-        <script type="text/javascript" src="{{ MEDIA_URL }}packages/dashMenu/dashMenu.js"></script>
+        <script type="text/javascript" src="{% static 'packages/jquery-1.9.1.min.js' %}"></script>
+        <script type="text/javascript" src="{% static 'packages/jquery-migrate-1.2.1.min.js' %}"></script>
+        <script type="text/javascript" src="{% static 'packages/jquery-ui-1.10.3/ui/jquery-ui.js' %}"></script>
+        <script type="text/javascript" src="{% static 'packages/jquery-corners/jquery.corners.min2.js' %}"></script>
+        <script type="text/javascript" src="{% static 'packages/superfish-1.7.2/js/hoverIntent.js' %}"></script>
+        <script type="text/javascript" src="{% static 'packages/superfish-1.7.2/js/superfish.js' %}"></script>
+        <script type="text/javascript" src="{% static 'packages/superfish-1.7.2/js/supersubs.js' %}"></script>
+        <script type="text/javascript" src="{% static 'packages/Sliding_login_panel_jquery/js/slide-min.js' %}"></script>
+        <script type="text/javascript" src="{% static 'packages/jGrowl-1.2.0/jquery.jgrowl_minimized.js' %}"></script>
+        <script type="text/javascript" src="{% static 'packages/dashMenu/dashMenu.js' %}"></script>
         <script type="text/javascript">
 
             var global_report_loading = false;
@@ -220,11 +221,11 @@
                         <h1>{% trans "Language" %}</h1>
                         <h2>
                     {% ifequal LANGUAGE_CODE "es" %}
-                        <a href="{% url 'set_language' %}?language=en"><img src="{{ MEDIA_URL }}images/flag-us.png" alt="US-flag" /> {% trans "English" %}</a>
-                        &nbsp;/&nbsp;<img src="{{ MEDIA_URL }}images/flag-pr.png" alt="PR-flag" /> {% trans "Spanish" %}
+                        <a href="{% url 'set_language' %}?language=en"><img src="{% static 'images/flag-us.png' %}" alt="US-flag" /> {% trans "English" %}</a>
+                        &nbsp;/&nbsp;<img src="{% static 'images/flag-pr.png' %}" alt="PR-flag" /> {% trans "Spanish" %}
                     {% else %}
-                        <a href="{% url 'set_language' %}?language=es"><img src="{{ MEDIA_URL }}images/flag-pr.png" alt="PR-flag" /> {% trans "Spanish" %}</a>
-                        &nbsp;/&nbsp;<img src="{{ MEDIA_URL }}images/flag-us.png" alt="US-flag" /> {% trans "English" %}
+                        <a href="{% url 'set_language' %}?language=es"><img src="{% static 'images/flag-pr.png' %}" alt="PR-flag" /> {% trans "Spanish" %}</a>
+                        &nbsp;/&nbsp;<img src="{% static 'images/flag-us.png' %}" alt="US-flag" /> {% trans "English" %}
                     {% endifequal %}
                     </h2>
 
@@ -259,14 +260,14 @@
         </div> <!-- / top -->
     </div> <!--panel -->
         <div id="loading">
-            {% trans "Loading" %}...<img src="{{ MEDIA_URL }}images/loading.gif" alt="" width="16" height="16" />
+            {% trans "Loading" %}...<img src="{% static 'images/loading.gif' %}" alt="" width="16" height="16" />
         </div>
 
         <div id="header"  >
             <!--{% project_name %}-->
                 <div style="float:left;">
                     <h1 style="text-align: center; font-size: 35px; margin-top: 0px; margin-bottom: 0px;" >
-                        <a href="/" style="color: white;"><img src="{{ MEDIA_URL }}images/logo2013.png" alt="project logo" /></a>
+                        <a href="/" style="color: white;"><img src="{% static 'images/logo2013.png' %}" alt="project logo" /></a>
                     </h1>
                 </div>
         </div> <!-- hd -->
@@ -334,7 +335,7 @@
 
                     <noscript>
                         <div id="js_noscript">
-                            <img src="{{ MEDIA_URL }}images/dialog-warning.png" alt="" />
+                            <img src="{% static 'images/dialog-warning.png' %}" alt="" />
                             {% trans "This software uses a technology known as Javascript, make sure that your browser supports it, and that it is properly enabled." %}
                         </div>
                     </noscript>
@@ -343,7 +344,7 @@
                         <ul id="flashmessages">
                             {% for message in messages %}
                                 <li id="flashmessage"><a href="#" onclick="$(this).parent().fadeOut(); return false;">{% trans "Ok" %}</a>
-                                    <img src="{{ MEDIA_URL }}images/internet-group-chat.png" alt="message"/>&nbsp;&quot;{{ message }}&quot;
+                                    <img src="{% static 'images/internet-group-chat.png' %}" alt="message"/>&nbsp;&quot;{{ message }}&quot;
                                 </li>
                             {% endfor %}
                         </ul>

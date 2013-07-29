@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 #    Copyright (C) 2010  Roberto Rosario
 #    This file is part of descartes-bi.
@@ -19,18 +18,19 @@
 
 from django.db import models
 from django.core.exceptions import ValidationError
-from mptt.models import MPTTModel, TreeForeignKey
-from reports.models import Menuitem
-from dashboard.models import Dash
-
 from django.utils.translation import ugettext_lazy as _
+
+from mptt.models import MPTTModel, TreeForeignKey
+
+from dashboard.models import Dash
+from reports.models import Menuitem
 
 TYPE_MENU = 1
 TYPE_WIDGETS = 2
 
 TYPE_CHOICES = (
-    (TYPE_MENU, 'Menus'),
-    (TYPE_WIDGETS, 'Dashboard'),
+    (TYPE_MENU, _('Menus')),
+    (TYPE_WIDGETS, _('Dashboard')),
 )
 
 
@@ -73,3 +73,4 @@ class Namespace(MPTTModel):
 
     class MPTTMeta:
         verbose_name = 'namespace'
+        verbose_name_plural = _('namespaces')

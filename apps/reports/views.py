@@ -136,13 +136,13 @@ def ajax_report(request, report_id):
     labels = []
     for s in report.serietype_set.all():
         query = s.serie.query
-        if re.search("^\\?", query):
-            return query_libre(query)
-
-        elif re.compile("[^%]%[^%(]").search(query):
+        if re.compile("[^%]%[^%(]").search(query):
             return render_to_response('messagebox-error.html', {'title': _(u'Query error'), 'message': _(u"Single '%' found, replace with double '%%' to properly escape the SQL wildcard caracter '%'.")})
 
-        cursor = connections['data_source'].cursor()
+        cursor = s.serie.data_source.load_backend().cursor()
+
+        import sys
+        print >>sys.stderr, s.serie.data_source.backend
 
         if special_params:
             for sp in special_params.keys():
@@ -157,11 +157,15 @@ def ajax_report(request, report_id):
 
         else:
             cursor.execute(query, params)
+            print >>sys.stderr, "Executed the cursor"
             serie_start_time = datetime.datetime.now()
 
         labels.append(re.compile('aS\s(\S*)', re.IGNORECASE).findall(query))
 
-        if output_type == 'chart':
+        #Temporary fix for Libre database
+        if s.serie.data_source.backend == 6:
+            series_results = cursor.fetchall()
+        elif output_type == 'chart':
             series_results.append(data_to_js_chart(cursor.fetchall(), s.serie.tick_format, report.orientation))
         elif output_type == 'grid':
             series_results.append(data_to_js_grid(cursor.fetchall(), s.serie.tick_format))
@@ -197,19 +201,43 @@ def ajax_report(request, report_id):
         h_axis = "y"
         v_axis = "x"
 
-    data = {
-        'chart_data': ','.join(series_results),
-        'series_results': series_results,
-        'chart_series': report.serietype_set.all(),
-        'chart': report,
-        'h_axis': h_axis,
-        'v_axis': v_axis,
-        'ajax': True,
-        'query': query,
-        'params': params,
-        'series_labels': labels,
-        'time_delta': datetime.datetime.now() - start_time,
-    }
+    if s.serie.data_source.backend == 6:
+        import json
+        model = []
+        names = []
+        for i in series_results[0]:
+            model.append({'name': i})
+            names.append(i)
+
+        data = {
+            'chart_data': "libre",
+            'series_results': json.dumps(series_results),
+            'chart_series': report.serietype_set.all(),
+            'model': json.dumps(model),
+            'names': json.dumps(names),
+            'chart': report,
+            'h_axis': h_axis,
+            'v_axis': v_axis,
+            'ajax': True,
+            'query': query,
+            'params': params,
+            'series_labels': labels,
+            'time_delta': datetime.datetime.now() - start_time,
+        }
+    else:
+        data = {
+            'chart_data': ','.join(series_results),
+            'series_results': series_results,
+            'chart_series': report.serietype_set.all(),
+            'chart': report,
+            'h_axis': h_axis,
+            'v_axis': v_axis,
+            'ajax': True,
+            'query': query,
+            'params': params,
+            'series_labels': labels,
+            'time_delta': datetime.datetime.now() - start_time,
+        }
 
     if output_type == 'chart':
         return render_to_response('single_chart.html', data,
@@ -399,11 +427,3 @@ def _get_user_filters_limits(user):
 
     #print "FILTER LIMITS: %s" % filter_limits
     return filter_limits
-
-
-def query_libre(query):
-    import requests, sys
-    website = 'http://localhost:8000/api/sources/test/data/'
-    req = requests.get(website + query + '&_format=json')
-    print >>sys.stderr, req.json()[0]
-    return req.json()

@@ -25,6 +25,6 @@ from common.models import Namespace
 
 class NamespaceAdmin(MPTTModelAdmin):
     list_display = ('label', 'parent', 'icon', 'view_type')
-    filter_horizontal = (u"view_menu",)
+    filter_horizontal = ('view_menu',)
 
 admin.site.register(Namespace, NamespaceAdmin)

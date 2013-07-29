@@ -1,14 +1,10 @@
 from django.contrib import admin
-from dashboard.models import Dash, Selected_report
 
-
-class SelectInline(admin.TabularInline):
-    model = Dash.selection_list.through
+from dashboard.models import Dash
 
 
 class DashAdmin(admin.ModelAdmin):
-    fieldsets = [('Name', {'fields': ['name']})]
-    inlines = [SelectInline]
+    filter_horizontal = ('selection_list',)
+
 
 admin.site.register(Dash, DashAdmin)
-admin.site.register(Selected_report)

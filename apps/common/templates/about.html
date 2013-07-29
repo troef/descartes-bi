@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load i18n %}
+{% load static %}
 {% load project_tags %}
 {% block keywords %}
 {% endblock %}
@@ -13,7 +14,7 @@
 
 {% block content %}
     <div class="tc" style="overflow: auto;">
-    <img class="aboutLogo" src="{{ MEDIA_URL }}images/project_logo_alt.png" alt="About logo" />
+    <img class="aboutLogo" src="{% static 'images/project_logo_alt.png' %}" alt="About logo" />
     <h1><strong>{% project_name %}</strong></h1>
     <h2><strong>{% trans "A Web based business intelligence software" %}</strong></h2></br />
     <a style="color: blue;" href="http://github.com/rosarior/descartes-bi">http://github.com/rosarior/descartes-bi</a><br />

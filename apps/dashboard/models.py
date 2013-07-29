@@ -1,7 +1,8 @@
 from django.db import models
+from django.utils.translation import ugettext_lazy as _
+
 from reports.models import Report, Filterset
 
-# Create your models here.
 
 class Selected_report(models.Model):
     rep_id = models.ForeignKey(Report)
@@ -16,6 +17,10 @@ class Selected_report(models.Model):
     def __unicode__(self):
         return self.rep_id.title + "{ " + self.values + " }"
 
+    class Meta:
+        verbose_name = _('dashboard report')
+        verbose_name_plural = _('dashboard reports')
+
 
 class Dash(models.Model):
     name = models.CharField(max_length=50)
@@ -24,8 +29,9 @@ class Dash(models.Model):
     def __unicode__(self):
         return self.name
 
-
-
+    class Meta:
+        verbose_name = _('dashboard')
+        verbose_name_plural = _('dashboards')
 
 
 
