@@ -1,82 +1,53 @@
-{% load static %}
+{% extends "base.html" %}
+{% load i18n %}
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
-    <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+{% block stylesheets %}
+    <style>
+        .col1 {  overflow: auto; }
+        .col2 {  display:none; }
+    </style>
+{% endblock %}
 
-        <link type="text/css" href="{% static 'css/layout.css' %}" rel="stylesheet" media="screen"/>
-        <link type="text/css" href="{% static 'css/theme_screen.css' %}" rel="stylesheet" media="screen" />
-        <link type="text/css" href="{% static 'css/theme_print.css' %}" rel="stylesheet" media="print" />
-        <link type="text/css" rel="stylesheet" href="{% static 'packages/jquery-ui-1.10.3/themes/smoothness/jquery-ui-1.10.3.custom.css' %}" />
-        <link type="text/css" rel="stylesheet" href="{% static 'packages/superfish-1.7.2/css/superfish.css' %}" media="screen" />
-        <link type="text/css" rel="stylesheet" href="{% static 'packages/Sliding_login_panel_jquery/css/slide.css' %}" media="screen" />
-        <link type="text/css" rel="stylesheet" href="{% static 'packages/jGrowl-1.2.0/jquery.jgrowl.css' %}" media="screen" />
-        <link type="text/css" href="{% static 'css/artemisMod.css" rel="stylesheet' %}" media="screen"/>
+{% block dashboard %}
+<script type="text/javascript">
+     $(document).ready(function() {
+        $(".col2").toggle();
+        {% for sp in selected_reports %}
+            var fd{{ sp.rep_id.id }} = new Date("{{ sp.from_date }}");
+            var td{{ sp.rep_id.id }} = new Date("{{ sp.to_date }}");
 
-        <script type="text/javascript" src="{% static 'packages/jquery-1.9.1.min.js' %}"></script>
-        <script type="text/javascript" src="{% static 'packages/jquery-migrate-1.2.1.min.js' %}"></script>
-        <script type="text/javascript" src="{% static 'packages/jquery-ui-1.10.3/ui/jquery-ui.js' %}"></script>
-        <script type="text/javascript" src="{% static 'packages/jquery-corners/jquery.corners.min2.js' %}"></script>
-        <script type="text/javascript" src="{% static 'packages/superfish-1.7.2/js/hoverIntent.js' %}"></script>
-        <script type="text/javascript" src="{% static 'packages/superfish-1.7.2/js/superfish.js' %}"></script>
-        <script type="text/javascript" src="{% static 'packages/superfish-1.7.2/js/supersubs.js' %}"></script>
-        <script type="text/javascript" src="{% static 'packages/Sliding_login_panel_jquery/js/slide-min.js' %}"></script>
-        <script type="text/javascript" src="{% static 'packages/jGrowl-1.2.0/jquery.jgrowl_minimized.js' %}"></script>
+            var from_date{{ sp.rep_id.id }} = ("0" + (fd{{ sp.rep_id.id }}.getMonth() + 1)).slice(-2) + "%2F" + ("0" + fd{{ sp.rep_id.id }}.getDate()).slice(-2) + "%2F" + fd{{ sp.rep_id.id }}.getFullYear();
 
-        <script type="text/javascript">
-             $(document).ready(function() {
-                {% for sp in selected_reports %}
-                    var fd{{ sp.rep_id.id }} = new Date("{{ sp.from_date }}");
-                    var td{{ sp.rep_id.id }} = new Date("{{ sp.to_date }}");
+            var to_date{{ sp.rep_id.id }} = ("0" + (td{{ sp.rep_id.id }}.getMonth() + 1)).slice(-2) + "%2F" + ("0" + td{{ sp.rep_id.id }}.getDate()).slice(-2) + "%2F" + td{{ sp.rep_id.id }}.getFullYear();
 
-                    var from_date{{ sp.rep_id.id }} = ("0" + (fd{{ sp.rep_id.id }}.getMonth() + 1)).slice(-2) + "%2F" + ("0" + fd{{ sp.rep_id.id }}.getDate()).slice(-2) + "%2F" + fd{{ sp.rep_id.id }}.getFullYear();
-
-                    var to_date{{ sp.rep_id.id }} = ("0" + (td{{ sp.rep_id.id }}.getMonth() + 1)).slice(-2) + "%2F" + ("0" + td{{ sp.rep_id.id }}.getDate()).slice(-2) + "%2F" + td{{ sp.rep_id.id }}.getFullYear();
-
-                    $('#dashboard').append('<div id ="{{ sp.id }}" style="width:48%; float:left; color:white;" ></div>');
+            $('#dashboard').append('<div id ="{{ sp.id }}" style="width:48%; float:left; color:white;" ></div>');
 
 
-                    function rep{{ sp.id }}(){
-                          //$('#{{ sp.id }}').load("{% url 'home_view' %}reports/ajax/report/{{sp.rep_id.id}}/?regional={{sp.id_regional}}&output_type={{sp.visual_type}}&from_date="+ from_date{{ sp.rep_id.id }} + "&to_date=" + to_date{{ sp.rep_id.id }} );
+            function rep{{ sp.id }}(){
+                  //$('#{{ sp.id }}').load("{% url 'home_view' %}reports/ajax/report/{{sp.rep_id.id}}/?regional={{sp.id_regional}}&output_type={{sp.visual_type}}&from_date="+ from_date{{ sp.rep_id.id }} + "&to_date=" + to_date{{ sp.rep_id.id }} );
 
-                        var param= [{% for filter in sp.filtersets.filters.all %} "{{ filter.name }}", {% endfor %} ];
-                        var values = "{{sp.values}}".split(",");
-                        if ( param.length == values.length) {
-                            var link = "{% url 'home_view' %}reports/ajax/report/{{ sp.rep_id.id }}/?";
-                            for (var i=0; i < param.length; i++){
-                                link = link + param[i] + "=" + values[i] + "&";
-                            }
-                            link = link + "output_type={{ sp.visual_type }}";
-                            $('#{{ sp.id }}').load(link);
-                        }
-                        else {
-                            $('#{{ sp.id }}').append("Parameters don't match");
-                        }
-
+                var param= [{% for filter in sp.filtersets.filters.all %} "{{ filter.name }}", {% endfor %} ];
+                var values = "{{sp.values}}".split(",");
+                if ( param.length == values.length) {
+                    var link = "{% url 'home_view' %}reports/ajax/report/{{ sp.rep_id.id }}/?";
+                    for (var i=0; i < param.length; i++){
+                        link = link + param[i] + "=" + values[i] + "&";
                     }
+                    link = link + "output_type={{ sp.visual_type }}";
+                    $('#{{ sp.id }}').load(link);
+                }
+                else {
+                    $('#{{ sp.id }}').append("Parameters don't match");
+                }
 
-                    setInterval( rep{{ sp.id }}(), ({{ sp.refresh_rate }} * 1000));
+            }
+
+            setInterval( rep{{ sp.id }}(), ({{ sp.refresh_rate }} * 1000));
 
 
-                {% endfor %}
+        {% endfor %}
 
-             });
-        </script>
-     </head>
-     <body style="margin-left:1%; margin-right:1%;">
-        <div id="header" >
-                <div style="float:left;">
-                    <h1 style="text-align: center; font-size: 35px; margin-top: 0px; margin-bottom: 0px;" >
-                        <a href="/" style="color: white;"><img src="{% static 'images/logo2013.png' %}" alt="project logo" /></a>
-                    </h1>
-                </div>
-        </div>
-              </br></br>
-              <h1 style="text-align:center;"> {{ dash_board.name }} </h1>
-              </br></br>
-              <hr>
-              <div id="dashboard" style="min-width:1200px;"></div>
-     </body>
-</html>
+     });
+</script>
+<div id="dashboard" style="min-width:1200px;"></div>
+{% endblock %}
