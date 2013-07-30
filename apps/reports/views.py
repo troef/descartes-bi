@@ -17,12 +17,15 @@
 #
 import datetime
 import re
+import json
 
 from django.db import connections
 from django.http import HttpResponse
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.utils.translation import ugettext as _
+
+from db_drivers.models import BACKEND_LIBRE
 
 from forms import FilterForm
 from models import Report, Menuitem, GroupPermission, UserPermission, User, SeriesStatistic, ReportStatistic
@@ -163,7 +166,7 @@ def ajax_report(request, report_id):
         labels.append(re.compile('aS\s(\S*)', re.IGNORECASE).findall(query))
 
         #Temporary fix for Libre database
-        if s.serie.data_source.backend == 6:
+        if s.serie.data_source.backend == BACKEND_LIBRE:
             series_results = cursor.fetchall()
         elif output_type == 'chart':
             series_results.append(data_to_js_chart(cursor.fetchall(), s.serie.tick_format, report.orientation))
@@ -201,8 +204,7 @@ def ajax_report(request, report_id):
         h_axis = "y"
         v_axis = "x"
 
-    if s.serie.data_source.backend == 6:
-        import json
+    if s.serie.data_source.backend == BACKEND_LIBRE:
         model = []
         names = []
         for i in series_results[0]:
@@ -210,19 +212,14 @@ def ajax_report(request, report_id):
             names.append(i)
 
         data = {
-            'chart_data': "libre",
+            'chart_data': s.serie.data_source.backend,
+            'backend_libre': BACKEND_LIBRE,
             'series_results': json.dumps(series_results),
             'chart_series': report.serietype_set.all(),
             'model': json.dumps(model),
             'names': json.dumps(names),
-            'chart': report,
-            'h_axis': h_axis,
-            'v_axis': v_axis,
             'ajax': True,
             'query': query,
-            'params': params,
-            'series_labels': labels,
-            'time_delta': datetime.datetime.now() - start_time,
         }
     else:
         data = {
