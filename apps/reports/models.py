@@ -175,6 +175,8 @@ class Report(models.Model):
     CHART_TYPE_CHOICES = (
         (u'SI', _(u'Standard X,Y')),
         (u'PI', _(u'Pie chart')),
+        (u'LB', _(u'Line Plus Bar Chart')),
+        (u'LI', _(u'Line chart')),
     )
     LEGEND_LOCATION_CHOICES = (
         (u'nw', _(u'North-West')),
