@@ -11,7 +11,7 @@
 {% if 0 %}
 QUERY: {{ query }}<br />
 PARAMS: {{ params }}<br />
-chart_series: {{ chart_series.0.tick_format }}<br />
+chart_series: {{ tick_format }}<br />
 SERIES_RESULTS: {{series_results }}<br />
 CHART_DATA: {{ chart_data }}<br />
 chart.trendline : {{ chart.trendline }}<br />
@@ -61,6 +61,8 @@ legendLocation: {{ chart.legend_location|default:"ne" }}<br />
     <script src="{% static 'packages/novus-nvd3/src/models/line.js' %}"></script>
     <script src="{% static 'packages/novus-nvd3/src/models/historicalBar.js' %}"></script>
     <script src="{% static 'packages/novus-nvd3/src/models/linePlusBarChart.js' %}"></script>
+    <script src="{% static 'packages/novus-nvd3/src/models/pie.js' %}"></script>
+    <script src="{% static 'packages/novus-nvd3/src/models/pieChart.js' %}"></script>
 
     <script>
     var data = [
@@ -90,7 +92,7 @@ legendLocation: {{ chart.legend_location|default:"ne" }}<br />
 
     {% endfor %}
 {% ifequal chart.type 'SI' %} 
-var chart;
+    var chart;
 nv.addGraph(function() {
     chart = nv.models.multiBarChart()
       //.barColor(d3.scale.category20().range());// color by y data
@@ -146,13 +148,46 @@ nv.addGraph(function() {
       chart.dispatch.on('stateChange', function(e) { nv.log('New State:', JSON.stringify(e)); });
       return chart;
     });
-
 {% endifequal %}
 {% ifequal chart.type 'PI' %}
+    nv.addGraph(function() {
+    var data = getData();
+    // var width = 900,
+    //     height = 500;
 
+    var chart = nv.models.pieChart()
+        .x(function(d) { return d.key })
+        .y(function(d) { return d.y })
+        //.showLabels(false)
+        .values(function(d) { return d })
+        .color(d3.scale.category10().range())
+        // .width(width)
+        // .height(450);
+
+      d3.select('#chart{{chart.id}} svg')
+          .datum([data])
+        .transition().duration(1200)
+          // .attr('width', width)
+          // .attr('height', height)
+          .call(chart);
+    chart.dispatch.on('stateChange', function(e) { nv.log('New State:', JSON.stringify(e)); });
+    return chart;
+});
+
+function getData() {
+    // PIE CHART SHOULD HAVE ONLY ONE DATA SOURCE
+  var data = '{{ series_results.0 }}';
+  data = JSON.parse(data.replace(/&quot;/g,'"'));
+  var x=[];
+
+data.forEach(function(entry) {
+    x.push({key: entry[0], y: entry[1]});
+});
+  return x;
+}
 {% endifequal %}
 {% ifequal chart.type 'LB' %}
-    var chart;
+     var chart;
 
     nv.addGraph(function() {
         chart = nv.models.linePlusBarChart()
