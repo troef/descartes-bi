@@ -93,6 +93,11 @@ def get_dash_menu(request, namespace_id):
         if node.view_type == 1:
             context['menus'] = node.view_menu.all()
             page = 'sub_dash_menu.html'
+
+        elif node.view.type == 3:
+            context['websites'] = node.view_website.all()
+            page = 'website.html'
+
         else:
             dash_id = node.view_dash_id
             dash_board = get_object_or_404(Dash, pk=dash_id)
