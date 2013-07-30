@@ -27,24 +27,28 @@ from reports.models import Menuitem
 
 TYPE_MENU = 1
 TYPE_WIDGETS = 2
+TYPE_WEBSITES = 3
 
 TYPE_CHOICES = (
     (TYPE_MENU, _('Menus')),
     (TYPE_WIDGETS, _('Dashboard')),
+    (TYPE_WEBSITES, _('Websites')),
 )
 
 
 class Namespace(MPTTModel):
     parent = TreeForeignKey('self', null=True, blank=True,
-        related_name='children')
+                            related_name='children')
     label = models.CharField(max_length=32)
     icon = models.CharField(max_length=32)
     view_type = models.PositiveIntegerField(choices=TYPE_CHOICES, blank=True,
-        null=True)
+                                            null=True)
     view_menu = models.ManyToManyField(Menuitem, null=True, blank=True,
-        verbose_name=_(u"menu item"))
+                                       verbose_name=_(u"menu item"))
     view_dash = models.ForeignKey(Dash, null=True, blank=True,
-        verbose_name=_(u"dash item"))
+                                  verbose_name=_(u"dash item"))
+    view_website = models.ManyToManyField('website.Website', null=True, blank=True,
+                                          verbose_name=_(u"website item"))
 
     def __unicode__(self):
         return self.label

@@ -141,6 +141,7 @@ INSTALLED_APPS = (
     'mptt',
     'dashboard',
     'libre_driver',
+    'website',
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
