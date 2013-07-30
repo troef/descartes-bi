@@ -30,6 +30,7 @@ def project_name():
     from django.conf import settings
     return settings.PROJECT_TITLE
 
+
 class get_root_menu_node(template.Node):
     def render(self, context):
 

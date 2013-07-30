@@ -17,12 +17,15 @@
 #
 import datetime
 import re
+import json
 
 from django.db import connections
 from django.http import HttpResponse
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.utils.translation import ugettext as _
+
+from db_drivers.models import BACKEND_LIBRE
 
 from forms import FilterForm
 from models import Report, Menuitem, GroupPermission, UserPermission, User, SeriesStatistic, ReportStatistic
@@ -141,6 +144,9 @@ def ajax_report(request, report_id):
 
         cursor = s.serie.data_source.load_backend().cursor()
 
+        import sys
+        print >>sys.stderr, s.serie.data_source.backend
+
         if special_params:
             for sp in special_params.keys():
                 query = re.compile('%\(' + sp + '\)s').sub(special_params[sp], query)
@@ -154,11 +160,15 @@ def ajax_report(request, report_id):
 
         else:
             cursor.execute(query, params)
+            print >>sys.stderr, "Executed the cursor"
             serie_start_time = datetime.datetime.now()
 
         labels.append(re.compile('aS\s(\S*)', re.IGNORECASE).findall(query))
 
-        if output_type == 'chart':
+        #Temporary fix for Libre database
+        if s.serie.data_source.backend == BACKEND_LIBRE:
+            series_results = cursor.fetchall()
+        elif output_type == 'chart':
             series_results.append(data_to_js_chart(cursor.fetchall(), s.serie.tick_format, report.orientation))
         elif output_type == 'grid':
             series_results.append(data_to_js_grid(cursor.fetchall(), s.serie.tick_format))
@@ -194,19 +204,37 @@ def ajax_report(request, report_id):
         h_axis = "y"
         v_axis = "x"
 
-    data = {
-        'chart_data': ','.join(series_results),
-        'series_results': series_results,
-        'chart_series': report.serietype_set.all(),
-        'chart': report,
-        'h_axis': h_axis,
-        'v_axis': v_axis,
-        'ajax': True,
-        'query': query,
-        'params': params,
-        'series_labels': labels,
-        'time_delta': datetime.datetime.now() - start_time,
-    }
+    if s.serie.data_source.backend == BACKEND_LIBRE:
+        model = []
+        names = []
+        for i in series_results[0]:
+            model.append({'name': i})
+            names.append(i)
+
+        data = {
+            'chart_data': s.serie.data_source.backend,
+            'backend_libre': BACKEND_LIBRE,
+            'series_results': json.dumps(series_results),
+            'chart_series': report.serietype_set.all(),
+            'model': json.dumps(model),
+            'names': json.dumps(names),
+            'ajax': True,
+            'query': query,
+        }
+    else:
+        data = {
+            'chart_data': ','.join(series_results),
+            'series_results': series_results,
+            'chart_series': report.serietype_set.all(),
+            'chart': report,
+            'h_axis': h_axis,
+            'v_axis': v_axis,
+            'ajax': True,
+            'query': query,
+            'params': params,
+            'series_labels': labels,
+            'time_delta': datetime.datetime.now() - start_time,
+        }
 
     if output_type == 'chart':
         return render_to_response('single_chart.html', data,

@@ -17,6 +17,7 @@
 #
 
 from django.db import models
+from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as _
 
 from mptt.models import MPTTModel, TreeForeignKey
@@ -41,13 +42,35 @@ class Namespace(MPTTModel):
     view_type = models.PositiveIntegerField(choices=TYPE_CHOICES, blank=True,
         null=True)
     view_menu = models.ManyToManyField(Menuitem, null=True, blank=True,
-        verbose_name=_('menu item'))
-    view_dash = models.ManyToManyField(Dash, null=True, blank=True,
-        verbose_name=_('dash item'))
+        verbose_name=_(u"menu item"))
+    view_dash = models.ForeignKey(Dash, null=True, blank=True,
+        verbose_name=_(u"dash item"))
 
     def __unicode__(self):
         return self.label
 
-    class Meta:
-        verbose_name = _('namespace')
+    def clean(self):
+        node_parent = self.parent
+        #if parent has menu/dash, the child should not be created.
+        if node_parent:
+            if node_parent.view_type:
+                raise ValidationError("""Parent has a menu or dashboard.
+                    Please select a new parent or no parent.""")
+
+        if self.view_type:
+            #View types should match
+            if self.view_type == 1 and not hasattr(self, 'view_menu'):
+                raise ValidationError("""View type is Menu. Please
+                    select Menu.""")
+            if self.view_type == 2 and not self.view_dash:
+                raise ValidationError("""View type is Dashboard.
+                    Please select Dashboard.""")
+        else:
+            #No menu/dash w/o a view_type
+            if hasattr(self, 'view_menu') is False or self.view_dash:
+                raise ValidationError("""Please select a view type for
+                    Menu/Dashboard item.""")
+
+    class MPTTMeta:
+        verbose_name = 'namespace'
         verbose_name_plural = _('namespaces')
