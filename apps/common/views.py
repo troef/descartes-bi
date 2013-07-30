@@ -94,7 +94,7 @@ def get_dash_menu(request, namespace_id):
             context['menus'] = node.view_menu.all()
             page = 'sub_dash_menu.html'
 
-        elif node.view.type == 3:
+        elif node.view_type == 3:
             context['websites'] = node.view_website.all()
             page = 'website.html'
 
