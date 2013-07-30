@@ -40,7 +40,8 @@
 
                     }
 
-                    setInterval( rep{{ sp.id }}(), ({{ sp.refresh_rate }} * 1000));
+                    rep{{ sp.id }}();
+                    setInterval( rep{{ sp.id }} , {{ sp.refresh_rate }} * 1000 );
 
 
                 {% endfor %}
