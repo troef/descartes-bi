@@ -280,7 +280,6 @@ class Menuitem(models.Model):
     #TODO: reports display order
     title = models.CharField(max_length=64, verbose_name=_(u"title"))
     reports = models.ManyToManyField(Report, verbose_name=_(u"chart"), blank=True, null=True)
-    websites = models.ManyToManyField('website.Website', verbose_name=_(u"website"), blank=True, null=True)
     order = models.IntegerField(default=0, verbose_name=_(u"order"))
 
     def __unicode__(self):
