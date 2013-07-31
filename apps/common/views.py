@@ -95,7 +95,12 @@ def get_dash_menu(request, namespace_id):
             page = 'sub_dash_menu.html'
 
         elif node.view_type == 3:
-            context['websites'] = node.view_website.all()
+            website = node.view_website.all()[0]
+            url = website.series.data_source.load_backend().cursor().url
+            # cursor.execute
+            import sys
+            print >>sys.stderr, url
+            context['url'] = url
             page = 'website.html'
 
         else:
