@@ -96,9 +96,12 @@ def get_dash_menu(request, namespace_id):
 
         elif node.view_type == 3:
             website = node.view_website.all()[0]
-            url = website.series.data_source.load_backend().cursor().url
-            query = website.series.query
-            context['url'] = url + "/?" + query
+            if website.series:
+                url = website.series.data_source.load_backend().cursor().url
+                query = website.series.query
+                context['url'] = url + "/?" + query
+            else:
+                context['url'] = website.base_URL
             page = 'website.html'
 
         else:
