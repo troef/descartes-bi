@@ -42,16 +42,14 @@
 
             {% else %}
                 console.log("I'm a website")
-                $('#dashboard').append('<div id ="{{ sp.id }}" style="width:48%; float:left;" ></div>');
-                function rep{{ sp.id }}(){
-                    var url = "{{ sp.website.series.data_source.load_backend.cursor.url }}"
-                    var query = "{{ sp.website.series.query |escapejs}}"
-                    var link = url + "?" + query
-                    $('#{{ sp.id }}').load(link)
-                    console.log(link)
-                }
-                rep{{ sp.id }}();
-                setInterval( rep{{ sp.id }} , {{ sp.refresh_rate }} * 1000 );
+                var url = "{{ sp.website.series.data_source.load_backend.cursor.url }}"
+                var query = "{{ sp.website.series.query |escapejs}}"
+                var link = url + "?" + query
+                // $('#{{ sp.id }}').load(link)
+                console.log(link)
+                $('#dashboard').append('<iframe src="'+link+'" id="{{ sp.id }}" style="width:50%;height:50%; float:left;" ></iframe>');
+                // rep{{ sp.id }}();
+                // setInterval( rep{{ sp.id }} , {{ sp.refresh_rate }} * 1000 );
             {% endif %}
 
         {% endfor %}
