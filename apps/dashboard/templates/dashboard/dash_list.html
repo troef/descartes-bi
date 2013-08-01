@@ -6,7 +6,7 @@
      $(document).ready(function() {
         $(".colmask").empty();
         $(".colmask").css("overflow-y", "scroll" );
-        $(".colmask").append('<div id="dashboard" style="margin:10px"></div>');
+        $(".colmask").append('<div id="dashboard" style="margin:10px; position:absolute; width:100%"></div>');
         {% for sp in selected_reports %}
             {% if not sp.website.id %}
                 console.log("I'm a report")
@@ -18,7 +18,7 @@
 
             var to_date{{ sp.rep_id.id }} = ("0" + (td{{ sp.rep_id.id }}.getMonth() + 1)).slice(-2) + "%2F" + ("0" + td{{ sp.rep_id.id }}.getDate()).slice(-2) + "%2F" + td{{ sp.rep_id.id }}.getFullYear();
 
-            $('#dashboard').append('<div id ="{{ sp.id }}" style="width:48%; float:left; color:white;" ></div>');
+            $('#dashboard').append('<div id ="{{ sp.id }}" style="width:48%; height:100%; float:left; color:white;" ></div>');
 
             function rep{{ sp.id }}(){
                 var param= [{% for filter in sp.filtersets.filters.all %} "{{ filter.name }}", {% endfor %} ];
@@ -47,7 +47,8 @@
                 var link = url + "?" + query
                 // $('#{{ sp.id }}').load(link)
                 console.log(link)
-                $('#dashboard').append('<iframe src="'+link+'" id="{{ sp.id }}" style="width:50%;height:50%; float:left;" ></iframe>');
+                $('#dashboard').append('<div style="width:48%;height:100%; float:left; color:white;" ><iframe id="{{ sp.id }}" src="'+link+'" style=" width:100%;height:100%;border:0 "></iframe></div>');
+
                 // rep{{ sp.id }}();
                 // setInterval( rep{{ sp.id }} , {{ sp.refresh_rate }} * 1000 );
             {% endif %}
