@@ -109,7 +109,7 @@ def get_dash_menu(request, namespace_id):
             dash_board = get_object_or_404(Dash, pk=dash_id)
             selected_reports = dash_board.selection_list.all()
             context = {'selected_reports': selected_reports,
-                'dash_board': dash_board, }
+                       'dash_board': dash_board, }
             page = 'dashboard/dash_list.html'
     else:
         context['nodes'] = node.get_children()

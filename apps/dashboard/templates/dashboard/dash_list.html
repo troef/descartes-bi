@@ -8,6 +8,9 @@
         $(".colmask").css("overflow-y", "scroll" );
         $(".colmask").append('<div id="dashboard" style="margin:10px"></div>');
         {% for sp in selected_reports %}
+            {% if not sp.website.id %}
+                console.log("I'm a report")
+
             var fd{{ sp.rep_id.id }} = new Date("{{ sp.from_date }}");
             var td{{ sp.rep_id.id }} = new Date("{{ sp.to_date }}");
 
@@ -17,10 +20,7 @@
 
             $('#dashboard').append('<div id ="{{ sp.id }}" style="width:48%; float:left; color:white;" ></div>');
 
-
             function rep{{ sp.id }}(){
-                  //$('#{{ sp.id }}').load("{% url 'home_view' %}reports/ajax/report/{{sp.rep_id.id}}/?regional={{sp.id_regional}}&output_type={{sp.visual_type}}&from_date="+ from_date{{ sp.rep_id.id }} + "&to_date=" + to_date{{ sp.rep_id.id }} );
-
                 var param= [{% for filter in sp.filtersets.filters.all %} "{{ filter.name }}", {% endfor %} ];
                 var val = "{{sp.values}}".replace(/\s/g, '');
                 var values = val.split(",");
@@ -31,16 +31,28 @@
                     }
                     link = link + "output_type={{ sp.visual_type }}";
                     $('#{{ sp.id }}').load(link);
+                    console.log(link)
                 }
                 else {
                     $('#{{ sp.id }}').append("Parameters don't match");
                 }
-
             }
-
                     rep{{ sp.id }}();
                     setInterval( rep{{ sp.id }} , {{ sp.refresh_rate }} * 1000 );
 
+            {% else %}
+                console.log("I'm a website")
+                $('#dashboard').append('<div id ="{{ sp.id }}" style="width:48%; float:left;" ></div>');
+                function rep{{ sp.id }}(){
+                    var url = "{{ sp.website.series.data_source.load_backend.cursor.url }}"
+                    var query = "{{ sp.website.series.query |escapejs}}"
+                    var link = url + "?" + query
+                    $('#{{ sp.id }}').load(link)
+                    console.log(link)
+                }
+                rep{{ sp.id }}();
+                setInterval( rep{{ sp.id }} , {{ sp.refresh_rate }} * 1000 );
+            {% endif %}
 
         {% endfor %}
 
