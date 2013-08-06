@@ -43,7 +43,7 @@
             {% else %}
                 console.log("I'm a website")
                 var url = "{{ sp.website.series.data_source.load_backend.cursor.url }}"
-                var query = "{{ sp.website.series.query |escapejs}}"
+                var query = "{{ sp.website.series.query}}"
                 var link = url + "?" + query
                 // $('#{{ sp.id }}').load(link)
                 console.log(link)
