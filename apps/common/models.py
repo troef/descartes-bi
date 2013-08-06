@@ -69,6 +69,9 @@ class Namespace(MPTTModel):
             if self.view_type == 2 and not self.view_dash:
                 raise ValidationError("""View type is Dashboard.
                     Please select Dashboard.""")
+            if self.view_type == 3 and not self.view_website:
+                raise ValidationError("""View type is website.
+                    Please select Website.""")
         else:
             #No menu/dash w/o a view_type
             if hasattr(self, 'view_menu') is False or self.view_dash:
