@@ -21,12 +21,13 @@ def get_website(request, website):
 
     page = 'website/website.html'
 
-    get_filter_form(request, website)
+    context['filter_form'] = FilterForm(website.filterset.all(), request.user)
 
     return render_to_response(page, context,
                               context_instance=RequestContext(request))
 
 
+#Unused function
 def get_filter_form(request, website):
     print >>sys.stderr, "Inside Get"
     url = website.series.data_source.load_backend().cursor().url
