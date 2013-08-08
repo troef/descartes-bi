@@ -74,7 +74,7 @@ class Namespace(MPTTModel):
                     Please select Website.""")
         else:
             #No menu/dash w/o a view_type
-            if hasattr(self, 'view_menu') is False or self.view_dash:
+            if hasattr(self, 'view_menu') is True or self.view_dash:
                 raise ValidationError("""Please select a view type for
                     Menu/Dashboard item.""")
 
