@@ -1,6 +1,16 @@
 {% extends "base.html" %}
 {% load i18n %}
 
+{% block javascript %}
+<script type="text/javascript">
+  $(document).ready(function(){
+    $('#parameters_wrapper').empty();
+    var form = '{{ filter_form | escapejs}}';
+    $('#parameters_wrapper').append(form);
+});
+</script>
+{% endblock %}
+
 {% block content %}
     <iframe src="{{ url }}" height=100% width=100%></iframe>
 {% endblock content %}
