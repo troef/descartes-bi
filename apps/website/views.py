@@ -11,8 +11,17 @@ def get_website(request, website):
 
     #Compose the URL to create LQL queries
     if website.series:
+
         url = website.series.data_source.load_backend().cursor().url
         query = website.series.query
+
+        if request.method == 'GET':
+            if request.GET:
+                filter_form = FilterForm(website.filterset.all(), request.user, request.GET)
+                query = query % filter_form               
+            else:
+                filter_form = FilterForm(website.filterset.all(), request.user)
+                
         context['url'] = url + "/?" + query
 
     #Display the website in base_URL
@@ -21,7 +30,7 @@ def get_website(request, website):
 
     page = 'website/website.html'
 
-    context['filter_form'] = FilterForm(website.filterset.all(), request.user)
+    context['filter_form'] = filter_form
 
     return render_to_response(page, context,
                               context_instance=RequestContext(request))
