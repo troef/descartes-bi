@@ -5,7 +5,7 @@
 <script type="text/javascript">
 	$(document).ready(function(){
     		var form = '{{ filter_form | escapejs }}';
-    		$('#pueblos').append(form);
+    		$('#params').append(form);
 	});
 </script>
 {% endblock %}
@@ -15,6 +15,7 @@
 {% endblock content %}
 
 {% block column2 %}
+<h1 style="color: #555;">{{ label }}</h1>
     {% if website %}
         <style>
             .data-entry table { width: 100%; }
@@ -39,7 +40,7 @@
                             </td>
                         </tr>
                     </tfoot>
-                    <tbody id="pueblos">
+                    <tbody id="params">
                         <style>
                             #date_helpers {
                                 width: 100%;
