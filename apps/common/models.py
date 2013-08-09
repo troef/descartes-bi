@@ -47,8 +47,7 @@ class Namespace(MPTTModel):
                                        verbose_name=_(u"menu item"))
     view_dash = models.ForeignKey(Dash, null=True, blank=True,
                                   verbose_name=_(u"dash item"))
-    view_website = models.ManyToManyField('website.Website', null=True, blank=True,
-                                          verbose_name=_(u"website item"))
+    view_website = models.ManyToManyField('website.Website', null=True, blank=True, verbose_name=_(u"website item"))
 
     def __unicode__(self):
         return self.label
