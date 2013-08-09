@@ -12,12 +12,18 @@ def get_website(request, website):
         query = website.series.query
 
         if request.method == 'GET' and website.filterset.exists():
+            filtersets = website.filterset
             if request.GET:
-                filter_form = FilterForm(website.filterset.all(), request.user, request.GET)
-                query = query % filter_form
+                filter_form = FilterForm(filtersets, request.user, request.GET)
+                for set in filtersets.all():
+                    for filter in set.filters.all():
+
+                        if filter_form.is_valid():
+                            value = filter_form.cleaned_data[filter.name]
+                query = query % {filter.name: value}
                 context['url'] = url + "/?" + query
             else:
-                filter_form = FilterForm(website.filterset.all(), request.user)
+                filter_form = FilterForm(filtersets, request.user)
 
             context['filter_form'] = filter_form
         else:
