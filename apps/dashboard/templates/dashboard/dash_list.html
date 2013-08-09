@@ -3,18 +3,18 @@
 {% block stylesheets %}
 <style>
     .mapdiv {
-        width:46%;
+        width:48%;
         height:100%;
         float:left;
         margin-left:1%;
         margin-right:1%;
-        margin-bottom:6%;
+        margin-bottom:3%;
         color:#666;
         float:left;
 
     }
     .map {
-        width:100%;
+        width:95%;
         height:100%;
         border:0;
         margin-top:1%;
@@ -31,17 +31,10 @@
      $(document).ready(function() {
         $(".colmask").empty();
         $(".colmask").css("overflow-y", "scroll" );
-        $(".colmask").append('<div id="dashboard" style="margin:10px; position:absolute; width:100%"></div>');
+        $(".colmask").append('<div id="dashboard" style="margin:10px; width:100%;"></div>');
         {% for sp in selected_reports %}
             {% if not sp.website.id %}
                 console.log("I'm a report")
-
-            var fd{{ sp.rep_id.id }} = new Date("{{ sp.from_date }}");
-            var td{{ sp.rep_id.id }} = new Date("{{ sp.to_date }}");
-
-            var from_date{{ sp.rep_id.id }} = ("0" + (fd{{ sp.rep_id.id }}.getMonth() + 1)).slice(-2) + "%2F" + ("0" + fd{{ sp.rep_id.id }}.getDate()).slice(-2) + "%2F" + fd{{ sp.rep_id.id }}.getFullYear();
-
-            var to_date{{ sp.rep_id.id }} = ("0" + (td{{ sp.rep_id.id }}.getMonth() + 1)).slice(-2) + "%2F" + ("0" + td{{ sp.rep_id.id }}.getDate()).slice(-2) + "%2F" + td{{ sp.rep_id.id }}.getFullYear();
 
             $('#dashboard').append('<div id ="{{ sp.id }}" style="width:48%; height:100%; float:left;" ></div>');
 
@@ -79,6 +72,11 @@
             {% endif %}
 
         {% endfor %}
+
+        window.onresize = function(){
+            var zoom = d3.behavior.zoom();
+            svg.call(zoom.on("zoom", redraw));
+        };
 
      });
 </script>

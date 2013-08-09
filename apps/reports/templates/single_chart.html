@@ -37,7 +37,7 @@ legendLocation: {{ chart.legend_location|default:"ne" }}<br />
         }
 
         #chart{{ chart.id }} svg {
-          height: 400px;
+          height: 80%;
           margin: 10px;
           min-width: 100px;
           min-height: 100px;
@@ -45,7 +45,8 @@ legendLocation: {{ chart.legend_location|default:"ne" }}<br />
     </style>
     <body>
 
-      <div id="chart{{ chart.id }}" style="margin:2px; color: #666;">
+      <div id="chart{{ chart.id }}" style="margin:2px; color: #666;
+      height:100%;">
         {% if chart.title %}
             <h1>{{ chart.title }}</h1>
         {% endif %}

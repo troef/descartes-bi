@@ -57,7 +57,7 @@ class Namespace(MPTTModel):
         #if parent has menu/dash, the child should not be created.
         if node_parent:
             if node_parent.view_type:
-                raise ValidationError("""Parent has a menu or dashboard.
+                raise ValidationError("""Parent has a menu, dashboard or website.
                     Please select a new parent or no parent.""")
 
         if self.view_type:
@@ -68,14 +68,14 @@ class Namespace(MPTTModel):
             if self.view_type == 2 and not self.view_dash:
                 raise ValidationError("""View type is Dashboard.
                     Please select Dashboard.""")
-            if self.view_type == 3 and not self.view_website:
-                raise ValidationError("""View type is website.
+            if self.view_type == 3 and not hasattr(self, 'view_website'):
+                raise ValidationError("""View type is Website.
                     Please select Website.""")
         else:
             #No menu/dash w/o a view_type
-            if hasattr(self, 'view_menu') is False or self.view_dash:
+            if hasattr(self, 'view_menu') is True or self.view_dash or hasattr(self, 'view_website') is True:
                 raise ValidationError("""Please select a view type for
-                    Menu/Dashboard item.""")
+                    Menu/Dashboard/Website item.""")
 
     class MPTTMeta:
         verbose_name = 'namespace'
