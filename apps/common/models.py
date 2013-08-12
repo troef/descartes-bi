@@ -37,16 +37,12 @@ TYPE_CHOICES = (
 
 
 class Namespace(MPTTModel):
-    parent = TreeForeignKey('self', null=True, blank=True,
-                            related_name='children')
+    parent = TreeForeignKey('self', null=True, blank=True, related_name='children')
     label = models.CharField(max_length=32)
     icon = models.CharField(max_length=32)
-    view_type = models.PositiveIntegerField(choices=TYPE_CHOICES, blank=True,
-                                            null=True)
-    view_menu = models.ManyToManyField(Menuitem, null=True, blank=True,
-                                       verbose_name=_(u"menu item"))
-    view_dash = models.ForeignKey(Dash, null=True, blank=True,
-                                  verbose_name=_(u"dash item"))
+    view_type = models.PositiveIntegerField(choices=TYPE_CHOICES, blank=True, null=True)
+    view_menu = models.ManyToManyField(Menuitem, null=True, blank=True, verbose_name=_(u"menu item"))
+    view_dash = models.ForeignKey(Dash, null=True, blank=True, verbose_name=_(u"dash item"))
     view_website = models.ManyToManyField('website.Website', null=True, blank=True, verbose_name=_(u"website item"))
 
     def __unicode__(self):
@@ -59,23 +55,6 @@ class Namespace(MPTTModel):
             if node_parent.view_type:
                 raise ValidationError("""Parent has a menu, dashboard or website.
                     Please select a new parent or no parent.""")
-
-        if self.view_type:
-            #View types should match
-            if self.view_type == 1 and not hasattr(self, 'view_menu'):
-                raise ValidationError("""View type is Menu. Please
-                    select Menu.""")
-            if self.view_type == 2 and not self.view_dash:
-                raise ValidationError("""View type is Dashboard.
-                    Please select Dashboard.""")
-            if self.view_type == 3 and not hasattr(self, 'view_website'):
-                raise ValidationError("""View type is Website.
-                    Please select Website.""")
-        else:
-            #No menu/dash w/o a view_type
-            if hasattr(self, 'view_menu') is True or self.view_dash or hasattr(self, 'view_website') is True:
-                raise ValidationError("""Please select a view type for
-                    Menu/Dashboard/Website item.""")
 
     class MPTTMeta:
         verbose_name = 'namespace'
