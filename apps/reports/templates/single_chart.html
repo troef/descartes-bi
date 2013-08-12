@@ -8,7 +8,7 @@
     {% endwith %}
     {% endwith %}
 {% else %}
-{% if 1 %}
+{% if 0 %}
 <!-- QUERY: {{ query }}<br />
 PARAMS: {{ params }}<br /> -->
 chart_series: {{ tick_format1 }}<br />
@@ -137,6 +137,10 @@ leg endLocation: {{ chart.legend_location|default:"ne" }}<br />-->
                         if (date.length == 1) date = d.split("-");
                         date = d3.time.format('%B %Y')(new Date(date[0], date[1], 0, 0, 0, 0, 0));
                         return date; 
+                    }
+                    else if (bool1 == true && tf == 'Ye'){
+                        date = d3.time.format('%B %Y')(new Date(date[0], date[1], 0, 0, 0, 0, 0));
+                        return date;
                     }
                     else 
                         return d;
