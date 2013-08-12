@@ -21,9 +21,11 @@ from django.contrib import admin
 from mptt.admin import MPTTModelAdmin
 
 from common.models import Namespace
+from common.forms import NamespaceForm
 
 
 class NamespaceAdmin(MPTTModelAdmin):
+    form = NamespaceForm
     list_display = ('label', 'parent', 'icon', 'view_type')
     filter_horizontal = ('view_menu',)
 

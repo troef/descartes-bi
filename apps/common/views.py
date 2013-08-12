@@ -26,6 +26,7 @@ from django.template import loader, RequestContext
 
 from common.models import Namespace
 from dashboard.models import Dash
+from website.views import get_website
 
 
 def error500(request, template_name='500.html'):
@@ -94,15 +95,10 @@ def get_dash_menu(request, namespace_id):
             context['menus'] = node.view_menu.all()
             page = 'sub_dash_menu.html'
 
+        #Check if the view_type is a website and call the website view
         elif node.view_type == 3:
             website = node.view_website.all()[0]
-            if website.series:
-                url = website.series.data_source.load_backend().cursor().url
-                query = website.series.query
-                context['url'] = url + "/?" + query
-            else:
-                context['url'] = website.base_URL
-            page = 'website.html'
+            return get_website(request, website)
 
         else:
             dash_id = node.view_dash_id

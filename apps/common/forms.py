@@ -17,7 +17,47 @@
 #
 
 from django import forms
+from common.models import Namespace, TYPE_MENU, TYPE_WIDGETS, TYPE_WEBSITES
 
 
 class UploadFileForm(forms.Form):
     file = forms.FileField()
+
+
+class NamespaceForm(forms.ModelForm):
+    class Meta:
+        model = Namespace
+
+    def clean(self):
+        super(NamespaceForm, self).clean()
+        has_selected_type = self.cleaned_data.get('view_type', None)
+        has_selected_menu = self.cleaned_data.get('view_menu', None)
+        has_selected_dash = self.cleaned_data.get('view_dash', None)
+        has_selected_website = self.cleaned_data.get('view_website', None)
+
+        if has_selected_type:
+            #view type and menu item should match
+            if has_selected_type == TYPE_MENU and not has_selected_menu:
+                message = ("""View type is Menu. Please select Menu.""")
+                raise forms.ValidationError(message)
+            if has_selected_type == TYPE_WIDGETS and not has_selected_dash:
+                message = ("""View type is Dashboard. Please select Dashboard.""")
+                raise forms.ValidationError(message)
+            if has_selected_type == TYPE_WEBSITES and not has_selected_website:
+                message = ("""View type is Website. Please select Website.""")
+                raise forms.ValidationError(message)
+        else:
+            #No menu item w/o view type
+            if has_selected_menu or has_selected_dash or has_selected_website:
+                message = ("""Please select a view type for Menu/Dashboard/Website item.""")
+                raise forms.ValidationError(message)
+
+        #Should not save multiple menu items
+        # TODO: Improve
+        if ((has_selected_menu and (has_selected_dash or has_selected_website))
+            or (has_selected_dash and (has_selected_menu or has_selected_website))
+            or (has_selected_website and (has_selected_menu or has_selected_dash))):
+                message = ("""Multiple menu items.""")
+                raise forms.ValidationError(message)
+
+        return self.cleaned_data
