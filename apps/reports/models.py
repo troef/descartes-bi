@@ -107,11 +107,21 @@ class FilterExtra(models.Model):
 
 
 class Serie(models.Model):
+    SERIES_TYPE_CHOICES = (
+        (u'Ye', _(u'Year')),
+        (u'My', _(u'Year-Month')),
+        (u'St', _(u'String')),
+        (u'To', _(u'Total')),
+        (u'Cu', _(u'Currency')),
+
+    )
     data_source = models.ForeignKey(DataSource, verbose_name=_('data source'))
 
     name = models.CharField(max_length=64, help_text="Internal name.  Do not use spaces or special symbols.", verbose_name=_(u"name"))
     label = models.CharField(max_length=24, null=True, blank=True, help_text="Label to be shown to the user and to be used for the legend.", verbose_name=_(u"label"))
-    tick_format = models.CharField(blank=True, null=True, max_length=16, help_text="Example: Currency - '$%d.00'", verbose_name=_(u"tick format"))
+    tick_format1 = models.CharField(max_length=8, choices=SERIES_TYPE_CHOICES, default="St",  verbose_name=_(u"tick format1"))
+    tick_format2 = models.CharField(max_length=8, choices=SERIES_TYPE_CHOICES, default="St",  verbose_name=_(u"tick format2"))
+
     query = models.TextField(verbose_name=_(u"query"), help_text=_(u"SQL query, that returns only 2 fields and may of may be a parameter query.  Include parameters in the format: <field> LIKE %(parameter)s.  Also the SQL wildcard character % must be escaped as %%."))
     description = models.TextField(null=True, blank=True, help_text="Description of the query, notes and observations.", verbose_name=_(u"description"))
 
@@ -177,6 +187,7 @@ class Report(models.Model):
         (u'PI', _(u'Pie chart')),
         (u'LB', _(u'Line Plus Bar Chart')),
         (u'LI', _(u'Line chart')),
+        (u'LF', _(u'Line chart with Focus')),
     )
     LEGEND_LOCATION_CHOICES = (
         (u'nw', _(u'North-West')),

@@ -154,13 +154,12 @@ class SerieAdmin(admin.ModelAdmin):
     search_fields_verbose = ['Name', 'Label']
     list_display = ('name', 'label', 'get_params', 'get_parents', 'get_data_source', 'validated')
     order = 2
-
     fieldsets = (
         (_('General'), {
             'fields': ('name', 'label')
         }),
         (_('Data'), {
-            'fields': ('data_source', 'tick_format', 'query', 'description')
+            'fields': ('data_source', 'tick_format1', 'tick_format2','query', 'description')
         }),
         (_(u'Validation'), {
             'classes': ('collapse-open',),

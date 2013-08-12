@@ -136,6 +136,8 @@ def ajax_report(request, report_id):
                     params[filter.name] = value
 
     series_results = []
+    tick_format1 = []
+    tick_format2 = []
     labels = []
     for s in report.serietype_set.all():
         query = s.serie.query
@@ -169,10 +171,13 @@ def ajax_report(request, report_id):
         if s.serie.data_source.backend == BACKEND_LIBRE:
             series_results = cursor.fetchall()
         elif output_type == 'chart':
-            series_results.append(data_to_js_chart(cursor.fetchall(), s.serie.tick_format, report.orientation))
+            series_results.append(data_to_js_chart(cursor.fetchall(), report.orientation))
         elif output_type == 'grid':
-            series_results.append(data_to_js_grid(cursor.fetchall(), s.serie.tick_format))
+            series_results.append(data_to_js_grid(cursor.fetchall(), s.serie.tick_format1))
+        #append tick formats
 
+        tick_format1.append(s.serie.tick_format1)
+        tick_format2.append(s.serie.tick_format2)
         s.serie.last_execution_time = (datetime.datetime.now() - serie_start_time).seconds
         s.serie.avg_execution_time = (s.serie.avg_execution_time or 0 + s.serie.last_execution_time) / 2
         s.serie.save()
@@ -226,6 +231,8 @@ def ajax_report(request, report_id):
             'chart_data': ','.join(series_results),
             'series_results': series_results,
             'chart_series': report.serietype_set.all(),
+            'tick_format1': tick_format1,
+            'tick_format2': tick_format2,
             'chart': report,
             'h_axis': h_axis,
             'v_axis': v_axis,
@@ -247,18 +254,14 @@ def ajax_report(request, report_id):
 
 
 #TODO: Improve this further
-def data_to_js_chart(data, label_format=None, orientation='v'):
+def data_to_js_chart(data,  orientation='v'):
     if not data:
         return ''
 
-    if not label_format:
-        label_format = "%s"
-
     result = '['
-
     if orientation == 'v':
         for key, value in data:
-            result += '["%s",%s,"%s"],' % (key or '?', value, label_format % value)
+            result += '["%s",%s],' % (key or '?', value)
             #result = [[k or '?',v, label_formar % v] for k,v in a]
     else:
         for key, value in data:
