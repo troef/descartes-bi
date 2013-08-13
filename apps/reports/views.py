@@ -146,9 +146,6 @@ def ajax_report(request, report_id):
 
         cursor = s.serie.data_source.load_backend().cursor()
 
-        import sys
-        print >>sys.stderr, s.serie.data_source.backend
-
         if special_params:
             for sp in special_params.keys():
                 query = re.compile('%\(' + sp + '\)s').sub(special_params[sp], query)
@@ -210,21 +207,19 @@ def ajax_report(request, report_id):
         v_axis = "x"
 
     if s.serie.data_source.backend == BACKEND_LIBRE:
-        model = []
-        names = []
-        for i in series_results[0]:
-            model.append({'name': i})
-            names.append(i)
+        new_results = []
+        new_results.append(str(json.dumps(series_results)))
 
         data = {
             'chart_data': s.serie.data_source.backend,
             'backend_libre': BACKEND_LIBRE,
-            'series_results': json.dumps(series_results),
+            'tick_format1': tick_format1,
+            'tick_format2': tick_format2,
+            'series_results': new_results,
             'chart_series': report.serietype_set.all(),
-            'model': json.dumps(model),
-            'names': json.dumps(names),
             'ajax': True,
             'query': query,
+            'chart': report,
         }
     else:
         data = {
