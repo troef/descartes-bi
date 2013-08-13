@@ -104,8 +104,37 @@ def get_dash_menu(request, namespace_id):
             dash_id = node.view_dash_id
             dash_board = get_object_or_404(Dash, pk=dash_id)
             selected_reports = dash_board.selection_list.all()
+
+            if selected_reports : print "I'm True"
+
+            links = {}
+            for sp in selected_reports:
+                if sp.rep_id:
+                    filterform = sp.filtersets.filters.all()
+                    values = sp.values.split(',')
+                    get_form = ""
+                    for index in range(len(values)):
+                        get_form += filterform[index].name + "=" + values[index] + "&"
+
+                    lk = "reports/ajax/report/" + str(sp.rep_id.id) + "/?" + get_form + "output_type=" + sp.visual_type
+                    links[str(sp.id)] = lk 
+
+                if sp.website:
+                    query = sp.website.series.query
+
+                    if sp.website.filterset:
+                        filterform = sp.filtersets.filters.all()
+                        values = sp.values.split(',')
+                        for index in range(len(values)):
+                            query = query % { filterform[index].name : values[index] }
+
+                    if sp.website.base_URL:
+                        links["mapdiv" + str(sp.id)]= sp.website.base_URL + "/?" + query
+                    else:
+                        links["mapdiv" + str(sp.id)] = sp.website.series.data_source.load_backend().cursor().url + "/?" + query 
+
             context = {'selected_reports': selected_reports,
-                       'dash_board': dash_board, }
+                       'dash_board': dash_board, 'links' : links }
             page = 'dashboard/dash_list.html'
     else:
         context['nodes'] = node.get_children()
