@@ -1,3 +1,5 @@
+from __future__ import absolute_import
+
 #
 #    Copyright (C) 2010  Roberto Rosario
 #    This file is part of descartes-bi.
@@ -17,6 +19,7 @@
 #
 
 import datetime
+import logging
 import re
 
 from django.contrib.auth.models import User
@@ -24,25 +27,17 @@ from django.contrib.auth.models import Group
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
+from main.exceptions import SeriesError
 from db_drivers.models import DataSource
 
-FILTER_TYPE_DATE = 'DA'
-FILTER_TYPE_COMBO = 'DR'
-FILTER_TYPE_MONTH = 'MO'
+from .literals import (FILTER_FIELD_CHOICES, SERIES_TYPE_CHOICES,
+    LEGEND_LOCATION_CHOICES, CHART_TYPE_CHOICES, ORIENTATION_CHOICES,
+    UNION_CHOICES)
+
+logger = logging.getLogger(__name__)
 
 
 class Filter(models.Model):
-    FILTER_FIELD_CHOICES = (
-        (FILTER_TYPE_DATE, _('Date field')),
-        (FILTER_TYPE_COMBO, _('Simple drop down')),
-#       ('SE', _('Separator  *N/A*')),
-#       ('DQ', _('Simple drop down from query *N/A*')),
-#       ('SI', _('Drop down with hidden index  *N/A*')),
-#       ('SI', _('Drop down with hidden index from query *N/A*')),
-#       ('TX', _('Text field *N/A*')),
-#       ('NU', _('Number field *N/A*')),
-#       ('MO', _('Month name drop down *N/A*')),
-    )
     name = models.CharField(max_length=48, help_text=_('Name of the parameter to be used in the queries.  Do not use spaces or special symbols.'), verbose_name=_('name'))
     description = models.CharField(max_length=32, blank=True, null=True, verbose_name=_('description'))
     type = models.CharField(max_length=2, choices=FILTER_FIELD_CHOICES, verbose_name=_('type'))
@@ -108,14 +103,6 @@ class FilterExtra(models.Model):
 
 
 class Serie(models.Model):
-    SERIES_TYPE_CHOICES = (
-        ('Ye', _('Year')),
-        ('My', _('Year-Month')),
-        ('St', _('String')),
-        ('To', _('Total')),
-        ('C', _('Currency')),
-
-    )
     data_source = models.ForeignKey(DataSource, verbose_name=_('data source'))
 
     name = models.CharField(max_length=64, help_text='Internal name.  Do not use spaces or special symbols.', verbose_name=_('name'))
@@ -159,6 +146,19 @@ class Serie(models.Model):
         return ' ,'.join(['%s' % f for f in filters])
     get_filters.short_description = _('filters')
 
+    # Descartes-NT
+    def execute(self, params=None):
+        if re.compile("[^%]%[^%(]").search(self.query):
+            SeriesError(_(u"Single '%' found, replace with double '%%' to properly escape the SQL wildcard caracter '%'."))
+
+        cursor = self.data_source.load_backend().cursor()
+        if not params:
+            params = {}
+        cursor.execute(self.query, params)
+        logger.debug('self.query: %s, params: %s' % (self.query, params))
+
+        return cursor.fetchall()
+
     class Meta:
         ordering = ['name']
         verbose_name = _('serie')
@@ -182,28 +182,6 @@ class SeriesStatistic(models.Model):
 
 
 class Report(models.Model):
-    CHART_TYPE_CHOICES = (
-        ('SI', _('Standard X,Y')),
-        ('PI', _('Pie chart')),
-        ('LB', _('Line Plus Bar Chart')),
-        ('LI', _('Line chart')),
-        ('LF', _('Line chart with Focus')),
-    )
-    LEGEND_LOCATION_CHOICES = (
-        ('nw', _('North-West')),
-        ('n', _('North')),
-        ('ne', _('North-East')),
-        ('e', _('East')),
-        ('se', _('South-East')),
-        ('s', _('South')),
-        ('sw', _('South-West')),
-        ('w', _('West')),
-    )
-    ORIENTATION_CHOICES = (
-        ('h', _('Horizontal')),
-        ('v', _('Vertical')),
-    )
-
     # Base properties
     title = models.CharField(max_length=128, help_text=_('Chart title.'), verbose_name=_('title'))
     description = models.TextField(null=True, blank=True, help_text=_('A description of the report.  This description will also be presented to the user.'), verbose_name=_('description'))
@@ -314,11 +292,6 @@ class Menuitem(models.Model):
 
 
 class UserPermission(models.Model):
-    UNION_CHOICES = (
-        ('E', _('Exclusive')),
-        ('I', _('Inclusive')),
-        ('O', _('Override')),
-    )
     user = models.ForeignKey(User, unique=True)
     #access_unpublished_reports = models.BooleanField(default = False)
     union = models.CharField(max_length=1, choices=UNION_CHOICES, default='I', verbose_name=_('Group/user permissions union type'), help_text=_('Determines how the user permissions interact with the group permissions of this user.'))
