@@ -1,3 +1,5 @@
+from __future__ import absolute_import
+
 #
 #    Copyright (C) 2010  Roberto Rosario
 #    This file is part of descartes-bi.
@@ -18,10 +20,11 @@
 
 from django import template
 from django.conf import settings
-from django.template.loader import get_template
 from django.template import Context
+from django.template.loader import get_template
 
-from reports.models import Menuitem
+from ..models import Menuitem
+from ..utils import get_allowed_object_for_user
 
 register = template.Library()
 
@@ -50,10 +53,9 @@ class MenuObject(template.Node):
 
 class get_menu_node(template.Node):
     def render(self, context):
-        from reports.views import _get_allowed_object_for_user
         user = template.resolve_variable('request.user', context)
 
-        results = _get_allowed_object_for_user(user)
+        results = get_allowed_object_for_user(user)
         mi_order = [mi.order for mi in results['menuitems']]
         mi_order.sort()
         context['menuitems_allowed'] = [Menuitem.objects.get(order=order)
