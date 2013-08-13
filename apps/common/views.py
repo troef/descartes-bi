@@ -117,12 +117,12 @@ def get_dash_menu(request, namespace_id):
                         get_form += filterform[index].name + "=" + values[index] + "&"
 
                     lk = "reports/ajax/report/" + str(sp.rep_id.id) + "/?" + get_form + "output_type=" + sp.visual_type
-                    links[str(sp.id)] = lk 
+                    links[str(sp.id)] = lk
 
                 if sp.website:
                     query = sp.website.series.query
 
-                    if sp.website.filterset:
+                    if sp.website.filterset.exists():
                         filterform = sp.filtersets.filters.all()
                         values = sp.values.split(',')
                         for index in range(len(values)):
@@ -131,7 +131,7 @@ def get_dash_menu(request, namespace_id):
                     if sp.website.base_URL:
                         links["mapdiv" + str(sp.id)]= sp.website.base_URL + "/?" + query
                     else:
-                        links["mapdiv" + str(sp.id)] = sp.website.series.data_source.load_backend().cursor().url + "/?" + query 
+                        links["mapdiv" + str(sp.id)] = sp.website.series.data_source.load_backend().cursor().url + "/?" + query
 
             context = {'selected_reports': selected_reports,
                        'dash_board': dash_board, 'links' : links }
