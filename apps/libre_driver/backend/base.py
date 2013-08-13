@@ -60,7 +60,8 @@ class Cursor():
     # Capture and decode LIBRE HTTP 400 errors
 
     def __init__(self, host, name, port):
-        self.url = '%(host)s:%(port)d/api/sources/%(name)s/data' % {
+        self.url = '%(schema)s%(host)s:%(port)d/api/sources/%(name)s/data' % {
+            'schema': 'http://',
             'host': host,
             'port': port or 80,
             'name': name

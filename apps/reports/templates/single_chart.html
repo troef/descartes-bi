@@ -9,21 +9,21 @@
     {% endwith %}
 {% else %}
 {% if 0 %}
-<!-- QUERY: {{ query }}<br />
-PARAMS: {{ params }}<br /> -->
-chart_series: {{ tick_format1 }}<br />
-chart_series: {{ tick_format2 }}<br />
-<!-- SERIES_RESULTS: {{series_results }}<br /> -->
-<!-- CHART_DATA: {{ chart_data }}<br />
-chart.trendline : {{ chart.trendline }}<br />
-chart.pointlabels: {{ chart.pointlabels}}<br />
-chart.highliter: {{ chart.highlighter}}<br />
-chart.type : {{chart.type}}<br />
-chart.title: {{ chart.title }}<br />
-chart_data|safe: {{ chart_data|safe }} <br />
-chart.legend: {{chart.legend}}<br />
-chart.series_label : {{ chart.series_label }}<br />
-leg endLocation: {{ chart.legend_location|default:"ne" }}<br />-->
+    QUERY: {{ query }}<br />
+    PARAMS: {{ params }}<br />
+    chart_series: {{ tick_format1 }}<br />
+    chart_series: {{ tick_format2 }}<br />
+    SERIES_RESULTS: {{series_results }}<br />
+    CHART_DATA: {{ chart_data }}<br />
+    chart.trendline : {{ chart.trendline }}<br />
+    chart.pointlabels: {{ chart.pointlabels}}<br />
+    chart.highliter: {{ chart.highlighter}}<br />
+    chart.type : {{chart.type}}<br />
+    chart.title: {{ chart.title }}<br />
+    chart_data|safe: {{ chart_data|safe }} <br />
+    chart.legend: {{chart.legend}}<br />
+    chart.series_label : {{ chart.series_label }}<br />
+    leg endLocation: {{ chart.legend_location|default:"ne" }}<br />
 
 {% endif %}
     <link href="{% static 'packages/novus-nvd3/src/nv.d3.css' %}" rel="stylesheet" type="text/css">
@@ -78,13 +78,12 @@ leg endLocation: {{ chart.legend_location|default:"ne" }}<br />-->
             {% endfor %}
             {% for tf in tick_format2 %}
                 if (tf2 != "{{ tf }}") {
-                    bool2 = false; 
+                    bool2 = false;
                     var tf_2 = '{{ tf }}';
                 }
             {% endfor %}
-            console.log(tf, tf2);
-            console.log(bool1, bool2);
-            // Get data 
+
+            // Get data
             var data = [
                 {% for series_result in series_results %}
                     {
@@ -110,8 +109,9 @@ leg endLocation: {{ chart.legend_location|default:"ne" }}<br />-->
                 {% endif %}
 
             {% endfor %}
+            console.log(data);
 
-            {% ifequal chart.type 'SI' %} 
+            {% ifequal chart.type 'SI' %}
                 var chart;
                 nv.addGraph(function() {
                   chart = nv.models.multiBarChart()
@@ -119,8 +119,8 @@ leg endLocation: {{ chart.legend_location|default:"ne" }}<br />-->
 
                 chart.multibar.hideable(true);
                 chart
-                    .reduceXTicks(true) 
-                    .showControls(false) 
+                    .reduceXTicks(true)
+                    .showControls(false)
                     .staggerLabels(false);
                 chart.xAxis.tickFormat(function(d) {
                     // TO DO : Include other ticks formats
@@ -128,7 +128,7 @@ leg endLocation: {{ chart.legend_location|default:"ne" }}<br />-->
 
                     // If all the tick formats are equal
                     // display the data with the format indicated
-                    // else display it as string or create another 
+                    // else display it as string or create another
                     // y2Axis. Ex: LinePlusBarChart
                     if (bool1 == true && tf == 'My'){
                         var date;
@@ -136,24 +136,24 @@ leg endLocation: {{ chart.legend_location|default:"ne" }}<br />-->
                         date = d.split("_");
                         if (date.length == 1) date = d.split("-");
                         date = d3.time.format('%B %Y')(new Date(date[0], date[1], 0, 0, 0, 0, 0));
-                        return date; 
+                        return date;
                     }
                     else if (bool1 == true && tf == 'Ye'){
                         date = d3.time.format('%B %Y')(new Date(date[0], date[1], 0, 0, 0, 0, 0));
                         return date;
                     }
-                    else 
+                    else
                         return d;
                 }).showMaxMin(true);
 
                 chart.yAxis.tickFormat(function(d) {
                     // TO DO: Include other tick formats
-                    if (bool2 == true && 
-                        (tf2 == 'To' || tf2 == 'Ye' || 
-                         tf2 == 'St')) 
+                    if (bool2 == true &&
+                        (tf2 == 'To' || tf2 == 'Ye' ||
+                         tf2 == 'St'))
                         return d;
-                    else if (bool2 == true && tf2 =='Cu') 
-                         return '$' + d3.format(',.2f')(d); 
+                    else if (bool2 == true && tf2 =='Cu')
+                         return '$' + d3.format(',.2f')(d);
                     else return d;
                 });
 
@@ -163,8 +163,8 @@ leg endLocation: {{ chart.legend_location|default:"ne" }}<br />-->
                     .duration(500)
                     .call(chart);
                 nv.utils.windowResize(chart.update);
-                chart.dispatch.on('stateChange', function(e) { 
-                    nv.log('New State:', JSON.stringify(e)); 
+                chart.dispatch.on('stateChange', function(e) {
+                    nv.log('New State:', JSON.stringify(e));
                 });
                 return chart;
             });
@@ -176,7 +176,7 @@ leg endLocation: {{ chart.legend_location|default:"ne" }}<br />-->
                     chart = nv.models.lineChart();
                     chart.x(function(d,i) { return i })
 
-                    chart.xAxis.tickFormat(function(d) { 
+                    chart.xAxis.tickFormat(function(d) {
                         return data[0].values[d].x;
                     }).showMaxMin(false);
 
@@ -190,8 +190,8 @@ leg endLocation: {{ chart.legend_location|default:"ne" }}<br />-->
                         .transition().duration(500)
                         .call(chart);
                     nv.utils.windowResize(chart.update);
-                    chart.dispatch.on('stateChange', function(e) { 
-                        nv.log('New State:', JSON.stringify(e)); 
+                    chart.dispatch.on('stateChange', function(e) {
+                        nv.log('New State:', JSON.stringify(e));
                     });
                     return chart;
                 });
@@ -211,8 +211,8 @@ leg endLocation: {{ chart.legend_location|default:"ne" }}<br />-->
                         .transition()
                         .duration(1200)
                         .call(chart);
-                    chart.dispatch.on('stateChange', function(e) { 
-                        nv.log('New State:', JSON.stringify(e)); 
+                    chart.dispatch.on('stateChange', function(e) {
+                        nv.log('New State:', JSON.stringify(e));
                     });
                     return chart;
                 });
@@ -232,16 +232,16 @@ leg endLocation: {{ chart.legend_location|default:"ne" }}<br />-->
             {% ifequal chart.type 'LF' %}
                 nv.addGraph(function() {
                     var chart = nv.models.lineWithFocusChart();
-                    chart.x(function(d, i) { 
-                        return i; 
+                    chart.x(function(d, i) {
+                        return i;
                     })
                     .color(d3.scale.category10().range());
-                   
+
                     chart.xAxis.tickFormat (function(d){  return data[0].values[d].x; });
                     chart.x2Axis.tickFormat(function(d){  return data[0].values[d].x; });
                     chart.yAxis
                         .tickFormat(d3.format(',f'));
-                    chart.y2Axis.tickFormat(function(d) { 
+                    chart.y2Axis.tickFormat(function(d) {
                         return d;
                     });
 
@@ -282,8 +282,8 @@ leg endLocation: {{ chart.legend_location|default:"ne" }}<br />-->
                         .transition().duration(500).call(chart);
 
                     nv.utils.windowResize(chart.update);
-                    chart.dispatch.on('stateChange', function(e) { 
-                        nv.log('New State:', JSON.stringify(e)); 
+                    chart.dispatch.on('stateChange', function(e) {
+                        nv.log('New State:', JSON.stringify(e));
                     });
                     return chart;
                 });
