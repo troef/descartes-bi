@@ -1,3 +1,5 @@
+from __future__ import absolute_import
+
 #
 #    Copyright (C) 2010  Roberto Rosario
 #    This file is part of descartes-bi.
@@ -28,9 +30,9 @@ from django.utils.translation import ugettext as _
 
 from db_drivers.models import BACKEND_LIBRE
 
-from forms import FilterForm
-from models import Report, Menuitem, GroupPermission, UserPermission, User, SeriesStatistic, ReportStatistic
-from models import FILTER_TYPE_DATE, FILTER_TYPE_COMBO
+from .forms import FilterForm
+from .models import Report, Menuitem, GroupPermission, UserPermission, User, SeriesStatistic, ReportStatistic
+from .literals import FILTER_TYPE_DATE, FILTER_TYPE_COMBO
 
 logger = logging.getLogger(__name__)
 
