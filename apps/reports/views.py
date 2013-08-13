@@ -16,8 +16,9 @@
 #    along with descartes-bi.  If not, see <http://www.gnu.org/licenses/>.
 #
 import datetime
-import re
+import logging
 import json
+import re
 
 from django.db import connections
 from django.http import HttpResponse
@@ -30,6 +31,8 @@ from db_drivers.models import BACKEND_LIBRE
 from forms import FilterForm
 from models import Report, Menuitem, GroupPermission, UserPermission, User, SeriesStatistic, ReportStatistic
 from models import FILTER_TYPE_DATE, FILTER_TYPE_COMBO
+
+logger = logging.getLogger(__name__)
 
 
 def ajax_report_benchmarks(request, report_id):
@@ -159,7 +162,7 @@ def ajax_report(request, report_id):
 
         else:
             cursor.execute(query, params)
-            print >>sys.stderr, "Executed the cursor"
+            logger.debug('cursor.execute; query: %s, params: %s' % (query, params))
             serie_start_time = datetime.datetime.now()
 
         labels.append(re.compile('aS\s(\S*)', re.IGNORECASE).findall(query))
