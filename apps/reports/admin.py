@@ -1,3 +1,5 @@
+from __future__ import absolute_import
+
 #
 #    Copyright (C) 2010  Roberto Rosario
 #    This file is part of descartes-bi.
@@ -16,15 +18,14 @@
 #    along with descartes-bi.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-from reports.models import FilterExtra, SerieType, \
-    GroupPermissionFilterValues, UserPermissionFilterValues, \
-    UserPermission, GroupPermission, Report, Serie, Filterset, Filter, \
-    Menuitem, SeriesStatistic, ReportStatistic
-
-from django.contrib import admin
 from django import forms
-from django.utils.translation import ugettext_lazy as _
+from django.contrib import admin
 from django.db.models.fields import CharField
+from django.utils.translation import ugettext_lazy as _
+
+from .models import (FilterExtra, SerieType, GroupPermissionFilterValues,
+    UserPermissionFilterValues, UserPermission, GroupPermission, Report, Serie,
+    Filterset, Filter, Menuitem, SeriesStatistic, ReportStatistic)
 
 
 #clone_objects Copyright (C) 2009  Rune Bromer

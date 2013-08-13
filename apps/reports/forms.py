@@ -1,3 +1,5 @@
+from __future__ import absolute_import
+
 #
 #    Copyright (C) 2010  Roberto Rosario
 #    This file is part of descartes-bi.
@@ -19,13 +21,13 @@
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 
-from models import FILTER_TYPE_DATE, FILTER_TYPE_COMBO, FILTER_TYPE_MONTH
+from .literals import FILTER_TYPE_DATE, FILTER_TYPE_COMBO, FILTER_TYPE_MONTH
 
 
 class FilterForm(forms.Form):
     def __init__(self, filtersets, user, *args, **kwargs):
         #cannot move this from here until leading _ is removed
-        from views import _get_user_filters_limits
+        from .views import _get_user_filters_limits
         super(FilterForm, self).__init__(*args, **kwargs)
         for fset in filtersets.all():
             for f in fset.filterextra_set.order_by('order').all():
