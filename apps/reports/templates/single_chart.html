@@ -41,9 +41,12 @@
     <script src="{% static 'packages/novus-nvd3/src/models/multiBarChart.js' %}"></script>
     <script src="{% static 'packages/novus-nvd3/src/models/pie.js' %}"></script>
     <script src="{% static 'packages/novus-nvd3/src/models/pieChart.js' %}"></script>
+    <script src="{% static 'packages/novus-nvd3/src/models/multiBarHorizontal.js' %}"></script>
+    <script src="{% static 'packages/novus-nvd3/src/models/multiBarHorizontalChart.js' %}"></script>
     <style>
         body {
           overflow-y:scroll;
+          color: #666 !important;
         }
 
         text {
@@ -109,8 +112,32 @@
                 {% endif %}
 
             {% endfor %}
-            console.log(data);
+            // If Standart X,Y Horizontal Chart
+            {% ifequal chart.type 'SH' %} 
+            var chart;
+            nv.addGraph(function() {
+              chart = nv.models.multiBarHorizontalChart()
+                  .x(function(d) { return d.x })
+                  .y(function(d) { return d.y })
+                  .margin({top: 30, right: 20, bottom: 50, left: 175})
+                  .color(d3.scale.category10().range())
+                  .showControls(false);
 
+              chart.yAxis
+                  .tickFormat(d3.format(',.2f'));
+                console.log(data);
+              d3.select('#chart{{chart.id}} svg')
+                  .datum(data)
+                  .transition().duration(500)
+                  .call(chart);
+
+              nv.utils.windowResize(chart.update);
+
+              chart.dispatch.on('stateChange', function(e) { nv.log('New State:', JSON.stringify(e)); });
+
+              return chart;
+            });
+            {% endifequal %}
             {% ifequal chart.type 'SI' %}
                 var chart;
                 nv.addGraph(function() {
@@ -176,13 +203,24 @@
                     chart = nv.models.lineChart();
                     chart.x(function(d,i) { return i })
 
-                    chart.xAxis.tickFormat(function(d) {
-                        return data[0].values[d].x;
+                    chart.xAxis.tickFormat(function(d) { 
+                        if (bool1 == true && tf == 'My'){
+                            var date =  (data[0].values[d].x);
+                            date = date.split("_");
+                            if (date.length == 1) 
+                                date = date[0].split("-");
+                            return d3.time.format('%B %Y')(new Date(date[0], date[1], 0, 0, 0, 0, 0));
+                        }
+                        else return data[0].values[d].x;
+                     
                     }).showMaxMin(false);
+                    chart.xAxis.tickPadding(10);
 
-                    chart.yAxis
-                        .tickFormat(d3.format(',f'));
 
+                chart.yAxis.tickFormat(function(d) {
+                    // TO DO: Include other tick formats
+                    return d;
+                });
                     chart.showXAxis(true);
 
                     d3.select('#chart{{chart.id}} svg')
@@ -190,8 +228,8 @@
                         .transition().duration(500)
                         .call(chart);
                     nv.utils.windowResize(chart.update);
-                    chart.dispatch.on('stateChange', function(e) {
-                        nv.log('New State:', JSON.stringify(e));
+                    chart.dispatch.on('stateChange', function(e) { 
+                        nv.log('New State:', JSON.stringify(e)); 
                     });
                     return chart;
                 });
