@@ -18,8 +18,7 @@ def get_website(request, website):
 
             if request.GET:
                 filter_form = FilterForm(filtersets, request.user, request.GET)
-                value = get_value(request, filter_form, filtersets)
-                query = query % value
+                query = query % get_dict(filter_form)
                 context['url'] = url + "/?" + query
             else:
                 filter_form = FilterForm(filtersets, request.user)
@@ -37,11 +36,13 @@ def get_website(request, website):
     return render_to_response(page, context,
                               context_instance=RequestContext(request))
 
+#Use function to convert string to int.
+def get_dict(filter_form):
+    value = {}
+    for key in filter_form.data:
+        if filter_form.data[key].isdigit():
+            value[key] = int(filter_form.data[key])
+        else:
+            value[key] = filter_form.data[key]
 
-def get_value(request, filter_form, filtersets):
-    for set in filtersets.all():
-        for filter in set.filters.all():
-
-            if filter_form.is_valid():
-                value = filter_form.cleaned_data[filter.name]
-                return {filter.name: value}
+    return value
