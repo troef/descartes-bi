@@ -173,7 +173,7 @@ def ajax_report(request, report_id):
 
         #Temporary fix for Libre database
         if s.serie.data_source.backend == BACKEND_LIBRE:
-            series_results = cursor.fetchall()
+            series_results.append(json.dumps(cursor.fetchall()))
         elif output_type == 'chart':
             series_results.append(data_to_js_chart(cursor.fetchall(), report.orientation))
         elif output_type == 'grid':
@@ -214,15 +214,12 @@ def ajax_report(request, report_id):
         v_axis = "x"
 
     if s.serie.data_source.backend == BACKEND_LIBRE:
-        new_results = []
-        new_results.append(str(json.dumps(series_results)))
-
         data = {
             'chart_data': s.serie.data_source.backend,
             'backend_libre': BACKEND_LIBRE,
             'tick_format1': tick_format1,
             'tick_format2': tick_format2,
-            'series_results': new_results,
+            'series_results': series_results,
             'chart_series': report.serietype_set.all(),
             'ajax': True,
             'query': query,
