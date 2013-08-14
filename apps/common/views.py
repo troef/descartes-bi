@@ -100,13 +100,10 @@ def get_dash_menu(request, namespace_id):
             website = node.view_website.all()[0]
             return get_website(request, website)
 
-        else:
+        elif node.view_type == 2:
             dash_id = node.view_dash_id
             dash_board = get_object_or_404(Dash, pk=dash_id)
             selected_reports = dash_board.selection_list.all()
-
-            if selected_reports : print "I'm True"
-
             links = {}
             for sp in selected_reports:
                 if sp.rep_id:
@@ -118,24 +115,23 @@ def get_dash_menu(request, namespace_id):
 
                     lk = "reports/ajax/report/" + str(sp.rep_id.id) + "/?" + get_form + "output_type=" + sp.visual_type
                     links[str(sp.id)] = lk
-
                 if sp.website:
                     query = sp.website.series.query
-
                     if sp.website.filterset.exists():
                         filterform = sp.filtersets.filters.all()
                         values = sp.values.split(',')
                         for index in range(len(values)):
-                            query = query % { filterform[index].name : values[index] }
-
+                            query = query % { filterform[index].name: values[index] }
                     if sp.website.base_URL:
-                        links["mapdiv" + str(sp.id)]= sp.website.base_URL + "/?" + query
+                        links["mapdiv" + str(sp.id)] = sp.website.base_URL + "/?" + query
                     else:
                         links["mapdiv" + str(sp.id)] = sp.website.series.data_source.load_backend().cursor().url + "/?" + query
-
             context = {'selected_reports': selected_reports,
-                       'dash_board': dash_board, 'links' : links }
+                       'dash_board': dash_board, 'links': links}
             page = 'dashboard/dash_list.html'
+
+        else:
+            page = 'sub_dash_menu.html'
     else:
         context['nodes'] = node.get_children()
         page = 'sub_dash_menu.html'
