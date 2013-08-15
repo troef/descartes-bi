@@ -120,8 +120,13 @@ def get_dash_menu(request, namespace_id):
                     if sp.website.filterset.exists():
                         filterform = sp.filtersets.filters.all()
                         values = sp.values.split(',')
+                        dic = {}
                         for index in range(len(values)):
-                            query = query % { filterform[index].name: values[index] }
+                            if values[index].isdigit():
+                                dic[filterform[index].name] = int(values[index])
+                            else:
+                                dic[filterform[index].name] = values[index]
+                        query = query % dic
                     if sp.website.base_URL:
                         links["mapdiv" + str(sp.id)] = sp.website.base_URL + "/?" + query
                     else:
