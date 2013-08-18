@@ -28,26 +28,39 @@ BACKEND_CLASSES = {
 }
 
 
-class DataSource(models.Model):
-    label = models.CharField(max_length=128, verbose_name=_('label'), help_text=_('A text by which this data source will be identified.'))
+class Server(models.Model):
+    label = models.CharField(max_length=128, verbose_name=_('label'), help_text=_('A text by which this server will be identified.'))
     backend = models.PositiveIntegerField(choices=BACKEND_CHOICES, verbose_name=_('database backend'))
-    name = models.CharField(max_length=128, blank=True, verbose_name=_('name'), help_text=_('Name or path to database.'))
     user = models.CharField(max_length=64, blank=True, verbose_name=_('user'), help_text=_('Not used with sqlite3.'))
     password = models.CharField(max_length=64, blank=True, verbose_name=_('password'), help_text=_('Not used with sqlite3.'))
     host = models.CharField(max_length=64, blank=True, verbose_name=_('host'), help_text=_('Set to empty string for localhost. Not used with sqlite3.'))
     port = models.PositiveIntegerField(blank=True, null=True, verbose_name=_('port'))
 
+    def __unicode__(self):
+        return self.label
+
+    class Meta:
+        ordering = ['label']
+        verbose_name = _('server')
+        verbose_name_plural = _('servers')
+
+
+class DataSource(models.Model):
+    label = models.CharField(max_length=128, verbose_name=_('label'), help_text=_('A text by which this data source will be identified.'))
+    server = models.ForeignKey(Server, verbose_name=_('server'))
+    name = models.CharField(max_length=128, blank=True, verbose_name=_('name'), help_text=_('Name or path to database.'))
+
     def load_backend(self):
         database_settings = {}
 
-        database_settings['ENGINE'] = BACKEND_CLASSES[self.backend]
+        database_settings['ENGINE'] = BACKEND_CLASSES[self.server.backend]
         database_settings.setdefault('OPTIONS', {})
         database_settings.setdefault('TIME_ZONE', 'UTC' if settings.USE_TZ else settings.TIME_ZONE)
         database_settings['NAME'] = self.name
-        database_settings['USER'] = self.user
-        database_settings['PASSWORD'] = self.password
-        database_settings['HOST'] = self.host
-        database_settings['PORT'] = self.port if self.port else ''
+        database_settings['USER'] = self.server.user
+        database_settings['PASSWORD'] = self.server.password
+        database_settings['HOST'] = self.server.host
+        database_settings['PORT'] = self.server.port if self.server.port else ''
 
         backend = django_load_backend(database_settings['ENGINE'])
         connection = backend.DatabaseWrapper(database_settings, 'data_source')
@@ -55,9 +68,15 @@ class DataSource(models.Model):
         return connection
 
     def __unicode__(self):
-        return self.name
+        return self.label
+
+    @property
+    def backend(self):
+        return self.server.backend
 
     class Meta:
-        ordering = ['name']
+        ordering = ['label']
         verbose_name = _('data source')
         verbose_name_plural = _('data sources')
+
+
