@@ -129,11 +129,13 @@ TEMPLATE_DIRS = (
 
 INSTALLED_APPS = (
     'grappelli',
+    'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
-    'django.contrib.admin',
     'django.contrib.humanize',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
     'south',
     'common',
     'main',
