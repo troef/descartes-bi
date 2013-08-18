@@ -7,11 +7,11 @@ from django.core.urlresolvers import reverse_lazy
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "./"))
 SITE_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 
-sys.path.append(os.path.join(SITE_ROOT, 'modules'))
-sys.path.append(os.path.join(SITE_ROOT, 'apps'))
-sys.path.append(os.path.join(SITE_ROOT, 'customization_apps'))
-sys.path.append(os.path.join(SITE_ROOT, 'shared_apps'))
-sys.path.append(os.path.join(SITE_ROOT, '3rd_party_apps'))
+sys.path.append(os.path.join(PROJECT_ROOT, 'modules'))
+sys.path.append(os.path.join(PROJECT_ROOT, 'apps'))
+sys.path.append(os.path.join(PROJECT_ROOT, 'customization_apps'))
+sys.path.append(os.path.join(PROJECT_ROOT, 'shared_apps'))
+sys.path.append(os.path.join(PROJECT_ROOT, '3rd_party_apps'))
 
 PROJECT_NAME = 'descartes'
 PROJECT_TITLE = 'Descartes'
