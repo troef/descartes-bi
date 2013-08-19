@@ -119,8 +119,10 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.transaction.TransactionMiddleware',
 )
 
+ROOT_URLCONF = 'descartes_bi.urls'
+
 # Python dotted path to the WSGI application used by Django's runserver.
-WSGI_APPLICATION = 'libre.wsgi.application'
+WSGI_APPLICATION = 'descartes_bi.wsgi.application'
 
 TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
