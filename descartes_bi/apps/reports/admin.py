@@ -154,7 +154,7 @@ class SerieAdmin(admin.ModelAdmin):
     search_fields = ['name', 'label']
     search_fields_verbose = ['Name', 'Label']
     list_display = ('name', 'label', 'get_params', 'get_parents', 'data_source', 'validated')
-    list_editable = ('data_source',)
+    list_editable = ('data_source', 'label')
     order = 2
     fieldsets = (
         (_('General'), {
