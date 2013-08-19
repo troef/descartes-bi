@@ -4,14 +4,14 @@ import sys
 
 from django.core.urlresolvers import reverse_lazy
 
-SITE_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "./"))
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "./"))
+SITE_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 
-sys.path.append(os.path.join(SITE_ROOT, 'modules'))
-sys.path.append(os.path.join(SITE_ROOT, 'apps'))
-sys.path.append(os.path.join(SITE_ROOT, 'customization_apps'))
-sys.path.append(os.path.join(SITE_ROOT, 'shared_apps'))
-sys.path.append(os.path.join(SITE_ROOT, '3rd_party_apps'))
+sys.path.append(os.path.join(PROJECT_ROOT, 'modules'))
+sys.path.append(os.path.join(PROJECT_ROOT, 'apps'))
+sys.path.append(os.path.join(PROJECT_ROOT, 'customization_apps'))
+sys.path.append(os.path.join(PROJECT_ROOT, 'shared_apps'))
+sys.path.append(os.path.join(PROJECT_ROOT, '3rd_party_apps'))
 
 PROJECT_NAME = 'descartes'
 PROJECT_TITLE = 'Descartes'
@@ -112,28 +112,33 @@ TEMPLATE_LOADERS = (
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.transaction.TransactionMiddleware',
 )
 
-ROOT_URLCONF = 'urls'
+ROOT_URLCONF = 'descartes_bi.urls'
+
+# Python dotted path to the WSGI application used by Django's runserver.
+WSGI_APPLICATION = 'descartes_bi.wsgi.application'
 
 TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-    os.path.join(SITE_ROOT, 'branding'),
-    os.path.join(SITE_ROOT, 'templates'),
 )
 
 INSTALLED_APPS = (
     'grappelli',
+    'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
-    'django.contrib.admin',
     'django.contrib.humanize',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
     'south',
     'common',
     'main',

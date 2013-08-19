@@ -8,3 +8,4 @@ settings_local.py
 /descartesEnv/
 .DS_Store
 .project
+.py~
