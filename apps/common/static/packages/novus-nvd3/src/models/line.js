@@ -1,6 +1,6 @@
 
 nv.models.line = function() {
-  "use strict";
+
   //============================================================
   // Public Variables with Default Settings
   //------------------------------------------------------------
@@ -20,7 +20,6 @@ nv.models.line = function() {
     , x //can be accessed via chart.xScale()
     , y //can be accessed via chart.yScale()
     , interpolate = "linear" // controls the line interpolation
-    , transitionDuration = 250  //override the transition duration
     ;
 
   scatter
@@ -85,7 +84,7 @@ nv.models.line = function() {
       var scatterWrap = wrap.select('.nv-scatterWrap');
           //.datum(data); // Data automatically trickles down from the wrap
 
-      scatterWrap.transition().call(scatter);
+      d3.transition(scatterWrap).call(scatter);
 
 
 
@@ -109,8 +108,7 @@ nv.models.line = function() {
       groups.enter().append('g')
           .style('stroke-opacity', 1e-6)
           .style('fill-opacity', 1e-6);
-      groups.exit()
-          .transition().duration(transitionDuration)
+      d3.transition(groups.exit())
           .style('stroke-opacity', 1e-6)
           .style('fill-opacity', 1e-6)
           .remove();
@@ -119,8 +117,7 @@ nv.models.line = function() {
           .classed('hover', function(d) { return d.hover })
           .style('fill', function(d,i){ return color(d, i) })
           .style('stroke', function(d,i){ return color(d, i)});
-      groups
-          .transition().duration(transitionDuration)
+      d3.transition(groups)
           .style('stroke-opacity', 1)
           .style('fill-opacity', .5);
 
@@ -134,32 +131,30 @@ nv.models.line = function() {
             return d3.svg.area()
                 .interpolate(interpolate)
                 .defined(defined)
-                .x(function(d,i) { return nv.utils.NaNtoZero(x0(getX(d,i))) })
-                .y0(function(d,i) { return nv.utils.NaNtoZero(y0(getY(d,i))) })
+                .x(function(d,i) { return x0(getX(d,i)) })
+                .y0(function(d,i) { return y0(getY(d,i)) })
                 .y1(function(d,i) { return y0( y.domain()[0] <= 0 ? y.domain()[1] >= 0 ? 0 : y.domain()[1] : y.domain()[0] ) })
                 //.y1(function(d,i) { return y0(0) }) //assuming 0 is within y domain.. may need to tweak this
                 .apply(this, [d.values])
           });
-      groups.exit().selectAll('path.nv-area')
-          .transition().duration(transitionDuration)
+      d3.transition(groups.exit().selectAll('path.nv-area'))
           .attr('d', function(d) {
             return d3.svg.area()
                 .interpolate(interpolate)
                 .defined(defined)
-                .x(function(d,i) { return nv.utils.NaNtoZero(x(getX(d,i))) })
-                .y0(function(d,i) { return nv.utils.NaNtoZero(y(getY(d,i))) })
+                .x(function(d,i) { return x(getX(d,i)) })
+                .y0(function(d,i) { return y(getY(d,i)) })
                 .y1(function(d,i) { return y( y.domain()[0] <= 0 ? y.domain()[1] >= 0 ? 0 : y.domain()[1] : y.domain()[0] ) })
                 //.y1(function(d,i) { return y0(0) }) //assuming 0 is within y domain.. may need to tweak this
                 .apply(this, [d.values])
           });
-      areaPaths
-          .transition().duration(transitionDuration)
+      d3.transition(areaPaths)
           .attr('d', function(d) {
             return d3.svg.area()
                 .interpolate(interpolate)
                 .defined(defined)
-                .x(function(d,i) { return nv.utils.NaNtoZero(x(getX(d,i))) })
-                .y0(function(d,i) { return nv.utils.NaNtoZero(y(getY(d,i))) })
+                .x(function(d,i) { return x(getX(d,i)) })
+                .y0(function(d,i) { return y(getY(d,i)) })
                 .y1(function(d,i) { return y( y.domain()[0] <= 0 ? y.domain()[1] >= 0 ? 0 : y.domain()[1] : y.domain()[0] ) })
                 //.y1(function(d,i) { return y0(0) }) //assuming 0 is within y domain.. may need to tweak this
                 .apply(this, [d.values])
@@ -175,26 +170,24 @@ nv.models.line = function() {
             d3.svg.line()
               .interpolate(interpolate)
               .defined(defined)
-              .x(function(d,i) { return nv.utils.NaNtoZero(x0(getX(d,i))) })
-              .y(function(d,i) { return nv.utils.NaNtoZero(y0(getY(d,i))) })
+              .x(function(d,i) { return x0(getX(d,i)) })
+              .y(function(d,i) { return y0(getY(d,i)) })
           );
-      groups.exit().selectAll('path.nv-line')
-          .transition().duration(transitionDuration)
+      d3.transition(groups.exit().selectAll('path.nv-line'))
           .attr('d',
             d3.svg.line()
               .interpolate(interpolate)
               .defined(defined)
-              .x(function(d,i) { return nv.utils.NaNtoZero(x(getX(d,i))) })
-              .y(function(d,i) { return nv.utils.NaNtoZero(y(getY(d,i))) })
+              .x(function(d,i) { return x(getX(d,i)) })
+              .y(function(d,i) { return y(getY(d,i)) })
           );
-      linePaths
-          .transition().duration(transitionDuration)
+      d3.transition(linePaths)
           .attr('d',
             d3.svg.line()
               .interpolate(interpolate)
               .defined(defined)
-              .x(function(d,i) { return nv.utils.NaNtoZero(x(getX(d,i))) })
-              .y(function(d,i) { return nv.utils.NaNtoZero(y(getY(d,i))) })
+              .x(function(d,i) { return x(getX(d,i)) })
+              .y(function(d,i) { return y(getY(d,i)) })
           );
 
 
@@ -216,8 +209,7 @@ nv.models.line = function() {
   chart.dispatch = scatter.dispatch;
   chart.scatter = scatter;
 
-  d3.rebind(chart, scatter, 'id', 'interactive', 'size', 'xScale', 'yScale', 'zScale', 'xDomain', 'yDomain', 'xRange', 'yRange', 
-    'sizeDomain', 'forceX', 'forceY', 'forceSize', 'clipVoronoi', 'useVoronoi', 'clipRadius', 'padData','highlightPoint','clearHighlights');
+  d3.rebind(chart, scatter, 'id', 'interactive', 'size', 'xScale', 'yScale', 'zScale', 'xDomain', 'yDomain', 'sizeDomain', 'forceX', 'forceY', 'forceSize', 'clipVoronoi', 'clipRadius', 'padData');
 
   chart.margin = function(_) {
     if (!arguments.length) return margin;
@@ -283,12 +275,6 @@ nv.models.line = function() {
     if (!arguments.length) return isArea;
     isArea = d3.functor(_);
     return chart;
-  };
-
-  chart.transitionDuration = function(_) {
-      if (!arguments.length) return transitionDuration;
-      transitionDuration = _;
-      return chart;
   };
 
   //============================================================

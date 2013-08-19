@@ -67,9 +67,7 @@ var negative_test_data = new d3.range(0,3).map(function(d,i) { return {
 var chart;
 nv.addGraph(function() {
     chart = nv.models.multiBarChart()
-      .barColor(d3.scale.category20().range())
-      .transitionDuration(300)
-      ;
+      .barColor(d3.scale.category20().range());
 
     chart.multibar
       .hideable(true);
@@ -85,7 +83,7 @@ nv.addGraph(function() {
 
     d3.select('#chart1 svg')
         .datum(negative_test_data)
-       .call(chart);
+      .transition().duration(500).call(chart);
 
     nv.utils.windowResize(chart.update);
 

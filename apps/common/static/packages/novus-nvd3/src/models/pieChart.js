@@ -1,5 +1,5 @@
 nv.models.pieChart = function() {
-  "use strict";
+
   //============================================================
   // Public Variables with Default Settings
   //------------------------------------------------------------
@@ -58,7 +58,7 @@ nv.models.pieChart = function() {
       chart.container = this;
 
       //set state.disabled
-      state.disabled = data.map(function(d) { return !!d.disabled });
+      state.disabled = data[0].map(function(d) { return !!d.disabled });
 
       if (!defaultState) {
         var key;
@@ -74,7 +74,7 @@ nv.models.pieChart = function() {
       //------------------------------------------------------------
       // Display No Data message if there's nothing to show.
 
-      if (!data || !data.length) {
+      if (!data[0] || !data[0].length) {
         var noDataText = container.selectAll('.nv-noData').data([noData]);
 
         noDataText.enter().append('text')
@@ -117,7 +117,7 @@ nv.models.pieChart = function() {
           .key(pie.x());
 
         wrap.select('.nv-legendWrap')
-            .datum(data)
+            .datum(pie.values()(data[0]))
             .call(legend);
 
         if ( margin.top != legend.height()) {
@@ -145,7 +145,7 @@ nv.models.pieChart = function() {
 
 
       var pieWrap = g.select('.nv-pieWrap')
-          .datum([data]);
+          .datum(data);
 
       d3.transition(pieWrap).call(pie);
 
@@ -156,9 +156,20 @@ nv.models.pieChart = function() {
       // Event Handling/Dispatching (in chart's scope)
       //------------------------------------------------------------
 
-      legend.dispatch.on('stateChange', function(newState) {
-        state = newState;
+      legend.dispatch.on('legendClick', function(d,i, that) {
+        d.disabled = !d.disabled;
+
+        if (!pie.values()(data[0]).filter(function(d) { return !d.disabled }).length) {
+          pie.values()(data[0]).map(function(d) {
+            d.disabled = false;
+            wrap.selectAll('.nv-series').classed('disabled', false);
+            return d;
+          });
+        }
+
+        state.disabled = data[0].map(function(d) { return !!d.disabled });
         dispatch.stateChange(state);
+
         chart.update();
       });
 
@@ -170,7 +181,7 @@ nv.models.pieChart = function() {
       dispatch.on('changeState', function(e) {
 
         if (typeof e.disabled !== 'undefined') {
-          data.forEach(function(series,i) {
+          data[0].forEach(function(series,i) {
             series.disabled = e.disabled[i];
           });
 
@@ -217,7 +228,7 @@ nv.models.pieChart = function() {
   chart.dispatch = dispatch;
   chart.pie = pie;
 
-  d3.rebind(chart, pie, 'valueFormat', 'values', 'x', 'y', 'description', 'id', 'showLabels', 'donutLabelsOutside', 'pieLabelsOutside', 'labelType', 'donut', 'donutRatio', 'labelThreshold');
+  d3.rebind(chart, pie, 'valueFormat', 'values', 'x', 'y', 'description', 'id', 'showLabels', 'donutLabelsOutside', 'pieLabelsOutside', 'donut', 'donutRatio', 'labelThreshold');
 
   chart.margin = function(_) {
     if (!arguments.length) return margin;

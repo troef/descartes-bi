@@ -1,5 +1,5 @@
 nv.models.pie = function() {
-  "use strict";
+
   //============================================================
   // Public Variables with Default Settings
   //------------------------------------------------------------
@@ -7,6 +7,7 @@ nv.models.pie = function() {
   var margin = {top: 0, right: 0, bottom: 0, left: 0}
     , width = 500
     , height = 500
+    , getValues = function(d) { return d.values }
     , getX = function(d) { return d.x }
     , getY = function(d) { return d.y }
     , getDescription = function(d) { return d.description }
@@ -16,7 +17,6 @@ nv.models.pie = function() {
     , showLabels = true
     , pieLabelsOutside = true
     , donutLabelsOutside = false
-    , labelType = "key"
     , labelThreshold = .02 //if slice percentage is under this, don't show label
     , donut = false
     , labelSunbeamLayout = false
@@ -42,7 +42,7 @@ nv.models.pie = function() {
       // Setup containers and skeleton of chart
 
       //var wrap = container.selectAll('.nv-wrap.nv-pie').data([data]);
-      var wrap = container.selectAll('.nv-wrap.nv-pie').data(data);
+      var wrap = container.selectAll('.nv-wrap.nv-pie').data([getValues(data[0])]);
       var wrapEnter = wrap.enter().append('g').attr('class','nvd3 nv-wrap nv-pie nv-chart-' + id);
       var gEnter = wrapEnter.append('g');
       var g = wrap.select('g');
@@ -212,12 +212,7 @@ nv.models.pie = function() {
                 .style('text-anchor', labelSunbeamLayout ? ((d.startAngle + d.endAngle) / 2 < Math.PI ? 'start' : 'end') : 'middle') //center the text on it's origin or begin/end if orthogonal aligned
                 .text(function(d, i) {
                   var percent = (d.endAngle - d.startAngle) / (2 * Math.PI);
-                  var labelTypes = {
-                    "key" : getX(d.data),
-                    "value": getY(d.data),
-                    "percent": d3.format('%')(percent)
-                  };
-                  return (d.value && percent > labelThreshold) ? labelTypes[labelType] : '';
+                  return (d.value && percent > labelThreshold) ? getX(d.data) : '';
                 });
 
             var textBox = slice.select('text').node().getBBox();
@@ -290,7 +285,8 @@ nv.models.pie = function() {
   };
 
   chart.values = function(_) {
-    nv.log("pie.values() is no longer supported.");
+    if (!arguments.length) return getValues;
+    getValues = _;
     return chart;
   };
 
@@ -333,13 +329,6 @@ nv.models.pie = function() {
   chart.pieLabelsOutside = function(_) {
     if (!arguments.length) return pieLabelsOutside;
     pieLabelsOutside = _;
-    return chart;
-  };
-
-  chart.labelType = function(_) {
-    if (!arguments.length) return labelType;
-    labelType = _;
-    labelType = labelType || "key";
     return chart;
   };
 

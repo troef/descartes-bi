@@ -1,5 +1,5 @@
 nv.models.legend = function() {
-  "use strict";
+
   //============================================================
   // Public Variables with Default Settings
   //------------------------------------------------------------
@@ -10,10 +10,7 @@ nv.models.legend = function() {
     , getKey = function(d) { return d.key }
     , color = nv.utils.defaultColor()
     , align = true
-    , rightAlign = true
-    , updateState = true   //If true, legend will update data.disabled and trigger a 'stateChange' dispatch.
-    , radioButtonMode = false   //If true, clicking legend items will cause it to behave like a radio button. (only one can be selected at a time)
-    , dispatch = d3.dispatch('legendClick', 'legendDblclick', 'legendMouseover', 'legendMouseout', 'stateChange')
+    , dispatch = d3.dispatch('legendClick', 'legendDblclick', 'legendMouseover', 'legendMouseout')
     ;
 
   //============================================================
@@ -48,39 +45,9 @@ nv.models.legend = function() {
           })
           .on('click', function(d,i) {
             dispatch.legendClick(d,i);
-            if (updateState) {
-               if (radioButtonMode) {
-                   //Radio button mode: set every series to disabled,
-                   //  and enable the clicked series.
-                   data.forEach(function(series) { series.disabled = true});
-                   d.disabled = false;
-               }
-               else {
-                   d.disabled = !d.disabled;
-                   if (data.every(function(series) { return series.disabled})) {
-                       //the default behavior of NVD3 legends is, if every single series
-                       // is disabled, turn all series' back on.
-                       data.forEach(function(series) { series.disabled = false});
-                   }
-               }
-               dispatch.stateChange({
-                  disabled: data.map(function(d) { return !!d.disabled })
-               });
-            }
           })
           .on('dblclick', function(d,i) {
             dispatch.legendDblclick(d,i);
-            if (updateState) {
-                //the default behavior of NVD3 legends, when double clicking one,
-                // is to set all other series' to false, and make the double clicked series enabled.
-                data.forEach(function(series) {
-                   series.disabled = true;
-                });
-                d.disabled = false; 
-                dispatch.stateChange({
-                    disabled: data.map(function(d) { return !!d.disabled })
-                });
-            }
           });
       seriesEnter.append('circle')
           .style('stroke-width', 2)
@@ -105,16 +72,12 @@ nv.models.legend = function() {
         var seriesWidths = [];
         series.each(function(d,i) {
               var legendText = d3.select(this).select('text');
-              var nodeTextLength;
-              try {
-                nodeTextLength = legendText.node().getComputedTextLength();
-              }
-              catch(e) {
-                nodeTextLength = nv.utils.calcApproxTextWidth(legendText);
-              }
-             
-              seriesWidths.push(nodeTextLength + 28); // 28 is ~ the width of the circle plus some padding
+              var svgComputedTextLength = legendText.node().getComputedTextLength() 
+                                         || nv.utils.calcApproxTextWidth(legendText);
+              seriesWidths.push(svgComputedTextLength + 28); // 28 is ~ the width of the circle plus some padding
             });
+
+        //nv.log('Series Widths: ', JSON.stringify(seriesWidths));
 
         var seriesPerRow = 0;
         var legendWidth = 0;
@@ -124,14 +87,13 @@ nv.models.legend = function() {
           columnWidths[seriesPerRow] = seriesWidths[seriesPerRow];
           legendWidth += seriesWidths[seriesPerRow++];
         }
-        if (seriesPerRow === 0) seriesPerRow = 1; //minimum of one series per row
 
 
         while ( legendWidth > availableWidth && seriesPerRow > 1 ) {
           columnWidths = [];
           seriesPerRow--;
 
-          for (var k = 0; k < seriesWidths.length; k++) {
+          for (k = 0; k < seriesWidths.length; k++) {
             if (seriesWidths[k] > (columnWidths[k % seriesPerRow] || 0) )
               columnWidths[k % seriesPerRow] = seriesWidths[k];
           }
@@ -140,6 +102,7 @@ nv.models.legend = function() {
                           return prev + cur;
                         });
         }
+        //console.log(columnWidths, legendWidth, seriesPerRow);
 
         var xPositions = [];
         for (var i = 0, curX = 0; i < seriesPerRow; i++) {
@@ -153,12 +116,7 @@ nv.models.legend = function() {
             });
 
         //position legend as far right as possible within the total width
-        if (rightAlign) {
-           g.attr('transform', 'translate(' + (width - margin.right - legendWidth) + ',' + margin.top + ')');
-        }
-        else {
-           g.attr('transform', 'translate(0' + ',' + margin.top + ')');
-        }
+        g.attr('transform', 'translate(' + (width - margin.right - legendWidth) + ',' + margin.top + ')');
 
         height = margin.top + margin.bottom + (Math.ceil(seriesWidths.length / seriesPerRow) * 20);
 
@@ -239,24 +197,6 @@ nv.models.legend = function() {
   chart.align = function(_) {
     if (!arguments.length) return align;
     align = _;
-    return chart;
-  };
-
-  chart.rightAlign = function(_) {
-    if (!arguments.length) return rightAlign;
-    rightAlign = _;
-    return chart;
-  };
-
-  chart.updateState = function(_) {
-    if (!arguments.length) return updateState;
-    updateState = _;
-    return chart;
-  };
-
-  chart.radioButtonMode = function(_) {
-    if (!arguments.length) return radioButtonMode;
-    radioButtonMode = _;
     return chart;
   };
 

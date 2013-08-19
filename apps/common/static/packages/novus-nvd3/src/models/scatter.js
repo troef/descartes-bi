@@ -1,6 +1,6 @@
 
 nv.models.scatter = function() {
-  "use strict";
+
   //============================================================
   // Public Variables with Default Settings
   //------------------------------------------------------------
@@ -31,14 +31,11 @@ nv.models.scatter = function() {
     , clipRadius   = function() { return 25 } // function to get the radius for voronoi point clips
     , xDomain      = null // Override x domain (skips the calculation from data)
     , yDomain      = null // Override y domain
-    , xRange       = null // Override x range
-    , yRange       = null // Override y range
     , sizeDomain   = null // Override point size domain
     , sizeRange    = null
     , singlePoint  = false
     , dispatch     = d3.dispatch('elementClick', 'elementMouseover', 'elementMouseout')
     , useVoronoi   = true
-    , transitionDuration = 250
     ;
 
   //============================================================
@@ -87,13 +84,13 @@ nv.models.scatter = function() {
       x   .domain(xDomain || d3.extent(seriesData.map(function(d) { return d.x; }).concat(forceX)))
 
       if (padData && data[0])
-        x.range(xRange || [(availableWidth * padDataOuter +  availableWidth) / (2 *data[0].values.length), availableWidth - availableWidth * (1 + padDataOuter) / (2 * data[0].values.length)  ]);
+        x.range([(availableWidth * padDataOuter +  availableWidth) / (2 *data[0].values.length), availableWidth - availableWidth * (1 + padDataOuter) / (2 * data[0].values.length)  ]);
         //x.range([availableWidth * .5 / data[0].values.length, availableWidth * (data[0].values.length - .5)  / data[0].values.length ]);
       else
-        x.range(xRange || [0, availableWidth]);
+        x.range([0, availableWidth]);
 
       y   .domain(yDomain || d3.extent(seriesData.map(function(d) { return d.y }).concat(forceY)))
-          .range(yRange || [availableHeight, 0]);
+          .range([availableHeight, 0]);
 
       z   .domain(sizeDomain || d3.extent(seriesData.map(function(d) { return d.size }).concat(forceSize)))
           .range(sizeRange || [16, 256]);
@@ -107,7 +104,7 @@ nv.models.scatter = function() {
 
       if (y.domain()[0] === y.domain()[1])
         y.domain()[0] ?
-            y.domain([y.domain()[0] - y.domain()[0] * 0.01, y.domain()[1] + y.domain()[1] * 0.01])
+            y.domain([y.domain()[0] + y.domain()[0] * 0.01, y.domain()[1] - y.domain()[1] * 0.01])
           : y.domain([-1,1]);
 
       if ( isNaN(x.domain()[0])) {
@@ -246,31 +243,44 @@ nv.models.scatter = function() {
                     return 'M' + d.data.join('L') + 'Z'; 
               });
 
-          var mouseEventCallback = function(d,mDispatch) {
+          pointPaths
+              .on('click', function(d) {
                 if (needsUpdate) return 0;
-                var series = data[d.series];
-                if (typeof series === 'undefined') return;
-                
-                var point  = series.values[d.point];
+                var series = data[d.series],
+                    point  = series.values[d.point];
 
-                mDispatch({
+                dispatch.elementClick({
                   point: point,
                   series: series,
                   pos: [x(getX(point, d.point)) + margin.left, y(getY(point, d.point)) + margin.top],
                   seriesIndex: d.series,
                   pointIndex: d.point
                 });
-          };
-
-          pointPaths
-              .on('click', function(d) {
-                mouseEventCallback(d, dispatch.elementClick);
               })
               .on('mouseover', function(d) {
-                mouseEventCallback(d, dispatch.elementMouseover);
+                if (needsUpdate) return 0;
+                var series = data[d.series],
+                    point  = series.values[d.point];
+
+                dispatch.elementMouseover({
+                  point: point,
+                  series: series,
+                  pos: [x(getX(point, d.point)) + margin.left, y(getY(point, d.point)) + margin.top],
+                  seriesIndex: d.series,
+                  pointIndex: d.point
+                });
               })
               .on('mouseout', function(d, i) {
-                mouseEventCallback(d, dispatch.elementMouseout);
+                if (needsUpdate) return 0;
+                var series = data[d.series],
+                    point  = series.values[d.point];
+
+                dispatch.elementMouseout({
+                  point: point,
+                  series: series,
+                  seriesIndex: d.series,
+                  pointIndex: d.point
+                });
               });
 
 
@@ -342,16 +352,14 @@ nv.models.scatter = function() {
       groups.enter().append('g')
           .style('stroke-opacity', 1e-6)
           .style('fill-opacity', 1e-6);
-      groups.exit()
-          .transition().duration(transitionDuration)
+      d3.transition(groups.exit())
           .style('stroke-opacity', 1e-6)
           .style('fill-opacity', 1e-6)
           .remove();
       groups
           .attr('class', function(d,i) { return 'nv-group nv-series-' + i })
           .classed('hover', function(d) { return d.hover });
-      groups
-          .transition().duration(transitionDuration)
+      d3.transition(groups)
           .style('fill', function(d,i) { return color(d, i) })
           .style('stroke', function(d,i) { return color(d, i) })
           .style('stroke-opacity', 1)
@@ -363,28 +371,22 @@ nv.models.scatter = function() {
         var points = groups.selectAll('circle.nv-point')
             .data(function(d) { return d.values }, pointKey);
         points.enter().append('circle')
-            .style('fill', function (d,i) { return d.color })
-            .style('stroke', function (d,i) { return d.color })
-            .attr('cx', function(d,i) { return nv.utils.NaNtoZero(x0(getX(d,i))) })
-            .attr('cy', function(d,i) { return nv.utils.NaNtoZero(y0(getY(d,i))) })
+            .attr('cx', function(d,i) { return x0(getX(d,i)) })
+            .attr('cy', function(d,i) { return y0(getY(d,i)) })
             .attr('r', function(d,i) { return Math.sqrt(z(getSize(d,i))/Math.PI) });
         points.exit().remove();
         groups.exit().selectAll('path.nv-point').transition()
-            .duration(transitionDuration)
-            .attr('cx', function(d,i) { return nv.utils.NaNtoZero(x(getX(d,i))) })
-            .attr('cy', function(d,i) { return nv.utils.NaNtoZero(y(getY(d,i))) })
+            .attr('cx', function(d,i) { return x(getX(d,i)) })
+            .attr('cy', function(d,i) { return y(getY(d,i)) })
             .remove();
         points.each(function(d,i) {
           d3.select(this)
             .classed('nv-point', true)
-            .classed('nv-point-' + i, true)
-            .classed('hover',false)
-            ;
+            .classed('nv-point-' + i, true);
         });
         points.transition()
-            .duration(transitionDuration)
-            .attr('cx', function(d,i) { return nv.utils.NaNtoZero(x(getX(d,i))) })
-            .attr('cy', function(d,i) { return nv.utils.NaNtoZero(y(getY(d,i))) })
+            .attr('cx', function(d,i) { return x(getX(d,i)) })
+            .attr('cy', function(d,i) { return y(getY(d,i)) })
             .attr('r', function(d,i) { return Math.sqrt(z(getSize(d,i))/Math.PI) });
 
       } else {
@@ -392,8 +394,6 @@ nv.models.scatter = function() {
         var points = groups.selectAll('path.nv-point')
             .data(function(d) { return d.values });
         points.enter().append('path')
-            .style('fill', function (d,i) { return d.color })
-            .style('stroke', function (d,i) { return d.color })
             .attr('transform', function(d,i) {
               return 'translate(' + x0(getX(d,i)) + ',' + y0(getY(d,i)) + ')'
             })
@@ -403,8 +403,7 @@ nv.models.scatter = function() {
                 .size(function(d,i) { return z(getSize(d,i)) })
             );
         points.exit().remove();
-        groups.exit().selectAll('path.nv-point')
-            .transition().duration(transitionDuration)
+        d3.transition(groups.exit().selectAll('path.nv-point'))
             .attr('transform', function(d,i) {
               return 'translate(' + x(getX(d,i)) + ',' + y(getY(d,i)) + ')'
             })
@@ -412,12 +411,9 @@ nv.models.scatter = function() {
         points.each(function(d,i) {
           d3.select(this)
             .classed('nv-point', true)
-            .classed('nv-point-' + i, true)
-            .classed('hover',false)
-            ;
+            .classed('nv-point-' + i, true);
         });
         points.transition()
-            .duration(transitionDuration)
             .attr('transform', function(d,i) {
               //nv.log(d,i,getX(d,i), x(getX(d,i)));
               return 'translate(' + x(getX(d,i)) + ',' + y(getY(d,i)) + ')'
@@ -449,23 +445,17 @@ nv.models.scatter = function() {
   //============================================================
   // Event Handling/Dispatching (out of chart's scope)
   //------------------------------------------------------------
-  chart.clearHighlights = function() {
-      //Remove the 'hover' class from all highlighted points.
-      d3.selectAll(".nv-chart-" + id + " .nv-point.hover").classed("hover",false);
-  };
-
-  chart.highlightPoint = function(seriesIndex,pointIndex,isHoverOver) {
-      d3.select(".nv-chart-" + id + " .nv-series-" + seriesIndex + " .nv-point-" + pointIndex)
-          .classed("hover",isHoverOver); 
-  };
-
 
   dispatch.on('elementMouseover.point', function(d) {
-     if (interactive) chart.highlightPoint(d.seriesIndex,d.pointIndex,true);
+    if (interactive)
+      d3.select('.nv-chart-' + id + ' .nv-series-' + d.seriesIndex + ' .nv-point-' + d.pointIndex)
+          .classed('hover', true);
   });
 
   dispatch.on('elementMouseout.point', function(d) {
-     if (interactive) chart.highlightPoint(d.seriesIndex,d.pointIndex,false);
+    if (interactive)
+      d3.select('.nv-chart-' + id + ' .nv-series-' + d.seriesIndex + ' .nv-point-' + d.pointIndex)
+          .classed('hover', false);
   });
 
   //============================================================
@@ -549,18 +539,6 @@ nv.models.scatter = function() {
   chart.sizeDomain = function(_) {
     if (!arguments.length) return sizeDomain;
     sizeDomain = _;
-    return chart;
-  };
-
-  chart.xRange = function(_) {
-    if (!arguments.length) return xRange;
-    xRange = _;
-    return chart;
-  };
-
-  chart.yRange = function(_) {
-    if (!arguments.length) return yRange;
-    yRange = _;
     return chart;
   };
 
@@ -672,12 +650,6 @@ nv.models.scatter = function() {
   chart.singlePoint = function(_) {
     if (!arguments.length) return singlePoint;
     singlePoint = _;
-    return chart;
-  };
-
-  chart.transitionDuration = function(_) {
-    if (!arguments.length) return transitionDuration;
-    transitionDuration = _;
     return chart;
   };
 
