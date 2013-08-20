@@ -1,5 +1,5 @@
 nv.models.axis = function() {
-  "use strict";
+
   //============================================================
   // Public Variables with Default Settings
   //------------------------------------------------------------
@@ -19,7 +19,6 @@ nv.models.axis = function() {
     , staggerLabels = false
     , isOrdinal = false
     , ticks = null
-    , transitionDuration = 250
     ;
 
   axis
@@ -65,7 +64,8 @@ nv.models.axis = function() {
       //TODO: consider calculating width/height based on whether or not label is added, for reference in charts using this component
 
 
-      g.transition().duration(transitionDuration).call(axis);
+      d3.transition(g)
+          .call(axis);
 
       scale0 = scale0 || axis.scale();
 
@@ -388,12 +388,6 @@ nv.models.axis = function() {
     if (!arguments.length) return staggerLabels;
     staggerLabels = _;
     return chart;
-  };
-
-  chart.transitionDuration = function(_) {
-      if (!arguments.length) return transitionDuration;
-      transitionDuration = _;
-      return chart;
   };
 
 
