@@ -1,6 +1,6 @@
 
 nv.models.scatterChart = function() {
-  "use strict";
+
   //============================================================
   // Public Variables with Default Settings
   //------------------------------------------------------------
@@ -25,15 +25,13 @@ nv.models.scatterChart = function() {
     , showDistX    = false
     , showDistY    = false
     , showLegend   = true
-    , showXAxis    = true
-    , showYAxis    = true
-    , rightAlignYAxis = false
     , showControls = !!d3.fisheye
     , fisheye      = 0
     , pauseFisheye = false
     , tooltips     = true
     , tooltipX     = function(key, x, y) { return '<strong>' + x + '</strong>' }
     , tooltipY     = function(key, x, y) { return '<strong>' + y + '</strong>' }
+    //, tooltip      = function(key, x, y) { return '<h3>' + key + '</h3>' }
     , tooltip      = null
     , state = {}
     , defaultState = null
@@ -50,7 +48,7 @@ nv.models.scatterChart = function() {
     .tickPadding(10)
     ;
   yAxis
-    .orient((rightAlignYAxis) ? 'right' : 'left')
+    .orient('left')
     .tickPadding(10)
     ;
   distX
@@ -59,8 +57,6 @@ nv.models.scatterChart = function() {
   distY
     .axis('y')
     ;
-
-  controls.updateState(false);
 
   //============================================================
 
@@ -109,7 +105,7 @@ nv.models.scatterChart = function() {
                              - margin.top - margin.bottom;
 
       chart.update = function() { container.transition().call(chart); };
-      chart.container = this;
+      // chart.container = this;
 
       //set state.disabled
       state.disabled = data.map(function(d) { return !!d.disabled });
@@ -183,8 +179,7 @@ nv.models.scatterChart = function() {
       // Legend
 
       if (showLegend) {
-        var legendWidth = (showControls) ? availableWidth / 2 : availableWidth;
-        legend.width(legendWidth);
+        legend.width( availableWidth / 2 );
 
         wrap.select('.nv-legendWrap')
             .datum(data)
@@ -197,7 +192,7 @@ nv.models.scatterChart = function() {
         }
 
         wrap.select('.nv-legendWrap')
-            .attr('transform', 'translate(' + (availableWidth - legendWidth) + ',' + (-margin.top) +')');
+            .attr('transform', 'translate(' + (availableWidth / 2) + ',' + (-margin.top) +')');
       }
 
       //------------------------------------------------------------
@@ -219,10 +214,6 @@ nv.models.scatterChart = function() {
 
       wrap.attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
-      if (rightAlignYAxis) {
-          g.select(".nv-y.nv-axis")
-              .attr("transform", "translate(" + availableWidth + ",0)");
-      }
 
       //------------------------------------------------------------
       // Main Chart Component(s)
@@ -232,62 +223,53 @@ nv.models.scatterChart = function() {
           .height(availableHeight)
           .color(data.map(function(d,i) {
             return d.color || color(d, i);
-          }).filter(function(d,i) { return !data[i].disabled }));
-
-      if (xPadding !== 0)
-        scatter.xDomain(null);
-
-      if (yPadding !== 0)
-        scatter.yDomain(null);
+          }).filter(function(d,i) { return !data[i].disabled }))
+          .xDomain(null)
+          .yDomain(null)
 
       wrap.select('.nv-scatterWrap')
           .datum(data.filter(function(d) { return !d.disabled }))
           .call(scatter);
 
+
       //Adjust for x and y padding
-      if (xPadding !== 0) {
+      if (xPadding) {
         var xRange = x.domain()[1] - x.domain()[0];
         scatter.xDomain([x.domain()[0] - (xPadding * xRange), x.domain()[1] + (xPadding * xRange)]);
       }
 
-      if (yPadding !== 0) {
+      if (yPadding) {
         var yRange = y.domain()[1] - y.domain()[0];
         scatter.yDomain([y.domain()[0] - (yPadding * yRange), y.domain()[1] + (yPadding * yRange)]);
       }
 
-      //Only need to update the scatter again if x/yPadding changed the domain.
-      if (yPadding !== 0 || xPadding !== 0) {
-        wrap.select('.nv-scatterWrap')
-            .datum(data.filter(function(d) { return !d.disabled }))
-            .call(scatter);
-      }
+      wrap.select('.nv-scatterWrap')
+          .datum(data.filter(function(d) { return !d.disabled }))
+          .call(scatter);
 
       //------------------------------------------------------------
 
 
       //------------------------------------------------------------
       // Setup Axes
-      if (showXAxis) {
-        xAxis
-            .scale(x)
-            .ticks( xAxis.ticks() && xAxis.ticks().length ? xAxis.ticks() : availableWidth / 100 )
-            .tickSize( -availableHeight , 0);
 
-        g.select('.nv-x.nv-axis')
-            .attr('transform', 'translate(0,' + y.range()[0] + ')')
-            .call(xAxis);
+      xAxis
+          .scale(x)
+          .ticks( xAxis.ticks() && xAxis.ticks().length ? xAxis.ticks() : availableWidth / 100 )
+          .tickSize( -availableHeight , 0);
 
-      }
+      g.select('.nv-x.nv-axis')
+          .attr('transform', 'translate(0,' + y.range()[0] + ')')
+          .call(xAxis);
 
-      if (showYAxis) {
-        yAxis
-            .scale(y)
-            .ticks( yAxis.ticks() && yAxis.ticks().length ? yAxis.ticks() : availableHeight / 36 )
-            .tickSize( -availableWidth, 0);
 
-        g.select('.nv-y.nv-axis')
-            .call(yAxis);
-      }
+      yAxis
+          .scale(y)
+          .ticks( yAxis.ticks() && yAxis.ticks().length ? yAxis.ticks() : availableHeight / 36 )
+          .tickSize( -availableWidth, 0);
+
+      g.select('.nv-y.nv-axis')
+          .call(yAxis);
 
 
       if (showDistX) {
@@ -317,8 +299,7 @@ nv.models.scatterChart = function() {
         gEnter.select('.nv-distWrap').append('g')
             .attr('class', 'nv-distributionY');
         g.select('.nv-distributionY')
-            .attr('transform', 
-              'translate(' + (rightAlignYAxis ? availableWidth : -distY.size() ) + ',0)')
+            .attr('transform', 'translate(-' + distY.size() + ',0)')
             .datum(data.filter(function(d) { return !d.disabled }))
             .call(distY);
       }
@@ -356,12 +337,8 @@ nv.models.scatterChart = function() {
         g.select('.nv-scatterWrap')
             .call(scatter);
 
-        if (showXAxis)
-          g.select('.nv-x.nv-axis').call(xAxis);
-        
-        if (showYAxis)
-          g.select('.nv-y.nv-axis').call(yAxis);
-        
+        g.select('.nv-x.nv-axis').call(xAxis);
+        g.select('.nv-y.nv-axis').call(yAxis);
         g.select('.nv-distributionX')
             .datum(data.filter(function(d) { return !d.disabled }))
             .call(distX);
@@ -397,11 +374,47 @@ nv.models.scatterChart = function() {
         chart.update();
       });
 
-      legend.dispatch.on('stateChange', function(newState) {
-        state.disabled = newState.disabled;
+      legend.dispatch.on('legendClick', function(d,i, that) {
+        d.disabled = !d.disabled;
+
+        if (!data.filter(function(d) { return !d.disabled }).length) {
+          data.map(function(d) {
+            d.disabled = false;
+            wrap.selectAll('.nv-series').classed('disabled', false);
+            return d;
+          });
+        }
+
+        state.disabled = data.map(function(d) { return !!d.disabled });
         dispatch.stateChange(state);
+
         chart.update();
       });
+
+      legend.dispatch.on('legendDblclick', function(d) {
+          //Double clicking should always enable current series, and disabled all others.
+          data.forEach(function(d) {
+             d.disabled = true;
+          });
+          d.disabled = false;  
+
+          state.disabled = data.map(function(d) { return !!d.disabled });
+          dispatch.stateChange(state);
+          chart.update();
+      });
+
+
+      /*
+      legend.dispatch.on('legendMouseover', function(d, i) {
+        d.hover = true;
+        chart(selection);
+      });
+
+      legend.dispatch.on('legendMouseout', function(d, i) {
+        d.hover = false;
+        chart(selection);
+      });
+      */
 
       scatter.dispatch.on('elementMouseover.tooltip', function(e) {
         d3.select('.nv-chart-' + scatter.id() + ' .nv-series-' + e.seriesIndex + ' .nv-distx-' + e.pointIndex)
@@ -478,7 +491,7 @@ nv.models.scatterChart = function() {
   chart.distX = distX;
   chart.distY = distY;
 
-  d3.rebind(chart, scatter, 'id', 'interactive', 'pointActive', 'x', 'y', 'shape', 'size', 'xScale', 'yScale', 'zScale', 'xDomain', 'yDomain', 'xRange', 'yRange', 'sizeDomain', 'sizeRange', 'forceX', 'forceY', 'forceSize', 'clipVoronoi', 'clipRadius', 'useVoronoi');
+  d3.rebind(chart, scatter, 'id', 'interactive', 'pointActive', 'x', 'y', 'shape', 'size', 'xScale', 'yScale', 'zScale', 'xDomain', 'yDomain', 'sizeDomain', 'sizeRange', 'forceX', 'forceY', 'forceSize', 'clipVoronoi', 'clipRadius', 'useVoronoi');
 
   chart.margin = function(_) {
     if (!arguments.length) return margin;
@@ -533,26 +546,6 @@ nv.models.scatterChart = function() {
     showLegend = _;
     return chart;
   };
-
-  chart.showXAxis = function(_) {
-    if (!arguments.length) return showXAxis;
-    showXAxis = _;
-    return chart;
-  };
-
-  chart.showYAxis = function(_) {
-    if (!arguments.length) return showYAxis;
-    showYAxis = _;
-    return chart;
-  };
-
-  chart.rightAlignYAxis = function(_) {
-    if(!arguments.length) return rightAlignYAxis;
-    rightAlignYAxis = _;
-    yAxis.orient( (_) ? 'right' : 'left');
-    return chart;
-  };
-
 
   chart.fisheye = function(_) {
     if (!arguments.length) return fisheye;
@@ -611,16 +604,6 @@ nv.models.scatterChart = function() {
   chart.noData = function(_) {
     if (!arguments.length) return noData;
     noData = _;
-    return chart;
-  };
-
-  chart.transitionDuration = function(_) {
-    if (!arguments.length) return scatter.transitionDuration();
-    scatter.transitionDuration(_);
-    xAxis.transitionDuration(_);
-    yAxis.transitionDuration(_);
-    distX.transitionDuration(_);
-    distY.transitionDuration(_);
     return chart;
   };
 
