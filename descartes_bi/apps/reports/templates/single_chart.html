@@ -246,7 +246,7 @@
                         .color(d3.scale.category10().range())
                     chart.showLegend(true);
                     d3.select('#chart{{chart.id}} svg')
-                        .datum([data])
+                        .datum(data)
                         .transition()
                         //.duration(1200)
                         .call(chart);
