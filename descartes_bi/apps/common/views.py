@@ -107,11 +107,12 @@ def get_dash_menu(request, namespace_id):
             links = {}
             for sp in selected_reports:
                 if sp.rep_id:
-                    filterform = sp.filtersets.filters.all()
-                    values = sp.values.split(',')
                     get_form = ""
-                    for index in range(len(values)):
-                        get_form += filterform[index].name + "=" + values[index] + "&"
+                    if sp.filtersets:
+                        filterform = sp.filtersets.filters.all()
+                        values = sp.values.split(',')
+                        for index in range(len(values)):
+                            get_form += filterform[index].name + "=" + values[index] + "&"
 
                     lk = "reports/ajax/report/" + str(sp.rep_id.id) + "/?" + get_form + "output_type=" + sp.visual_type
                     links[str(sp.id)] = lk
