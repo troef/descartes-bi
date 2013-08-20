@@ -29,8 +29,8 @@
     <link href="{% static 'packages/novus-nvd3/src/nv.d3.css' %}" rel="stylesheet" type="text/css">
     <script src="{% static 'packages/novus-nvd3/lib/d3.v3.js' %}"></script>
     <script src="{% static 'packages/novus-nvd3/nv.d3.js' %}"></script>
-    <script src="{% static 'packages/novus-nvd3/src/utils.js' %}"></script>
     <script src="{% static 'packages/novus-nvd3/src/tooltip.js' %}"></script>
+    <script src="{% static 'packages/novus-nvd3/src/utils.js' %}"></script>
     <script src="{% static 'packages/novus-nvd3/src/models/legend.js' %}"></script>
     <script src="{% static 'packages/novus-nvd3/src/models/axis.js' %}"></script>
     <script src="{% static 'packages/novus-nvd3/src/models/scatter.js' %}"></script>
@@ -38,6 +38,7 @@
     <script src="{% static 'packages/novus-nvd3/src/models/historicalBar.js' %}"></script>
     <script src="{% static 'packages/novus-nvd3/src/models/linePlusBarChart.js' %}"></script>
     <script src="{% static 'packages/novus-nvd3/src/models/lineWithFocusChart.js' %}"></script>
+    <script src="{% static 'packages/novus-nvd3/src/models/multiBar.js' %}"></script>
     <script src="{% static 'packages/novus-nvd3/src/models/multiBarChart.js' %}"></script>
     <script src="{% static 'packages/novus-nvd3/src/models/pie.js' %}"></script>
     <script src="{% static 'packages/novus-nvd3/src/models/pieChart.js' %}"></script>
@@ -150,16 +151,8 @@
                     .showControls(false)
                     .staggerLabels(false);
                 chart.xAxis.tickFormat(function(d) {
-                    // TO DO : Include other ticks formats
-                    //      and work with different ones
-
-                    // If all the tick formats are equal
-                    // display the data with the format indicated
-                    // else display it as string or create another
-                    // y2Axis. Ex: LinePlusBarChart
                     if (bool1 == true && tf == 'My'){
                         var date;
-                        // TO DO: Considerate split by '-' and '_'
                         date = d.split("_");
                         if (date.length == 1) date = d.split("-");
                         date = d3.time.format('%B %Y')(new Date(date[0], date[1], 0, 0, 0, 0, 0));
@@ -246,7 +239,7 @@
                         .color(d3.scale.category10().range())
                     chart.showLegend(true);
                     d3.select('#chart{{chart.id}} svg')
-                        .datum(data)
+                        .datum([data])
                         .transition()
                         //.duration(1200)
                         .call(chart);

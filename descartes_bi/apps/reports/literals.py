@@ -29,6 +29,7 @@ SERIES_TYPE_CHOICES = (
 
 CHART_TYPE_CHOICES = (
     ('SI', _('Standard X,Y')),
+    ('SH', _('Horizontal X,Y')),
     ('PI', _('Pie chart')),
     ('LB', _('Line Plus Bar Chart')),
     ('LI', _('Line chart')),
