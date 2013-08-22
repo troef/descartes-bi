@@ -55,11 +55,12 @@
         }
 
         #chart{{ chart.id }} svg {
-          height: 80%;
-          margin: 10px;
-          min-width: 100px;
-          min-height: 100px;
+            height: 80%;
+            margin: 10px;
+            min-width: 100px;
+            min-height: 100px;
         }
+
     </style>
     <body>
         <div id="chart{{ chart.id }}" style="margin:2px; color: #666; height:100%;">
@@ -143,13 +144,16 @@
                 var chart;
                 nv.addGraph(function() {
                   chart = nv.models.multiBarChart()
-                    .color(d3.scale.category10().range());
+                    .barColor(d3.scale.category20().range());
 
-                chart.multibar.hideable(true);
+                chart.multibar
+                    .hideable(true);
+
+                chart.reduceXTicks(false).staggerLabels(true);
+
                 chart
-                    .reduceXTicks(true)
-                    .showControls(false)
-                    .staggerLabels(false);
+                    .showControls(false);
+
                 chart.xAxis.tickFormat(function(d) {
                     if (bool1 == true && tf == 'My'){
                         var date;
@@ -179,9 +183,13 @@
 
                 d3.select('#chart{{chart.id}} svg')
                     .datum(data)
-                    .transition()
-                    .duration(500)
-                    .call(chart);
+                    .transition().duration(500).call(chart);
+
+                chart.margin({bottom: 80});
+                var xTicks = d3.select('.nv-x.nv-axis > g').selectAll('g');
+                xTicks
+                  .selectAll('text')
+                  .attr('transform', function(d,i,j) { return 'translate (-30, 40) rotate(-90 0,0)' }) ;
                 nv.utils.windowResize(chart.update);
                 chart.dispatch.on('stateChange', function(e) {
                     nv.log('New State:', JSON.stringify(e));
@@ -221,6 +229,7 @@
                         .datum(data)
                         .transition().duration(500)
                         .call(chart);
+
                     nv.utils.windowResize(chart.update);
                     chart.dispatch.on('stateChange', function(e) {
                         nv.log('New State:', JSON.stringify(e));
