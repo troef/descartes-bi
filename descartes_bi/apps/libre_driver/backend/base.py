@@ -4,12 +4,15 @@ LIBRE database backend for Django.
 #Each of these API functions, except connection.close(), raises
 #ImproperlyConfigured.
 """
+import logging
 
 from django.core.exceptions import ImproperlyConfigured
 from django.db.backends import *
 from django.db.backends.creation import BaseDatabaseCreation
 
 import requests
+
+logger = logging.getLogger(__name__)
 
 
 def complain(*args, **kwargs):
@@ -77,10 +80,13 @@ class Cursor():
 
         self.query_url = ''.join([self.url, '?', query_string, '&_format=json'])
         # TODO: use proper URL fabrication
-        if self.username and self.password:
+        if self.user and self.password:
             self.response = requests.get(self.query_url, auth=(self.user, self.password))
         else:
             self.response = requests.get(self.query_url)
+
+        logger.debug('query_url: %s' % self.query_url)
+        logger.debug('status_code: %s' % self.response.status_code)
 
     def fetchall(self):
         return self.response.json()
