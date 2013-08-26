@@ -19,6 +19,7 @@ from __future__ import absolute_import
 #
 
 import datetime
+import json
 import logging
 import re
 
@@ -28,11 +29,12 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
 from main.exceptions import SeriesError
-from db_drivers.models import DataSource
+from db_drivers.models import BACKEND_LIBRE, DataSource
 
 from .literals import (FILTER_FIELD_CHOICES, SERIES_TYPE_CHOICES,
     LEGEND_LOCATION_CHOICES, CHART_TYPE_CHOICES, ORIENTATION_CHOICES,
     UNION_CHOICES)
+from .utils import data_to_js_chart, data_to_js_grid
 
 logger = logging.getLogger(__name__)
 
@@ -238,6 +240,30 @@ class Report(models.Model):
     def get_series(self):
         return ', '.join(['"%s (%s)"' % (serie.serie.name, serie.get_type_display()) for serie in self.serietype_set.all()])
     get_series.short_description = _('series')
+
+    # Descartes-NT
+    def execute(self, params=None, special_params=None, output_format='chart'):
+        series_results = []
+        tick_format1 = []
+        tick_format2 = []
+
+        for serie_type in self.serietype_set.all():
+            cursor = serie_type.serie.execute(params, special_params)
+            # TODO: Fix, labels should come from series properties not scavenged from the query
+            #labels.append(re.compile('aS\s(\S*)', re.IGNORECASE).findall(query))
+
+            #Temporary fix for Libre database
+            if serie_type.serie.data_source.backend == BACKEND_LIBRE:
+                series_results.append(json.dumps(cursor.fetchall()))
+            elif output_type == 'chart':
+                series_results.append(data_to_js_chart(cursor.fetchall(), report.orientation))
+            elif output_type == 'grid':
+                series_results.append(data_to_js_grid(cursor.fetchall(), s.serie.tick_format1))
+            #append tick formats
+
+            tick_format1.append(serie_type.serie.tick_format1)
+            tick_format2.append(serie_type.serie.tick_format2)
+        return series_results, tick_format1, tick_format2
 
     class Meta:
         ordering = ['title']

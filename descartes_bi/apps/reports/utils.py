@@ -18,10 +18,10 @@ from __future__ import absolute_import
 #    along with descartes-bi.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-from .models import Report, Menuitem, GroupPermission, UserPermission, User, SeriesStatistic, ReportStatistic
-
 
 def get_allowed_object_for_user(user):
+    from .models import Report, Menuitem, GroupPermission, UserPermission, User, SeriesStatistic, ReportStatistic
+
     reports_allowed = []
     menuitems_allowed = []
     try:
@@ -81,6 +81,8 @@ def get_allowed_object_for_user(user):
 
 #TODO: Define filter default value when user is doing an exclusive union
 def get_user_filters_limits(user):
+    from .models import Report, Menuitem, GroupPermission, UserPermission, User, SeriesStatistic, ReportStatistic
+
     filter_limits = {}
     try:
         # TODO: Fix this comparison too
@@ -151,3 +153,47 @@ def get_user_filters_limits(user):
 
     #print "FILTER LIMITS: %s" % filter_limits
     return filter_limits
+
+
+#TODO: Improve this further
+def data_to_js_chart(data,  orientation='v'):
+    if not data:
+        return ''
+
+    result = '['
+    if orientation == 'v':
+        for key, value in data:
+            result += '["%s",%s],' % (key or '?', value)
+            #result = [[k or '?',v, label_formar % v] for k,v in a]
+    else:
+        for key, value in data:
+            try:
+                # unicode(key.decode("utf-8")) Needed to handle non ascii
+                result += '[%s,"%s","%s"],' % (value,
+                      unicode(key.decode("utf-8")) or u'?', unicode(value))
+            except:
+                #However fails with long integer
+                result += '[%s,"%s","%s"],' % (value, unicode(key or '?'),
+                        unicode(value))
+
+    result = result[:-1]
+    result += ']'
+
+    return result
+
+
+def data_to_js_grid(data, label_format=None):
+    if not data:
+        return ''
+
+    if not label_format:
+        label_format = "%s"
+
+    result = '['
+    for key, value in data:
+        result += '{key:"%s", value:"%s"},' % (key or '?', label_format % value)
+
+    result = result[:-1]
+    result += ']'
+
+    return result
