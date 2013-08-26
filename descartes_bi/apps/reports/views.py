@@ -29,6 +29,7 @@ from django.template import RequestContext
 from django.utils.translation import ugettext as _
 
 from db_drivers.models import BACKEND_LIBRE
+from main.exceptions import SeriesError
 
 from .forms import FilterForm
 from .models import Report, Menuitem, GroupPermission, UserPermission, User, SeriesStatistic, ReportStatistic
@@ -142,55 +143,10 @@ def ajax_report(request, report_id):
                 else:
                     params[filter.name] = value
 
-    series_results = []
-    tick_format1 = []
-    tick_format2 = []
-    labels = []
-    for s in report.serietype_set.all():
-        try:
-            cursor = s.serie.execute(params, special_params)
-        except SeriesError as exception:
-            return render_to_response('messagebox-error.html', {'title': _('Series error'), 'message': exception})
-
-        serie_start_time = datetime.datetime.now()
-
-        # TODO: Fix, labels should come from series properties not scavenged from the query
-        #labels.append(re.compile('aS\s(\S*)', re.IGNORECASE).findall(query))
-
-        #Temporary fix for Libre database
-        if s.serie.data_source.backend == BACKEND_LIBRE:
-            series_results.append(json.dumps(cursor.fetchall()))
-        elif output_type == 'chart':
-            series_results.append(data_to_js_chart(cursor.fetchall(), report.orientation))
-        elif output_type == 'grid':
-            series_results.append(data_to_js_grid(cursor.fetchall(), s.serie.tick_format1))
-        #append tick formats
-
-        tick_format1.append(s.serie.tick_format1)
-        tick_format2.append(s.serie.tick_format2)
-        s.serie.last_execution_time = (datetime.datetime.now() - serie_start_time).seconds
-        s.serie.avg_execution_time = (s.serie.avg_execution_time or 0 + s.serie.last_execution_time) / 2
-        s.serie.save()
-
-        try:
-            serie_statistics = SeriesStatistic()
-            serie_statistics.serie = s.serie
-            serie_statistics.user = request.user
-            serie_statistics.execution_time = (datetime.datetime.now() - serie_start_time).seconds
-            serie_statistics.params = ', '.join(["%s = %s" % (k, v) for k, v in filter_form.cleaned_data.items()])
-            serie_statistics.save()
-        except:
-            pass
-
     try:
-        report_statistics = ReportStatistic()
-        report_statistics.report = report
-        report_statistics.user = request.user
-        report_statistics.execution_time = (datetime.datetime.now() - start_time).seconds
-        report_statistics.params = "%s" % (', '.join(["%s = %s" % (k, v) for k, v in filter_form.cleaned_data.items()]))
-        report_statistics.save()
-    except:
-        pass
+        series_results, tick_format1, tick_format2 = report.execute(params, special_params, output_type)
+    except SeriesError as exception:
+        return render_to_response('messagebox-error.html', {'title': _('Series error'), 'message': exception})
 
     if report.orientation == 'v':
         h_axis = "x"
@@ -199,32 +155,15 @@ def ajax_report(request, report_id):
         h_axis = "y"
         v_axis = "x"
 
-    if s.serie.data_source.backend == BACKEND_LIBRE:
-        data = {
-            'chart_data': s.serie.data_source.backend,
-            'backend_libre': BACKEND_LIBRE,
-            'tick_format1': tick_format1,
-            'tick_format2': tick_format2,
-            'series_results': series_results,
-            'chart_series': report.serietype_set.all(),
-            'ajax': True,
-            'chart': report,
-        }
-    else:
-        data = {
-            'chart_data': ','.join(series_results),
-            'series_results': series_results,
-            'chart_series': report.serietype_set.all(),
-            'tick_format1': tick_format1,
-            'tick_format2': tick_format2,
-            'chart': report,
-            'h_axis': h_axis,
-            'v_axis': v_axis,
-            'ajax': True,
-            'params': params,
-            'series_labels': labels,
-            'time_delta': datetime.datetime.now() - start_time,
-        }
+    data = {
+        'backend_libre': BACKEND_LIBRE,
+        'tick_format1': tick_format1,
+        'tick_format2': tick_format2,
+        'series_results': series_results,
+        'chart_series': report.serietype_set.all(),
+        'ajax': True,
+        'chart': report,
+    }
 
     if output_type == 'chart':
         return render_to_response('single_chart.html', data,
@@ -234,47 +173,3 @@ def ajax_report(request, report_id):
             context_instance=RequestContext(request))
     else:
         return render_to_response('messagebox-error.html', {'title': _(u'Error'), 'message': _(u"Unknown output type (chart, table, etc).")})
-
-
-#TODO: Improve this further
-def data_to_js_chart(data,  orientation='v'):
-    if not data:
-        return ''
-
-    result = '['
-    if orientation == 'v':
-        for key, value in data:
-            result += '["%s",%s],' % (key or '?', value)
-            #result = [[k or '?',v, label_formar % v] for k,v in a]
-    else:
-        for key, value in data:
-            try:
-                # unicode(key.decode("utf-8")) Needed to handle non ascii
-                result += '[%s,"%s","%s"],' % (value,
-                      unicode(key.decode("utf-8")) or u'?', unicode(value))
-            except:
-                #However fails with long integer
-                result += '[%s,"%s","%s"],' % (value, unicode(key or '?'),
-                        unicode(value))
-
-    result = result[:-1]
-    result += ']'
-
-    return result
-
-
-def data_to_js_grid(data, label_format=None):
-    if not data:
-        return ''
-
-    if not label_format:
-        label_format = "%s"
-
-    result = '['
-    for key, value in data:
-        result += '{key:"%s", value:"%s"},' % (key or '?', label_format % value)
-
-    result = result[:-1]
-    result += ']'
-
-    return result

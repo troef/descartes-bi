@@ -1,7 +1,7 @@
 {% load simplehelpers %}
 {% load i18n %}
 {% load static %}
-{% if not chart_data %}
+{% if not chart_series %}
     {% with 'Attention' as title %}
     {% with 'There are no results for the selected parameters, choose other values.' as message %}
     {% include "messagebox-attention.html" %}
