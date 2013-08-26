@@ -147,29 +147,15 @@ def ajax_report(request, report_id):
     tick_format2 = []
     labels = []
     for s in report.serietype_set.all():
-        query = s.serie.query
-        if re.compile("[^%]%[^%(]").search(query):
-            return render_to_response('messagebox-error.html', {'title': _(u'Query error'), 'message': _(u"Single '%' found, replace with double '%%' to properly escape the SQL wildcard caracter '%'.")})
+        try:
+            cursor = s.serie.execute(params, special_params)
+        except SeriesError as exception:
+            return render_to_response('messagebox-error.html', {'title': _('Series error'), 'message': exception})
 
-        cursor = s.serie.data_source.load_backend().cursor()
+        serie_start_time = datetime.datetime.now()
 
-        if special_params:
-            for sp in special_params.keys():
-                query = re.compile('%\(' + sp + '\)s').sub(special_params[sp], query)
-            try:
-                serie_start_time = datetime.datetime.now()
-                cursor.execute(query, params)
-            except:
-                import sys
-                (exc_type, exc_info, tb) = sys.exc_info()
-                return render_to_response('messagebox-error.html', {'title': exc_type, 'message': exc_info})
-
-        else:
-            cursor.execute(query, params)
-            logger.debug('cursor.execute; query: %s, params: %s' % (query, params))
-            serie_start_time = datetime.datetime.now()
-
-        labels.append(re.compile('aS\s(\S*)', re.IGNORECASE).findall(query))
+        # TODO: Fix, labels should come from series properties not scavenged from the query
+        #labels.append(re.compile('aS\s(\S*)', re.IGNORECASE).findall(query))
 
         #Temporary fix for Libre database
         if s.serie.data_source.backend == BACKEND_LIBRE:
@@ -222,7 +208,6 @@ def ajax_report(request, report_id):
             'series_results': series_results,
             'chart_series': report.serietype_set.all(),
             'ajax': True,
-            'query': query,
             'chart': report,
         }
     else:
@@ -236,7 +221,6 @@ def ajax_report(request, report_id):
             'h_axis': h_axis,
             'v_axis': v_axis,
             'ajax': True,
-            'query': query,
             'params': params,
             'series_labels': labels,
             'time_delta': datetime.datetime.now() - start_time,
