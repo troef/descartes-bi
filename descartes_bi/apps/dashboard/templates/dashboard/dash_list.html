@@ -22,6 +22,10 @@
         margin-right:3%;
         height:70%;
     }
+    svg {
+        max-height: 100%;
+        padding-bottom: 50px;
+    }
 </style>
 {% endblock %}
 
@@ -80,7 +84,7 @@
             function rep{{ key }}(){
                 $("#test{{key}}").load("{% url 'home_view' %}{{ value }}");}
             {% endif %}
-            
+
         {% endfor %}
 
         {% for sp in selected_reports %}
