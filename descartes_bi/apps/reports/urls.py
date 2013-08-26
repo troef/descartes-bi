@@ -24,6 +24,4 @@ urlpatterns = patterns('reports.views',
     url(r'^ajax/report_description/(?P<report_id>\d+)/$', 'ajax_report_description', (), 'ajax_report_description_view'),
     url(r'^ajax/report_validation/(?P<report_id>\d+)/$', 'ajax_report_validation', (), 'ajax_report_validation_view'),
     url(r'^ajax/report/(?P<report_id>\d+)/benchmarks/$', 'ajax_report_benchmarks', (), 'ajax_report_benchmarks_view'),
-
-    #url(r'^dashboard/$', 'django.views.generic.simple.direct_to_template', { 'template' : 'dashboard.html'}, 'dashboard'),
 )
