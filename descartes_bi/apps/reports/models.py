@@ -147,17 +147,27 @@ class Serie(models.Model):
     get_filters.short_description = _('filters')
 
     # Descartes-NT
-    def execute(self, params=None):
-        if re.compile("[^%]%[^%(]").search(self.query):
-            SeriesError(_(u"Single '%' found, replace with double '%%' to properly escape the SQL wildcard caracter '%'."))
+    def execute(self, params=None, special_params=None):
+        if special_params:
+            for sp in special_params.keys():
+                query = re.compile(r'%\(' + sp + r'\)s').sub(special_params[sp], query)
+        else:
+            query = self.query
+
+        if re.compile(r'[^%]%[^%(]').search(self.query):
+            SeriesError(_('Single \'%\'found, replace with double \'%%\' to properly escape the SQL wildcard caracter \'%\'.'))
 
         cursor = self.data_source.load_backend().cursor()
         if not params:
             params = {}
-        cursor.execute(self.query, params)
-        logger.debug('self.query: %s, params: %s' % (self.query, params))
 
-        return cursor.fetchall()
+        try:
+            logger.debug('self.query: %s, params: %s' % (self.query, params))
+            cursor.execute(self.query, params)
+        except Exception as exception:
+            raise SeriesError('Cursor error: %s' % exception)
+
+        return cursor
 
     class Meta:
         ordering = ['name']
