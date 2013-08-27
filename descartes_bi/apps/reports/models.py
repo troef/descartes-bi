@@ -32,7 +32,6 @@ from django.utils.translation import ugettext_lazy as _
 from main.exceptions import SeriesError
 from db_drivers.models import BACKEND_LIBRE, DataSource
 
-from .job_processing import Job
 from .literals import (FILTER_FIELD_CHOICES, SERIES_TYPE_CHOICES,
     LEGEND_LOCATION_CHOICES, CHART_TYPE_CHOICES, ORIENTATION_CHOICES,
     UNION_CHOICES)
