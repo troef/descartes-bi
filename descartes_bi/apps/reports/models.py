@@ -165,8 +165,7 @@ class Serie(models.Model):
         if re.compile(r'[^%]%[^%(]').search(self.query):
             SeriesError(_('Single \'%\'found, replace with double \'%%\' to properly escape the SQL wildcard caracter \'%\'.'))
 
-        serie = Serie.objects.get(pk=self.pk)
-        cursor = serie.data_source.load_backend().cursor()
+        cursor = self.data_source.load_backend().cursor()
         if not params:
             params = {}
 
