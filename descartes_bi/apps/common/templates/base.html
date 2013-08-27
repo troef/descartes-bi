@@ -36,10 +36,8 @@
                * * * * * * * * *:hover { border:2px dotted #CD1821 }
             </style>
         {% endif %}
-        <script type="text/javascript" src="{% static 'packages/jquery-1.9.1.min.js' %}"></script>
-        <script type="text/javascript" src="{% static 'packages/jquery-migrate-1.2.1.min.js' %}"></script>
+        <script type="text/javascript" src="{% static 'packages/jquery-1.10.2.min.js' %}"></script>
         <script type="text/javascript" src="{% static 'packages/jquery-ui-1.10.3/ui/jquery-ui.js' %}"></script>
-        <script type="text/javascript" src="{% static 'packages/jquery-corners/jquery.corners.min2.js' %}"></script>
         <script type="text/javascript" src="{% static 'packages/superfish-1.7.2/js/hoverIntent.js' %}"></script>
         <script type="text/javascript" src="{% static 'packages/superfish-1.7.2/js/superfish.js' %}"></script>
         <script type="text/javascript" src="{% static 'packages/superfish-1.7.2/js/supersubs.js' %}"></script>
@@ -127,8 +125,6 @@
                     $("#loading").fadeOut("fast");
                 });
 
-                $('.rounded').corners();
-
                 $('ul.sf-menu').supersubs({
                     minWidth: 12,
                     maxWidth: 39,
@@ -172,7 +168,6 @@
                     $("#info-panel").tabs("option", "active", 0);
 
                     $("#parameters_wrapper").load("/reports/ajax/filter_form/" + report_num + '/', function() {
-                        $('.rounded').corners();
                         $("#submit-text").text("{% trans 'Generate results' %}");
                     });
                     $("#current_report").val(report_num);
