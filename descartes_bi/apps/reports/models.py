@@ -21,6 +21,7 @@ from __future__ import absolute_import
 import datetime
 import json
 import logging
+from multiprocessing import Pipe, Process
 import re
 
 from django.contrib.auth.models import User
@@ -31,6 +32,7 @@ from django.utils.translation import ugettext_lazy as _
 from main.exceptions import SeriesError
 from db_drivers.models import BACKEND_LIBRE, DataSource
 
+from .job_processing import Job
 from .literals import (FILTER_FIELD_CHOICES, SERIES_TYPE_CHOICES,
     LEGEND_LOCATION_CHOICES, CHART_TYPE_CHOICES, ORIENTATION_CHOICES,
     UNION_CHOICES)
@@ -149,7 +151,11 @@ class Serie(models.Model):
     get_filters.short_description = _('filters')
 
     # Descartes-NT
-    def execute(self, params=None, special_params=None):
+    def execute(self, **kwargs):
+        params = kwargs.get('params')
+        special_params = kwargs.get('special_params')
+        pipe = kwargs.get('pipe')
+
         if special_params:
             for sp in special_params.keys():
                 query = re.compile(r'%\(' + sp + r'\)s').sub(special_params[sp], query)
@@ -159,7 +165,8 @@ class Serie(models.Model):
         if re.compile(r'[^%]%[^%(]').search(self.query):
             SeriesError(_('Single \'%\'found, replace with double \'%%\' to properly escape the SQL wildcard caracter \'%\'.'))
 
-        cursor = self.data_source.load_backend().cursor()
+        serie = Serie.objects.get(pk=self.pk)
+        cursor = serie.data_source.load_backend().cursor()
         if not params:
             params = {}
 
@@ -168,6 +175,9 @@ class Serie(models.Model):
             cursor.execute(self.query, params)
         except Exception as exception:
             raise SeriesError('Cursor error: %s' % exception)
+
+        if pipe:
+            pipe.send(cursor.fetchall())
 
         return cursor
 
@@ -246,23 +256,25 @@ class Report(models.Model):
         series_results = []
         tick_format1 = []
         tick_format2 = []
+        deferred_list = []
 
         for serie_type in self.serietype_set.all():
-            cursor = serie_type.serie.execute(params, special_params)
-            # TODO: Fix, labels should come from series properties not scavenged from the query
-            #labels.append(re.compile('aS\s(\S*)', re.IGNORECASE).findall(query))
-
-            #Temporary fix for Libre database
-            if serie_type.serie.data_source.backend == BACKEND_LIBRE:
-                series_results.append(json.dumps(cursor.fetchall()))
-            elif output_type == 'chart':
-                series_results.append(data_to_js_chart(cursor.fetchall(), report.orientation))
-            elif output_type == 'grid':
-                series_results.append(data_to_js_grid(cursor.fetchall(), s.serie.tick_format1))
-            #append tick formats
-
             tick_format1.append(serie_type.serie.tick_format1)
             tick_format2.append(serie_type.serie.tick_format2)
+
+            # Launch all serie queries in parallel
+            pipe_a, pipe_b = Pipe()
+            process = Process(
+                target=serie_type.serie.execute,
+                kwargs={'pipe': pipe_a, 'params': params, 'special_params': special_params})
+            process.start()
+            deferred_list.append({'series': serie_type.serie, 'pipe': pipe_b, 'process': process})
+
+        for deferred in deferred_list:
+            # Collect the serires queries results
+            deferred['process'].join()
+            series_results.append(json.dumps(deferred['pipe'].recv()))
+
         return series_results, tick_format1, tick_format2
 
     class Meta:
