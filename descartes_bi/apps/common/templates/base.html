@@ -2,6 +2,8 @@
 {% load static %}
 {% load menubuilder %}
 {% load project_tags %}
+{% load compress %}
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
@@ -11,31 +13,36 @@
         {% block keywords %}{% endblock %}
         <link rel="shortcut icon" type="image/png" href="{% static 'images/favicon.ico' %}" />
 
-        <link type="text/css" href="{% static 'css/layout.css' %}" rel="stylesheet" media="screen"/>
-        <link type="text/css" href="{% static 'css/theme_screen.css' %}" rel="stylesheet" media="screen" />
-        <link type="text/css" href="{% static 'css/theme_print.css' %}" rel="stylesheet" media="print" />
-        <link type="text/css" rel="stylesheet" href="{% static 'packages/jquery-ui-1.10.3/themes/smoothness/jquery-ui-1.10.3.custom.css' %}" />
-        <link type="text/css" rel="stylesheet" href="{% static 'packages/superfish-1.7.2/css/superfish.css' %}" media="screen" />
-        <link type="text/css" rel="stylesheet" href="{% static 'packages/Sliding_login_panel_jquery/css/slide.css' %}" media="screen" />
-        <link type="text/css" rel="stylesheet" href="{% static 'packages/jGrowl-1.2.0/jquery.jgrowl.css' %}" media="screen" />
-        <link type="text/css" href="{% static 'css/artemisMod.css' %}" rel="stylesheet" media="screen"/>
-        <link type="text/css" rel="stylesheet" href="{% static 'packages/dashMenu/dashMenu.css' %}" media="screen"/>
+        {% compress css %}
+            <link type="text/css" href="{% static 'css/layout.css' %}" rel="stylesheet" media="screen"/>
+            <link type="text/css" href="{% static 'css/theme_screen.css' %}" rel="stylesheet" media="screen" />
+            <link type="text/css" href="{% static 'css/theme_print.css' %}" rel="stylesheet" media="print" />
+            <link type="text/css" rel="stylesheet" href="{% static 'packages/jquery-ui-1.10.3/themes/smoothness/jquery-ui-1.10.3.custom.css' %}" />
+            <link type="text/css" rel="stylesheet" href="{% static 'packages/superfish-1.7.2/css/superfish.css' %}" media="screen" />
+            <link type="text/css" rel="stylesheet" href="{% static 'packages/Sliding_login_panel_jquery/css/slide.css' %}" media="screen" />
+            <link type="text/css" rel="stylesheet" href="{% static 'packages/jGrowl-1.2.0/jquery.jgrowl.css' %}" media="screen" />
+            <link type="text/css" href="{% static 'css/artemisMod.css' %}" rel="stylesheet" media="screen"/>
+            <link type="text/css" rel="stylesheet" href="{% static 'packages/dashMenu/dashMenu.css' %}" media="screen"/>
 
-        {% block stylesheets %}{% endblock %}
-        {# Add CSS Debugging #}
-        {% if 0 %}
-            <style type="text/css">
-               *:hover { border:2px solid #ffffff }
-               * *:hover { border:2px solid #89A81E }
-               * * *:hover { border:2px solid #F34607 }
-               * * * *:hover { border:2px solid #5984C3 }
-               * * * * *:hover { border:2px solid #CD1821 }
-               * * * * * *:hover { border:2px dotted #89A81E }
-               * * * * * * *:hover { border:2px dotted #F34607 }
-               * * * * * * * *:hover { border:2px dotted #5984C3 }
-               * * * * * * * * *:hover { border:2px dotted #CD1821 }
-            </style>
-        {% endif %}
+            {% block stylesheets %}{% endblock %}
+
+            {# Add CSS Debugging #}
+            {% if 0 %}
+                <style type="text/css">
+                   *:hover { border:2px solid #ffffff }
+                   * *:hover { border:2px solid #89A81E }
+                   * * *:hover { border:2px solid #F34607 }
+                   * * * *:hover { border:2px solid #5984C3 }
+                   * * * * *:hover { border:2px solid #CD1821 }
+                   * * * * * *:hover { border:2px dotted #89A81E }
+                   * * * * * * *:hover { border:2px dotted #F34607 }
+                   * * * * * * * *:hover { border:2px dotted #5984C3 }
+                   * * * * * * * * *:hover { border:2px dotted #CD1821 }
+                </style>
+            {% endif %}
+        {% endcompress %}
+
+        {% compress js %}
         <script type="text/javascript" src="{% static 'packages/jquery-1.10.2.min.js' %}"></script>
         <script type="text/javascript" src="{% static 'packages/jquery-ui-1.10.3/ui/jquery-ui.js' %}"></script>
         <script type="text/javascript" src="{% static 'packages/superfish-1.7.2/js/hoverIntent.js' %}"></script>
@@ -182,6 +189,8 @@
             });
         </script>
         {% block javascript %}{% endblock %}
+        {% endcompress %}
+
         <title>{% project_name %}{% block title %}{% endblock %}</title>
 
     </head>
