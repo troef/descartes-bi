@@ -36,7 +36,7 @@ urlpatterns = patterns('',
     url(r'^myaccount/password_change/$', 'django.contrib.auth.views.password_change', {'template_name': 'password_change_form.html'}, name='my_password_change'),
     url(r'^accounts/password_change_ok/$', 'django.contrib.auth.views.password_change_done', {'template_name': 'password_change_done.html'}),
 
-    (r'^favicon\.ico$', RedirectView.as_view(url='%simages/favicon.ico' % settings.MEDIA_URL)),
+    (r'^favicon\.ico$', RedirectView.as_view(url='%simages/favicon.png' % settings.STATIC_URL)),
 )
 
 if settings.DEVELOPMENT:
