@@ -121,8 +121,9 @@
               chart = nv.models.multiBarHorizontalChart()
                   .x(function(d) { return d.x })
                   .y(function(d) { return d.y })
-                  .margin({top: 30, right: 20, bottom: 50, left: 175})
+                  .margin({top: 0, right: 30, bottom: 50, left: 90})
                   .barColor(d3.scale.category20().range())
+                  .showLegend(false)
                   .showControls(false);
 
               chart.yAxis
@@ -143,57 +144,39 @@
             {% ifequal chart.type 'SI' %}
                 var chart;
                 nv.addGraph(function() {
-                  chart = nv.models.multiBarChart()
-                    .barColor(d3.scale.category20().range());
+                chart = nv.models.multiBarChart()
+                    .x(function(d) { return d.x })
+                    .y(function(d) { return d.y })
+                    .margin({top: 30, right: 20, bottom: 60, left: 75})
+                    .barColor(d3.scale.category10().range())
+                    .showLegend(false)
+                    .showControls(false);
 
                 chart.multibar
                     .hideable(true);
 
                 chart.reduceXTicks(false).staggerLabels(true);
 
-                chart
-                    .showControls(false);
-
-                chart.xAxis.tickFormat(function(d) {
-                    if (bool1 == true && tf == 'My'){
-                        var date;
-                        date = d.split("_");
-                        if (date.length == 1) date = d.split("-");
-                        date = d3.time.format('%B %Y')(new Date(date[0], date[1], 0, 0, 0, 0, 0));
-                        return date;
-                    }
-                    else if (bool1 == true && tf == 'Ye'){
-                        date = d3.time.format('%B %Y')(new Date(date[0], date[1], 0, 0, 0, 0, 0));
-                        return date;
-                    }
-                    else
-                        return d;
-                }).showMaxMin(false);
-
-                chart.yAxis.tickFormat(function(d) {
-                    // TO DO: Include other tick formats
-                    if (bool2 == true &&
-                        (tf2 == 'To' || tf2 == 'Ye' ||
-                         tf2 == 'St'))
-                        return d;
-                    else if (bool2 == true && tf2 =='Cu')
-                         return '$' + d3.format(',.2f')(d);
-                    else return d;
-                });
-
-                d3.select('#chart{{chart.id}} svg')
-                    .datum(data)
-                    .transition().duration(500).call(chart);
-
-                chart.margin({bottom: 80});
                 var xTicks = d3.select('.nv-x.nv-axis > g').selectAll('g');
                 xTicks
                   .selectAll('text')
-                  .attr('transform', function(d,i,j) { return 'translate (-30, 40) rotate(-90 0,0)' }) ;
+                  .style("text-anchor", "end")
+                  .attr('transform', function(d,i,j) { return 'translate (0, 0) rotate(-65 0,10)' }) ;
+
+                d3.select('#chart{{chart.id}} svg')
+                    .datum(data)
+                    .transition().duration(500)
+                    .call(chart);
+
+                    var xTicks = d3.select('.nv-x.nv-axis > g').selectAll('g');
+                    xTicks
+                      .selectAll('text')
+                      .style("text-anchor", "end")
+                      .attr('transform', function(d,i,j) { return 'translate (0, 0) rotate(-65 0,10)' })
                 nv.utils.windowResize(chart.update);
-                chart.dispatch.on('stateChange', function(e) {
-                    nv.log('New State:', JSON.stringify(e));
-                });
+
+                chart.dispatch.on('stateChange', function(e) { nv.log('New State:', JSON.stringify(e)); });
+
                 return chart;
             });
             {% endifequal%}
