@@ -23,6 +23,7 @@
             <link type="text/css" rel="stylesheet" href="{% static 'packages/jGrowl-1.2.0/jquery.jgrowl.css' %}" media="screen" />
             <link type="text/css" href="{% static 'css/artemisMod.css' %}" rel="stylesheet" media="screen"/>
             <link type="text/css" rel="stylesheet" href="{% static 'packages/dashMenu/dashMenu.css' %}" media="screen"/>
+            <link type="text/css" rel="stylesheet" href="{% static 'packages/novus-nvd3/src/nv.d3.css' %}"/>
 
             {% block stylesheets %}{% endblock %}
 
@@ -51,6 +52,23 @@
         <script type="text/javascript" src="{% static 'packages/Sliding_login_panel_jquery/js/slide-min.js' %}"></script>
         <script type="text/javascript" src="{% static 'packages/jGrowl-1.2.0/jquery.jgrowl_minimized.js' %}"></script>
         <script type="text/javascript" src="{% static 'packages/dashMenu/dashMenu.js' %}"></script>
+        <script type="text/javascript" src="{% static 'packages/novus-nvd3/lib/d3.v3.js' %}"></script>
+        <script type="text/javascript" src="{% static 'packages/novus-nvd3/nv.d3.js' %}"></script>
+        <script type="text/javascript" src="{% static 'packages/novus-nvd3/src/tooltip.js' %}"></script>
+        <script type="text/javascript" src="{% static 'packages/novus-nvd3/src/utils.js' %}"></script>
+        <script type="text/javascript" src="{% static 'packages/novus-nvd3/src/models/legend.js' %}"></script>
+        <script type="text/javascript" src="{% static 'packages/novus-nvd3/src/models/axis.js' %}"></script>
+        <script type="text/javascript" src="{% static 'packages/novus-nvd3/src/models/scatter.js' %}"></script>
+        <script type="text/javascript" src="{% static 'packages/novus-nvd3/src/models/line.js' %}"></script>
+        <script type="text/javascript" src="{% static 'packages/novus-nvd3/src/models/historicalBar.js' %}"></script>
+        <script type="text/javascript" src="{% static 'packages/novus-nvd3/src/models/linePlusBarChart.js' %}"></script>
+        <script type="text/javascript" src="{% static 'packages/novus-nvd3/src/models/lineWithFocusChart.js' %}"></script>
+        <script type="text/javascript" src="{% static 'packages/novus-nvd3/src/models/multiBar.js' %}"></script>
+        <script type="text/javascript" src="{% static 'packages/novus-nvd3/src/models/multiBarChart.js' %}"></script>
+        <script type="text/javascript" src="{% static 'packages/novus-nvd3/src/models/pie.js' %}"></script>
+        <script type="text/javascript" src="{% static 'packages/novus-nvd3/src/models/pieChart.js' %}"></script>
+        <script type="text/javascript" src="{% static 'packages/novus-nvd3/src/models/multiBarHorizontal.js' %}"></script>
+        <script type="text/javascript" src="{% static 'packages/novus-nvd3/src/models/multiBarHorizontalChart.js' %}"></script>
         <script type="text/javascript">
 
             var global_report_loading = false;

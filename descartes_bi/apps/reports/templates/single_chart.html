@@ -1,6 +1,5 @@
-{% load simplehelpers %}
 {% load i18n %}
-{% load static %}
+
 {% if not chart_series %}
     {% with 'Attention' as title %}
     {% with 'There are no results for the selected parameters, choose other values.' as message %}
@@ -26,24 +25,7 @@
     leg endLocation: {{ chart.legend_location|default:"ne" }}<br />
 
 {% endif %}
-    <link href="{% static 'packages/novus-nvd3/src/nv.d3.css' %}" rel="stylesheet" type="text/css">
-    <script src="{% static 'packages/novus-nvd3/lib/d3.v3.js' %}"></script>
-    <script src="{% static 'packages/novus-nvd3/nv.d3.js' %}"></script>
-    <script src="{% static 'packages/novus-nvd3/src/tooltip.js' %}"></script>
-    <script src="{% static 'packages/novus-nvd3/src/utils.js' %}"></script>
-    <script src="{% static 'packages/novus-nvd3/src/models/legend.js' %}"></script>
-    <script src="{% static 'packages/novus-nvd3/src/models/axis.js' %}"></script>
-    <script src="{% static 'packages/novus-nvd3/src/models/scatter.js' %}"></script>
-    <script src="{% static 'packages/novus-nvd3/src/models/line.js' %}"></script>
-    <script src="{% static 'packages/novus-nvd3/src/models/historicalBar.js' %}"></script>
-    <script src="{% static 'packages/novus-nvd3/src/models/linePlusBarChart.js' %}"></script>
-    <script src="{% static 'packages/novus-nvd3/src/models/lineWithFocusChart.js' %}"></script>
-    <script src="{% static 'packages/novus-nvd3/src/models/multiBar.js' %}"></script>
-    <script src="{% static 'packages/novus-nvd3/src/models/multiBarChart.js' %}"></script>
-    <script src="{% static 'packages/novus-nvd3/src/models/pie.js' %}"></script>
-    <script src="{% static 'packages/novus-nvd3/src/models/pieChart.js' %}"></script>
-    <script src="{% static 'packages/novus-nvd3/src/models/multiBarHorizontal.js' %}"></script>
-    <script src="{% static 'packages/novus-nvd3/src/models/multiBarHorizontalChart.js' %}"></script>
+
     <style>
         body {
           overflow-y:scroll;
@@ -57,13 +39,12 @@
         #chart{{ chart.id }} svg {
             height: 80%;
             margin: 10px;
-            min-width: 100px;
-            min-height: 100px;
+            min-width: 400px;
+            min-height: 400px;
         }
-
     </style>
     <body>
-        <div id="chart{{ chart.id }}" style="margin:2px; color: #666; height:100%;">
+        <div id="chart{{ chart.id }}" style="margin:2px; color: #666; min-height:450px;">
             {% if chart.title %}
                 <h1>{{ chart.title }}</h1>
             {% endif %}
@@ -147,32 +128,31 @@
                 chart = nv.models.multiBarChart()
                     .x(function(d) { return d.x })
                     .y(function(d) { return d.y })
-                    .margin({top: 30, right: 20, bottom: 60, left: 75})
+                    .margin({top: 30, right: 20, bottom: 115, left: 75})
                     .barColor(d3.scale.category10().range())
                     .showLegend(false)
                     .showControls(false);
+                    //.height("300");
 
                 chart.multibar
                     .hideable(true);
 
                 chart.reduceXTicks(false).staggerLabels(true);
 
-                var xTicks = d3.select('.nv-x.nv-axis > g').selectAll('g');
-                xTicks
-                  .selectAll('text')
-                  .style("text-anchor", "end")
-                  .attr('transform', function(d,i,j) { return 'translate (0, 0) rotate(-65 0,10)' }) ;
+                chart.yAxis.showMaxMin(false);
 
                 d3.select('#chart{{chart.id}} svg')
                     .datum(data)
                     .transition().duration(500)
                     .call(chart);
 
-                    var xTicks = d3.select('.nv-x.nv-axis > g').selectAll('g');
-                    xTicks
-                      .selectAll('text')
-                      .style("text-anchor", "end")
-                      .attr('transform', function(d,i,j) { return 'translate (0, 0) rotate(-65 0,10)' })
+                d3.select('#chart{{chart.id}} svg')
+                    .selectAll('.nv-x.nv-axis > g')
+                    .selectAll('g')
+                    .selectAll('text')
+                    .style("text-anchor", "end")
+                    .attr('transform', function(d) { return 'translate (0, 0) rotate(-65 -5,10)' });
+
                 nv.utils.windowResize(chart.update);
 
                 chart.dispatch.on('stateChange', function(e) { nv.log('New State:', JSON.stringify(e)); });

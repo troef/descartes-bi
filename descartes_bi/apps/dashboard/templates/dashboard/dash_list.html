@@ -24,8 +24,9 @@
     }
     svg {
         display: block;
-        min-height: 100%;
-        padding-bottom: 10%;
+        min-height: 400px;
+        min-width: 400px;
+        padding-bottom: 20px;
     }
 </style>
 {% endblock %}
@@ -78,6 +79,7 @@
         // {% endfor %}
 
         {% for key,value in links.items %}
+
             {% if "mapdiv" in key %}
                 $("#dashboard").append('<div class="mapdiv"><h1 id="{{key}}">Map</h1><iframe src="{{value}}" class="map" ></iframe></div>');
             {% else %}
