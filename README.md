@@ -89,3 +89,7 @@ To do
 License
 -------
 Descartes-bi is licensed under the terms of the GNU License version 3, see the included LICENSE file.
+
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/rosarior/descartes-bi/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
