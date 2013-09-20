@@ -32,10 +32,7 @@ from django.utils.translation import ugettext_lazy as _
 from main.exceptions import SeriesError
 from db_drivers.models import BACKEND_LIBRE, DataSource
 
-from .literals import (FILTER_FIELD_CHOICES, SERIES_TYPE_CHOICES,
-    LEGEND_LOCATION_CHOICES, CHART_TYPE_CHOICES, ORIENTATION_CHOICES,
-    UNION_CHOICES)
-from .utils import data_to_js_chart, data_to_js_grid
+from .literals import FILTER_FIELD_CHOICES, SERIES_TYPE_CHOICES, UNION_CHOICES
 
 logger = logging.getLogger(__name__)
 
@@ -110,8 +107,8 @@ class Serie(models.Model):
 
     name = models.CharField(max_length=64, help_text='Internal name.  Do not use spaces or special symbols.', verbose_name=_('name'))
     label = models.CharField(max_length=24, null=True, blank=True, help_text='Label to be shown to the user and to be used for the legend.', verbose_name=_('label'))
-    tick_format1 = models.CharField(max_length=8, choices=SERIES_TYPE_CHOICES, default='St', verbose_name=_('tick format1'))
-    tick_format2 = models.CharField(max_length=8, choices=SERIES_TYPE_CHOICES, default='St', verbose_name=_('tick format2'))
+    tick_format1 = models.CharField(max_length=8, choices=SERIES_TYPE_CHOICES, verbose_name=_('tick format 1'))
+    tick_format2 = models.CharField(max_length=8, choices=SERIES_TYPE_CHOICES, verbose_name=_('tick format 2'))
 
     query = models.TextField(verbose_name=_('query'), help_text=_('SQL query, that returns only 2 fields and may of may be a parameter query.  Include parameters in the format: <field> LIKE %(parameter)s.  Also the SQL wildcard character % must be escaped as %%.'))
     description = models.TextField(null=True, blank=True, help_text='Description of the query, notes and observations.', verbose_name=_('description'))
@@ -121,15 +118,12 @@ class Serie(models.Model):
     validated_person = models.CharField(max_length=32, blank=True, null=True, verbose_name=_('validated by'))
     validation_description = models.TextField(blank=True, null=True, verbose_name=_('validation description'), help_text=_('An explanation or description about how this series was validated.'))
 
-    last_execution_time = models.PositiveIntegerField(blank=True, null=True)
-    avg_execution_time = models.PositiveIntegerField(blank=True, null=True)
-
     def __unicode__(self):
         return self.name
 
-    def get_parents(self):
-        return ', '.join(['"%s"' % r.title for r in self.report_set.all()])
-    get_parents.short_description = _('used by reports')
+    def get_reports(self):
+        return ', '.join(['"%s"' % report_series.report for report_series in ReportSeries.objects.filter(series=self)])
+    get_reports.short_description = _('used by reports')
 
     def get_params(self):
         return '(%s)' % ', '.join([p for p in re.compile(r'%\((.*?)\)').findall(self.query)])
@@ -185,54 +179,17 @@ class Serie(models.Model):
         verbose_name_plural = _('series')
 
 
-class SeriesStatistic(models.Model):
-    timestamp = models.DateTimeField(auto_now_add=True, verbose_name=_('timestamp'))
-    serie = models.ForeignKey(Serie, verbose_name=_('serie'))
-    user = models.ForeignKey(User, verbose_name=_('user'))
-    execution_time = models.PositiveIntegerField(verbose_name=_('execution time'))
-    params = models.CharField(max_length=128, blank=True, null=True, verbose_name=_('parameters'))
-
-    def __unicode__(self):
-        return unicode(self.id)
-
-    class Meta:
-        ordering = ('-id',)
-        verbose_name = _('series statistic')
-        verbose_name_plural = _('series statistics')
-
-
 class Report(models.Model):
     # Base properties
     title = models.CharField(max_length=128, help_text=_('Chart title.'), verbose_name=_('title'))
     description = models.TextField(null=True, blank=True, help_text=_('A description of the report.  This description will also be presented to the user.'), verbose_name=_('description'))
 
-    # Renderer properties
-    type = models.CharField(max_length=2, choices=CHART_TYPE_CHOICES, default='SI', help_text=_('Chart type.'), verbose_name=_('type'))
-    zoom = models.BooleanField(default=False, verbose_name=_('zoom'), help_text=_('Allow the user to zoom in on the chart.'))
-    pointlabels = models.BooleanField(default=False, verbose_name=_('point labels'), help_text=_('Enable point labels displaying the values.'))
-    pointlabels_location = models.CharField(max_length=2, default='n', choices=LEGEND_LOCATION_CHOICES, verbose_name=_('point label location'), help_text=_('The point label position respetive to the series.'))
-    trendline = models.BooleanField(default=False, help_text=_('Show a trendline?'), verbose_name=_('trendline'))
-    highlighter = models.BooleanField(default=False, verbose_name=_('highlighter'))
-    use_one_scale = models.BooleanField(default=False, help_text=_('This options forces all series in chart to use the same scale.'), verbose_name=_('use one scale'))
-    scale_label_override = models.CharField(max_length=32, null=True, blank=True, help_text=_('The scale label to be used when using a single scale per report.'), verbose_name=_('scale label override'))
-    tracking = models.BooleanField(default=False, help_text=_('Draw horizontal and/or vertical tracking lines across the plot to the cursor location.'), verbose_name=_('data tracking'))
-    legend = models.BooleanField(default=False, help_text=_('Show legend?'), verbose_name=_('legend'))
-    legend_location = models.CharField(max_length=2, default='ne', choices=LEGEND_LOCATION_CHOICES, verbose_name=_('legend location'), help_text=_('Select the legend position respetive to the chart.'))
-    orientation = models.CharField(max_length=1, default='v', choices=ORIENTATION_CHOICES, verbose_name=_('report orientation'), help_text=_('Direction the report\'s series will be drawn.'))
+    # Data
     filtersets = models.ManyToManyField(Filterset, null=True, blank=True, verbose_name=_('filter sets'))
-    series = models.ManyToManyField(Serie, through='SerieType', verbose_name=_('series'))
-    #tracking_axis = X,Y, both
 
-    #publish = models.BooleanField(default = False)
-#   validated = models.BooleanField(default = False, verbose_name = _('validated?'))
-#   validated_date = models.DateField(blank = True, null = True, verbose_name = _('validation date'))
-#   validated_person = models.CharField(max_length = 32, blank = True, null = True, verbose_name = _('validated by'))
-
-#   series_label = models.CharField(max_length = 32, null = True, blank = True)
-#   scale_label = models.CharField(max_length = 32, null = True, blank = True)
-#   series_label_rotation = models.IntegerField(default = 0)
-#   scale_label_rotation = models.IntegerField(default = 90)
-#   use_series_label = models.BooleanField(default = True)
+    # Renderer properties
+    renderer = models.TextField(verbose_name=_('renderer'))
+    renderer_options = models.TextField(blank=True, verbose_name=_('renderer options'))
 
     def __unicode__(self):
         return self.title
@@ -246,24 +203,19 @@ class Report(models.Model):
     get_parents.short_description = _('used by menus')
 
     def get_series(self):
-        return ', '.join(['"%s (%s)"' % (serie.serie.name, serie.get_type_display()) for serie in self.serietype_set.all()])
+        return ', '.join(['"%s"' % report_series.series for report_series in self.report_series.all()])
     get_series.short_description = _('series')
 
     # Descartes-NT
     def execute(self, params=None, special_params=None, output_format='chart'):
         series_results = []
-        tick_format1 = []
-        tick_format2 = []
         deferred_list = []
 
-        for serie_type in self.serietype_set.all():
-            tick_format1.append(serie_type.serie.tick_format1)
-            tick_format2.append(serie_type.serie.tick_format2)
-
+        for report_series in self.report_series.all():
             # Launch all serie queries in parallel
             pipe_a, pipe_b = Pipe()
             process = Process(
-                target=serie_type.serie.execute,
+                target=report_series.series.execute,
                 kwargs={'pipe': pipe_a, 'params': params, 'special_params': special_params})
             process.start()
             deferred_list.append({'series': serie_type.serie, 'pipe': pipe_b, 'process': process})
@@ -273,7 +225,7 @@ class Report(models.Model):
             deferred['process'].join()
             series_results.append(json.dumps(deferred['pipe'].recv()))
 
-        return series_results, tick_format1, tick_format2
+        return series_results
 
     class Meta:
         ordering = ['title']
@@ -281,41 +233,15 @@ class Report(models.Model):
         verbose_name_plural = _('reports')
 
 
-class ReportStatistic(models.Model):
-    timestamp = models.DateTimeField(auto_now_add=True, verbose_name=_('timestamp'))
-    report = models.ForeignKey(Report, verbose_name=_('report'))
-    user = models.ForeignKey(User, verbose_name=_('user'))
-    execution_time = models.PositiveIntegerField(verbose_name=_('execution time'))
-    params = models.CharField(max_length=128, blank=True, null=True, verbose_name=_('parameters'))
+class ReportSeries(models.Model):
+    report = models.ForeignKey(Report, verbose_name=_('report'), related_name='report_series')
+    series = models.ForeignKey(Serie, verbose_name=_('series'))
 
-    def __unicode__(self):
-        return unicode(self.id)
+    properties = models.TextField(blank=True, verbose_name=_('properties'))
 
     class Meta:
-        ordering = ('-id',)
-        verbose_name = _('report statistic')
-        verbose_name_plural = _('report statistics')
-
-
-class SerieType(models.Model):
-    """Hold serie's configuration that is specific to a report"""
-
-    SERIES_TYPE_CHOICES = (
-        ('BA', _('Bars')),
-        ('LI', _('Lines')),
-    )
-    serie = models.ForeignKey(Serie, verbose_name=_('serie'))
-    report = models.ForeignKey(Report, verbose_name=_('chart'))
-    type = models.CharField(max_length=2, choices=SERIES_TYPE_CHOICES, default='BA', verbose_name=_('type'))
-    zerobase = models.BooleanField(default=True, verbose_name=_('zerobase'), help_text=_('Force this serie\'s scale to start at integer number 0.'))
-
-    def __unicode__(self):
-        return unicode(self.serie)
-
-    class Meta:
-        #ordering = ['title']
-        verbose_name = _('serie')
-        verbose_name_plural = _('series')
+        verbose_name = _('report series')
+        verbose_name_plural = _('reports series')
 
 
 class Menuitem(models.Model):

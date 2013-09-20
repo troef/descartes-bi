@@ -8,5 +8,7 @@ class Website(models.Model):
     series = models.ForeignKey('reports.Serie', verbose_name=_(u"series"), blank=True, null=True)
     filterset = models.ManyToManyField('reports.Filterset', verbose_name=_(u'filterset'), blank=True, null=True)
 
+    #Add username & password
+
     def __unicode__(self):
         return self.label

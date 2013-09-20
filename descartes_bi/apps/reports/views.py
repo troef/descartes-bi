@@ -40,20 +40,6 @@ from .utils import get_allowed_object_for_user
 logger = logging.getLogger(__name__)
 
 
-def ajax_report_benchmarks(request, report_id):
-    #TODO: change this to get values from serie_statistics instead
-    report = get_object_or_404(Report, pk=report_id)
-    result = ''
-    if request.user.is_staff:
-        result = '<ul>'
-        for s in report.series.all():
-            result += "<li>%s</li><br />" % _('"%(serie)s" = Lastest run: %(last)ss; Average: %(avg)ss') % {'serie': s.label or unicode(s), 'last': s.last_execution_time or '0', 'avg': s.avg_execution_time or '0'}
-
-        result += '</ul>'
-
-    return HttpResponse(result)
-
-
 def ajax_filter_form(request, report_id):
     #TODO: access control
     if request.method == 'GET':
@@ -144,32 +130,23 @@ def ajax_report(request, report_id):
                     params[filter.name] = value
 
     try:
-        series_results, tick_format1, tick_format2 = report.execute(params, special_params, output_type)
+        series_results = report.execute(params, special_params, output_type)
     except SeriesError as exception:
         return render_to_response('messagebox-error.html', {'title': _('Series error'), 'message': exception})
 
-    if report.orientation == 'v':
-        h_axis = "x"
-        v_axis = "y"
-    else:
-        h_axis = "y"
-        v_axis = "x"
+    #data = {
+    #    'backend_libre': BACKEND_LIBRE,
+    #    'series_results': series_results,
+    #    'report_series': report.report_series.all(),
+    #    'ajax': True,
+    #    'report': report,
+    #}
 
-    data = {
-        'backend_libre': BACKEND_LIBRE,
-        'tick_format1': tick_format1,
-        'tick_format2': tick_format2,
-        'series_results': series_results,
-        'chart_series': report.serietype_set.all(),
-        'ajax': True,
-        'chart': report,
-    }
-
-    if output_type == 'chart':
-        return render_to_response('single_chart.html', data,
-            context_instance=RequestContext(request))
-    elif output_type == 'grid':
-        return render_to_response('single_grid.html', data,
-            context_instance=RequestContext(request))
-    else:
-        return render_to_response('messagebox-error.html', {'title': _(u'Error'), 'message': _(u"Unknown output type (chart, table, etc).")})
+    ##if output_type == 'chart':
+    # #   return render_to_response('single_chart.html', data,
+    #        context_instance=RequestContext(request))
+    #elif output_type == 'grid':
+    #    return render_to_response('single_grid.html', data,
+    #        context_instance=RequestContext(request))
+    #else:
+    #    return render_to_response('messagebox-error.html', {'title': _(u'Error'), 'message': _(u"Unknown output type (chart, table, etc).")})

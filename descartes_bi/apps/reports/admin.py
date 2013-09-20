@@ -23,9 +23,9 @@ from django.contrib import admin
 from django.db.models.fields import CharField
 from django.utils.translation import ugettext_lazy as _
 
-from .models import (FilterExtra, SerieType, GroupPermissionFilterValues,
-    UserPermissionFilterValues, UserPermission, GroupPermission, Report, Serie,
-    Filterset, Filter, Menuitem, SeriesStatistic, ReportStatistic)
+from .models import (Filter, FilterExtra, Filterset, GroupPermissionFilterValues,
+    GroupPermission, Menuitem, Report, ReportSeries, Serie, UserPermission,
+    UserPermissionFilterValues)
 
 
 #clone_objects Copyright (C) 2009  Rune Bromer
@@ -153,7 +153,7 @@ class FiltersetAdmin(admin.ModelAdmin):
 class SerieAdmin(admin.ModelAdmin):
     search_fields = ['name', 'label']
     search_fields_verbose = ['Name', 'Label']
-    list_display = ('name', 'label', 'get_params', 'get_parents', 'data_source', 'validated')
+    list_display = ('name', 'label', 'get_params', 'get_reports', 'data_source', 'validated')
     list_editable = ('data_source', 'label')
     order = 2
     fieldsets = (
@@ -184,24 +184,21 @@ class SerieAdmin(admin.ModelAdmin):
     clone.short_description = _(u"Copy the selected object")
 
 
-class SerieInline(admin.StackedInline):
-    model = SerieType
+class ReportSeriesInline(admin.StackedInline):
+    model = ReportSeries
     extra = 1
     classes = ('collapse-open',)
     allow_add = True
 
 
 class ReportAdmin(admin.ModelAdmin):
-    radio_fields = {'type': admin.VERTICAL, 'orientation': admin.HORIZONTAL}
-    list_display = ('title', 'description', 'type', 'get_series',
+    list_display = ('title', 'description', 'get_series',
                     'get_parents')
     filter_horizontal = ('filtersets',)
     search_fields = ['title', 'description']
     search_fields_verbose = ['Title', 'Description']
-    exclude = ('series',)
-    inlines = [
-        SerieInline,
-    ]
+    #exclude = ('series',)
+    inlines = [ReportSeriesInline]
     order = 3
 
     actions = ['clone']
@@ -225,26 +222,6 @@ class MenuitemAdmin(admin.ModelAdmin):
     order = 4
 
 
-class SeriesStatisticAdmin(ReadOnlyAdminFields, admin.ModelAdmin):
-    date_hierarchy = 'timestamp'
-    list_filter = ['serie', 'user']
-    list_display = ['id', 'timestamp', 'serie', 'user', 'execution_time',
-                    'params']
-    readonly = ['serie', 'user', 'execution_time', 'params']
-    order = 10
-    actions = None
-
-
-class ReportStatisticAdmin(ReadOnlyAdminFields, admin.ModelAdmin):
-    date_hierarchy = 'timestamp'
-    list_filter = ['report', 'user']
-    list_display = ['id', 'timestamp', 'report', 'user', 'execution_time',
-                    'params']
-    readonly = ['report', 'user', 'execution_time', 'params']
-    order = 11
-    actions = None
-
-
 admin.site.register(UserPermission, UserPermissionAdmin)
 admin.site.register(GroupPermission, GroupPermissionAdmin)
 admin.site.register(Report, ReportAdmin)
@@ -252,5 +229,3 @@ admin.site.register(Serie, SerieAdmin)
 admin.site.register(Filterset, FiltersetAdmin)
 admin.site.register(Filter, FilterAdmin)
 admin.site.register(Menuitem, MenuitemAdmin)
-admin.site.register(ReportStatistic, ReportStatisticAdmin)
-admin.site.register(SeriesStatistic, SeriesStatisticAdmin)

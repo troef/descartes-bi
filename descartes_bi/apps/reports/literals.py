@@ -27,29 +27,6 @@ SERIES_TYPE_CHOICES = (
 
 )
 
-CHART_TYPE_CHOICES = (
-    ('SI', _('Standard X,Y')),
-    ('SH', _('Horizontal X,Y')),
-    ('PI', _('Pie chart')),
-    ('LB', _('Line Plus Bar Chart')),
-    ('LI', _('Line chart')),
-    ('LF', _('Line chart with Focus')),
-)
-LEGEND_LOCATION_CHOICES = (
-    ('nw', _('North-West')),
-    ('n', _('North')),
-    ('ne', _('North-East')),
-    ('e', _('East')),
-    ('se', _('South-East')),
-    ('s', _('South')),
-    ('sw', _('South-West')),
-    ('w', _('West')),
-)
-ORIENTATION_CHOICES = (
-    ('h', _('Horizontal')),
-    ('v', _('Vertical')),
-)
-
 UNION_CHOICES = (
     ('E', _('Exclusive')),
     ('I', _('Inclusive')),
