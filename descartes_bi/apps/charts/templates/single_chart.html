@@ -1,30 +1,18 @@
 {% load i18n %}
 
-{% if not chart_series %}
+{% if 0 %}
+    QUERY: {{ query }}<br />
+    PARAMS: {{ params }}<br />
+    series_results: {{ series_results }}<br />
+{% endif %}
+
+{% if not series_results %}
     {% with 'Attention' as title %}
     {% with 'There are no results for the selected parameters, choose other values.' as message %}
     {% include "messagebox-attention.html" %}
     {% endwith %}
     {% endwith %}
 {% else %}
-{% if 0 %}
-    QUERY: {{ query }}<br />
-    PARAMS: {{ params }}<br />
-    chart_series: {{ tick_format1 }}<br />
-    chart_series: {{ tick_format2 }}<br />
-    SERIES_RESULTS: {{series_results }}<br />
-    CHART_DATA: {{ chart_data }}<br />
-    chart.trendline : {{ chart.trendline }}<br />
-    chart.pointlabels: {{ chart.pointlabels}}<br />
-    chart.highliter: {{ chart.highlighter}}<br />
-    chart.type : {{chart.type}}<br />
-    chart.title: {{ chart.title }}<br />
-    chart_data|safe: {{ chart_data|safe }} <br />
-    chart.legend: {{chart.legend}}<br />
-    chart.series_label : {{ chart.series_label }}<br />
-    leg endLocation: {{ chart.legend_location|default:"ne" }}<br />
-
-{% endif %}
 
     <style>
         body {
@@ -86,17 +74,18 @@
             });
 
             // Insert chart legends and set graph type into each series
-            {% for chart_serie in chart_series %}
-                data[{{ forloop.counter0 }}]["key"] = "{{ chart_serie.serie.label }}"
+            {% for chart_series in report.report_series.all %}
+                data[{{ forloop.counter0 }}]["key"] = "{{ chart_series.series.label }}"
 
-                {% if chart_serie.type == 'BA' %}
+                {% if chart_series.type == 'BA' %}
                     // Is a bar type series
                     data[{{ forloop.counter0 }}]["bar"] = true
                 {% endif %}
 
             {% endfor %}
             // If Standart X,Y Horizontal Chart
-            {% ifequal chart.type 'SH' %}
+            {#{% ifequal chart.type 'SH' %}#}
+            {% if 1 %}
             var chart;
             nv.addGraph(function() {
               chart = nv.models.multiBarHorizontalChart()
@@ -121,7 +110,7 @@
 
               return chart;
             });
-            {% endifequal %}
+            {% endif %}
             {% ifequal chart.type 'SI' %}
                 var chart;
                 nv.addGraph(function() {

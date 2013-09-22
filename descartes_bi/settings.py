@@ -145,6 +145,7 @@ INSTALLED_APPS = (
     'common',
     'main',
     'db_drivers',
+    'charts',
     'reports',
     'mptt',
     'dashboard',

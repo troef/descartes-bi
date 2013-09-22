@@ -17,10 +17,12 @@ from __future__ import absolute_import
 #    You should have received a copy of the GNU General Public License
 #    along with descartes-bi.  If not, see <http://www.gnu.org/licenses/>.
 #
+from django.contrib.auth.models import User
+
+from .models import Report, Menuitem, GroupPermission, UserPermission
 
 
 def get_allowed_object_for_user(user):
-    from .models import Report, Menuitem, GroupPermission, UserPermission, User, SeriesStatistic, ReportStatistic
 
     reports_allowed = []
     menuitems_allowed = []

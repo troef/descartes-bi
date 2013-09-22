@@ -22,17 +22,17 @@ import logging
 import json
 import re
 
+from django.contrib.auth.models import User
 from django.db import connections
 from django.http import HttpResponse
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.utils.translation import ugettext as _
 
-from db_drivers.models import BACKEND_LIBRE
 from main.exceptions import SeriesError
 
 from .forms import FilterForm
-from .models import Report, Menuitem, GroupPermission, UserPermission, User, SeriesStatistic, ReportStatistic
+from .models import Report, Menuitem, GroupPermission, UserPermission
 from .literals import FILTER_TYPE_DATE, FILTER_TYPE_COMBO
 from .utils import get_allowed_object_for_user
 
@@ -98,55 +98,7 @@ def ajax_report(request, report_id):
          {'title': _(u'Permission error'),
           'message': _(u"Insufficient permissions to access this area.")})
 
-    output_type = request.GET.get('output_type', 'chart')
-    params = {}
-    special_params = {}
-
-    if report.filtersets.all():
-        filtersets = report.filtersets
-        if request.method == 'GET':
-            filter_form = FilterForm(filtersets, request.user, request.GET)
-        else:
-            filter_form = FilterForm(filtersets, request.user)
-
-        for set in filtersets.all():
-            for filter in set.filters.all():
-
-                if filter_form.is_valid():
-                    value = filter_form.cleaned_data[filter.name]
-                    if not value:
-                        filter.execute_function()
-                        value = filter.default
-
-                else:
-                    filter.execute_function()
-                    value = filter.default
-
-                if filter.type == FILTER_TYPE_DATE:
-                    params[filter.name] = value.strftime("%Y%m%d")
-                elif filter.type == FILTER_TYPE_COMBO:
-                    special_params[filter.name] = '(' + ((''.join(['%s'] * len(value)) % tuple(value))) + ')'
-                else:
-                    params[filter.name] = value
-
     try:
-        series_results = report.execute(params, special_params, output_type)
+        return report.render(request)
     except SeriesError as exception:
         return render_to_response('messagebox-error.html', {'title': _('Series error'), 'message': exception})
-
-    #data = {
-    #    'backend_libre': BACKEND_LIBRE,
-    #    'series_results': series_results,
-    #    'report_series': report.report_series.all(),
-    #    'ajax': True,
-    #    'report': report,
-    #}
-
-    ##if output_type == 'chart':
-    # #   return render_to_response('single_chart.html', data,
-    #        context_instance=RequestContext(request))
-    #elif output_type == 'grid':
-    #    return render_to_response('single_grid.html', data,
-    #        context_instance=RequestContext(request))
-    #else:
-    #    return render_to_response('messagebox-error.html', {'title': _(u'Error'), 'message': _(u"Unknown output type (chart, table, etc).")})

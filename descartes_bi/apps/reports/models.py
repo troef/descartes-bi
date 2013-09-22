@@ -29,8 +29,10 @@ from django.contrib.auth.models import Group
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
+from charts.literals import BACKEND_CHOICES
+from charts.utils import import_backend
+from db_drivers.models import DataSource
 from main.exceptions import SeriesError
-from db_drivers.models import BACKEND_LIBRE, DataSource
 
 from .literals import FILTER_FIELD_CHOICES, SERIES_TYPE_CHOICES, UNION_CHOICES
 
@@ -143,7 +145,6 @@ class Serie(models.Model):
         return ' ,'.join(['%s' % f for f in filters])
     get_filters.short_description = _('filters')
 
-    # Descartes-NT
     def execute(self, **kwargs):
         params = kwargs.get('params')
         special_params = kwargs.get('special_params')
@@ -188,7 +189,7 @@ class Report(models.Model):
     filtersets = models.ManyToManyField(Filterset, null=True, blank=True, verbose_name=_('filter sets'))
 
     # Renderer properties
-    renderer = models.TextField(verbose_name=_('renderer'))
+    renderer = models.PositiveIntegerField(choices=BACKEND_CHOICES, verbose_name=_('renderer'))
     renderer_options = models.TextField(blank=True, verbose_name=_('renderer options'))
 
     def __unicode__(self):
@@ -206,10 +207,51 @@ class Report(models.Model):
         return ', '.join(['"%s"' % report_series.series for report_series in self.report_series.all()])
     get_series.short_description = _('series')
 
-    # Descartes-NT
-    def execute(self, params=None, special_params=None, output_format='chart'):
+    def get_backend(self):
+        return import_backend(self.renderer)
+
+    def get_parameter_values(self, request):
+        params = {}
+        special_params = {}
+
+        if self.filtersets.all():
+            filtersets = self.filtersets
+            if request.method == 'GET':
+                filter_form = FilterForm(filtersets, request.user, request.GET)
+            else:
+                filter_form = FilterForm(filtersets, request.user)
+
+            for set in filtersets.all():
+                for filter in set.filters.all():
+
+                    if filter_form.is_valid():
+                        value = filter_form.cleaned_data[filter.name]
+                        if not value:
+                            filter.execute_function()
+                            value = filter.default
+
+                    else:
+                        filter.execute_function()
+                        value = filter.default
+
+                    if filter.type == FILTER_TYPE_DATE:
+                        params[filter.name] = value.strftime("%Y%m%d")
+                    elif filter.type == FILTER_TYPE_COMBO:
+                        special_params[filter.name] = '(' + ((''.join(['%s'] * len(value)) % tuple(value))) + ')'
+                    else:
+                        params[filter.name] = value
+
+        return params, special_params
+
+    def render(self, request):
+        backend_class = self.get_backend()
+        backend = backend_class()
+        return backend.render(self, request)
+
+    def execute(self, request):
         series_results = []
         deferred_list = []
+        params, special_params = self.get_parameter_values(request)
 
         for report_series in self.report_series.all():
             # Launch all serie queries in parallel
@@ -218,7 +260,7 @@ class Report(models.Model):
                 target=report_series.series.execute,
                 kwargs={'pipe': pipe_a, 'params': params, 'special_params': special_params})
             process.start()
-            deferred_list.append({'series': serie_type.serie, 'pipe': pipe_b, 'process': process})
+            deferred_list.append({'series': report_series.series, 'pipe': pipe_b, 'process': process})
 
         for deferred in deferred_list:
             # Collect the serires queries results
@@ -238,6 +280,9 @@ class ReportSeries(models.Model):
     series = models.ForeignKey(Serie, verbose_name=_('series'))
 
     properties = models.TextField(blank=True, verbose_name=_('properties'))
+
+    def __unicode__(self):
+        return unicode(self.series)
 
     class Meta:
         verbose_name = _('report series')
