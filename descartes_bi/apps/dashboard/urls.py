@@ -1,8 +1,10 @@
+from __future__ import absolute_import
+
 from django.conf.urls import patterns, url
 
-from dashboard import views
+from .views import index, display
 
 urlpatterns = patterns('',
-    url(r'^$', views.index, name='index'),
-    url(r'^dash_list/(?P<dash_id>\d+)/$', views.display),
+    url(r'^$', index, name='index'),
+    url(r'^dash_list/(?P<dash_id>\d+)/$', display),
 )

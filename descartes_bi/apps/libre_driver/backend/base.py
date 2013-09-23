@@ -7,7 +7,9 @@ LIBRE database backend for Django.
 import logging
 
 from django.core.exceptions import ImproperlyConfigured
-from django.db.backends import *
+from django.db.backends import (BaseDatabaseOperations,
+    BaseDatabaseClient, BaseDatabaseIntrospection, BaseDatabaseWrapper,
+    BaseDatabaseFeatures, BaseDatabaseValidation)
 from django.db.backends.creation import BaseDatabaseCreation
 
 import requests
@@ -19,6 +21,7 @@ def complain(*args, **kwargs):
     raise ImproperlyConfigured("settings.DATABASES is improperly configured. "
                                "Please supply the ENGINE value. Check "
                                "settings documentation for more details.")
+
 
 def ignore(*args, **kwargs):
     pass

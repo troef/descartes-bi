@@ -17,23 +17,16 @@ from __future__ import absolute_import
 #    You should have received a copy of the GNU General Public License
 #    along with descartes-bi.  If not, see <http://www.gnu.org/licenses/>.
 #
-import datetime
 import logging
-import json
-import re
 
-from django.contrib.auth.models import User
-from django.db import connections
 from django.http import HttpResponse
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.utils.translation import ugettext as _
 
-from main.exceptions import SeriesError
-
+from .exceptions import SeriesError
 from .forms import FilterForm
-from .models import Report, Menuitem, GroupPermission, UserPermission
-from .literals import FILTER_TYPE_DATE, FILTER_TYPE_COMBO
+from .models import Report
 from .utils import get_allowed_object_for_user
 
 
@@ -89,8 +82,6 @@ def ajax_report_validation(request, report_id):
 
 
 def ajax_report(request, report_id):
-    start_time = datetime.datetime.now()
-
     report = get_object_or_404(Report, pk=report_id)
 
     if report not in get_allowed_object_for_user(request.user)['reports']:

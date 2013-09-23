@@ -8,6 +8,7 @@ def get_website(request, website):
     context = {}
     context['website'] = website.filterset.exists()
     context['label'] = website.label
+
     #Compose the URL to create LQL queries
     if website.series:
         url = website.series.data_source.load_backend().cursor().url
@@ -36,8 +37,11 @@ def get_website(request, website):
     return render_to_response(page, context,
                               context_instance=RequestContext(request))
 
-#Use function to convert string to int.
+
 def get_dict(filter_form):
+    """
+    Use function to convert string to int.
+    """
     value = {}
     for key in filter_form.data:
         if filter_form.data[key].isdigit():

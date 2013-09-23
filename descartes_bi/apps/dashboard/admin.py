@@ -6,6 +6,7 @@ from dashboard.models import Dash, Selected_report
 class DashAdmin(admin.ModelAdmin):
     filter_horizontal = ('selection_list',)
 
+
 class SelectReportAdmin(admin.ModelAdmin):
     pass
 

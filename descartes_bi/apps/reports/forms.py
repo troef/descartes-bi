@@ -22,7 +22,6 @@ from django import forms
 from django.utils.translation import ugettext_lazy as _
 
 from .literals import FILTER_TYPE_DATE, FILTER_TYPE_COMBO, FILTER_TYPE_MONTH
-from .utils import get_user_filters_limits
 
 
 class FilterForm(forms.Form):
@@ -39,7 +38,7 @@ class FilterForm(forms.Form):
                                                                  widget=forms.DateInput(format='%m/%d/%Y',
                                                                                         attrs={'size': '10'}))
                 elif f.filter.type == FILTER_TYPE_COMBO:
-                    results = get_user_filters_limits(user)
+                    results = []
                     #TODO: try this later on
                     #if f.filter in results and 'mask' in results[f.filter]:
                     try:

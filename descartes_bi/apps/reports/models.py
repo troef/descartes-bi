@@ -19,7 +19,6 @@ from __future__ import absolute_import
 #
 
 import datetime
-import json
 import logging
 from multiprocessing import Pipe, Process
 import re
@@ -32,9 +31,11 @@ from django.utils.translation import ugettext_lazy as _
 from charts.literals import BACKEND_CHOICES
 from charts.utils import import_backend
 from db_drivers.models import DataSource
-from main.exceptions import SeriesError
 
-from .literals import FILTER_FIELD_CHOICES, SERIES_TYPE_CHOICES, UNION_CHOICES
+from .exceptions import SeriesError
+from .forms import FilterForm
+from .literals import FILTER_FIELD_CHOICES, SERIES_TYPE_CHOICES, UNION_CHOICES, FILTER_TYPE_DATE, FILTER_TYPE_COMBO
+
 
 logger = logging.getLogger(__name__)
 
@@ -132,10 +133,6 @@ class Serie(models.Model):
     get_params.short_description = _('parameters')
 
     def get_filters(self):
-        #TODO: optmize
-        #return [fs for fs in [r.filtersets.all()] for r in self.report_set.all()]
-        #return ', '.join([''%s'' % f.title for f in self.report_set.all()])
-
         filters = []
         for report in self.report_set.all():
             for set in report.filtersets.all():
@@ -152,11 +149,11 @@ class Serie(models.Model):
 
         if special_params:
             for sp in special_params.keys():
-                query = re.compile(r'%\(' + sp + r'\)s').sub(special_params[sp], query)
+                query = re.compile(r'%\(' + sp + r'\)s').sub(special_params[sp], self.query)
         else:
             query = self.query
 
-        if re.compile(r'[^%]%[^%(]').search(self.query):
+        if re.compile(r'[^%]%[^%(]').search(query):
             SeriesError(_('Single \'%\'found, replace with double \'%%\' to properly escape the SQL wildcard caracter \'%\'.'))
 
         cursor = self.data_source.load_backend().cursor()
@@ -164,8 +161,8 @@ class Serie(models.Model):
             params = {}
 
         try:
-            logger.debug('self.query: %s, params: %s' % (self.query, params))
-            cursor.execute(self.query, params)
+            logger.debug('self.query: %s, params: %s' % (query, params))
+            cursor.execute(query, params)
         except Exception as exception:
             raise SeriesError('Cursor error: %s' % exception)
 
@@ -235,7 +232,7 @@ class Report(models.Model):
                         value = filter.default
 
                     if filter.type == FILTER_TYPE_DATE:
-                        params[filter.name] = value.strftime("%Y%m%d")
+                        params[filter.name] = value.strftime('%Y%m%d')
                     elif filter.type == FILTER_TYPE_COMBO:
                         special_params[filter.name] = '(' + ((''.join(['%s'] * len(value)) % tuple(value))) + ')'
                     else:
@@ -265,7 +262,8 @@ class Report(models.Model):
         for deferred in deferred_list:
             # Collect the serires queries results
             deferred['process'].join()
-            series_results.append(json.dumps(deferred['pipe'].recv()))
+            #series_results.append(json.dumps(deferred['pipe'].recv()))
+            series_results.append(deferred['pipe'].recv())
 
         return series_results
 

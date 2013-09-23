@@ -161,7 +161,7 @@ class SerieAdmin(admin.ModelAdmin):
             'fields': ('name', 'label')
         }),
         (_('Data'), {
-            'fields': ('data_source', 'tick_format1', 'tick_format2','query', 'description')
+            'fields': ('data_source', 'tick_format1', 'tick_format2', 'query', 'description')
         }),
         (_(u'Validation'), {
             'classes': ('collapse-open',),

@@ -54,10 +54,8 @@ class NamespaceForm(forms.ModelForm):
 
         #Should not save multiple menu items
         # TODO: Improve
-        if ((has_selected_menu and (has_selected_dash or has_selected_website))
-            or (has_selected_dash and (has_selected_menu or has_selected_website))
-            or (has_selected_website and (has_selected_menu or has_selected_dash))):
-                message = ("""Multiple menu items.""")
-                raise forms.ValidationError(message)
+        if ((has_selected_menu and (has_selected_dash or has_selected_website)) or (has_selected_dash and (has_selected_menu or has_selected_website)) or (has_selected_website and (has_selected_menu or has_selected_dash))):
+            message = ("""Multiple menu items.""")
+            raise forms.ValidationError(message)
 
         return self.cleaned_data

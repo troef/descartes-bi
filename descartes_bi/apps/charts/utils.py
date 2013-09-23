@@ -2,8 +2,6 @@ from __future__ import absolute_import
 
 import importlib
 
-from django.utils.translation import ugettext_lazy as _
-
 from .literals import BACKEND_CLASSES
 
 
