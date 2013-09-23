@@ -14,7 +14,7 @@ sys.path.append(os.path.join(PROJECT_ROOT, 'shared_apps'))
 sys.path.append(os.path.join(PROJECT_ROOT, '3rd_party_apps'))
 
 PROJECT_NAME = 'descartes'
-PROJECT_TITLE = 'Descartes'
+PROJECT_TITLE = 'Descartes BI'
 
 DEBUG = False
 DEVELOPMENT = False

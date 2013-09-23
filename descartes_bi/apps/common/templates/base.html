@@ -300,11 +300,15 @@
 
         <div id="header"  >
             <!--{% project_name %}-->
-                <div style="float:left;">
-                    <h1 style="text-align: center; font-size: 35px; margin-top: 0px; margin-bottom: 0px;" >
-                        <a href="/" style="color: white;"><img src="{% static 'images/logo2013.png' %}" alt="project logo" /></a>
-                    </h1>
-                </div>
+            <div style="float:left;">
+                <h1 style="text-align: center; font-size: 35px; margin-top: 0px; margin-bottom: 0px;" >
+                    <a href="/" style="color: white;"><img src="{% static 'images/word_logo.png' %}" alt="project logo" /></a>
+                </h1>
+            </div>
+            <div style="float:left; margin-top: 30px; margin-left: 30px;">
+                <h2><strong>{% trans 'A Web based business intelligence software' %}</strong></h2>
+                {% trans 'Copyright (C) 2010 Roberto Rosario' %}
+            </div>
         </div> <!-- hd -->
 
         <div class="navigation">
@@ -401,10 +405,6 @@
                 <!-- Column 2 end -->
             </div>
         </div>
-        </div>
-        <div class="footer">
-            <h2><strong>{% trans 'A Web based business intelligence software' %}</strong></h2>
-            {% trans 'Copyright (C) 2010  Roberto Rosario' %}
         </div>
     </body>
 </html>
