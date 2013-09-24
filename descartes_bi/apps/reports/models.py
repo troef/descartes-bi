@@ -262,7 +262,6 @@ class Report(models.Model):
         for deferred in deferred_list:
             # Collect the serires queries results
             deferred['process'].join()
-            #series_results.append(json.dumps(deferred['pipe'].recv()))
             series_results.append(deferred['pipe'].recv())
 
         return series_results
