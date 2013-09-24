@@ -40,9 +40,6 @@ urlpatterns = patterns('',
 )
 
 if settings.DEVELOPMENT:
-    from django.contrib.staticfiles.urls import staticfiles_urlpatterns
-    urlpatterns += staticfiles_urlpatterns()
-
     if 'rosetta' in settings.INSTALLED_APPS:
         urlpatterns += patterns('',
             url(r'^rosetta/', include('rosetta.urls'), name='rosetta'),
