@@ -143,6 +143,7 @@ INSTALLED_APPS = (
     'compressor',
     'south',
     'common',
+    'web_theme',
     'main',
     'db_drivers',
     'charts',

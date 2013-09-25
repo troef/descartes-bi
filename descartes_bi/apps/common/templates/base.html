@@ -1,28 +1,24 @@
+{% extends "web_theme_base.html" %}
 {% load i18n %}
 {% load static %}
 {% load menubuilder %}
 {% load project_tags %}
 {% load compress %}
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
-    <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-
+{% block web_theme_head %}
         {% block keywords %}{% endblock %}
         <link rel="shortcut icon" type="image/png" href="{% static 'images/favicon.ico' %}" />
 
         {% compress css %}
-            <link type="text/css" href="{% static 'css/layout.css' %}" rel="stylesheet" media="screen"/>
-            <link type="text/css" href="{% static 'css/theme_screen.css' %}" rel="stylesheet" media="screen" />
-            <link type="text/css" href="{% static 'css/theme_print.css' %}" rel="stylesheet" media="print" />
-            <link type="text/css" rel="stylesheet" href="{% static 'packages/jquery-ui-1.10.3/themes/smoothness/jquery-ui-1.10.3.custom.css' %}" />
-            <link type="text/css" rel="stylesheet" href="{% static 'packages/superfish-1.7.2/css/superfish.css' %}" media="screen" />
-            <link type="text/css" rel="stylesheet" href="{% static 'packages/Sliding_login_panel_jquery/css/slide.css' %}" media="screen" />
-            <link type="text/css" rel="stylesheet" href="{% static 'packages/jGrowl-1.2.0/jquery.jgrowl.css' %}" media="screen" />
-            <link type="text/css" href="{% static 'css/artemisMod.css' %}" rel="stylesheet" media="screen"/>
-            <link type="text/css" rel="stylesheet" href="{% static 'packages/dashMenu/dashMenu.css' %}" media="screen"/>
+            {#<link type="text/css" href="{% static 'css/layout.css' %}" rel="stylesheet" media="screen"/>#}
+            {#<link type="text/css" href="{% static 'css/theme_screen.css' %}" rel="stylesheet" media="screen" />#}
+            {#<link type="text/css" href="{% static 'css/theme_print.css' %}" rel="stylesheet" media="print" />#}
+            {#<link type="text/css" rel="stylesheet" href="{% static 'packages/jquery-ui-1.10.3/themes/smoothness/jquery-ui-1.10.3.custom.css' %}" />#}
+            {#<link type="text/css" rel="stylesheet" href="{% static 'packages/superfish-1.7.2/css/superfish.css' %}" media="screen" />#}
+            {#<link type="text/css" rel="stylesheet" href="{% static 'packages/Sliding_login_panel_jquery/css/slide.css' %}" media="screen" />#}
+            {#<link type="text/css" rel="stylesheet" href="{% static 'packages/jGrowl-1.2.0/jquery.jgrowl.css' %}" media="screen" />#}
+            {#<link type="text/css" href="{% static 'css/artemisMod.css' %}" rel="stylesheet" media="screen"/>#}
+            {#<link type="text/css" rel="stylesheet" href="{% static 'packages/dashMenu/dashMenu.css' %}" media="screen"/>#}
             <link type="text/css" rel="stylesheet" href="{% static 'packages/novus-nvd3/src/nv.d3.css' %}"/>
 
             {% block stylesheets %}{% endblock %}
@@ -150,16 +146,7 @@
                     $("#loading").fadeOut("fast");
                 });
 
-                $('ul.sf-menu').supersubs({
-                    minWidth: 12,
-                    maxWidth: 39,
-                    extraWidth: 1
-                }).superfish({
-                    animation: {opacity:'show',height:'show'},
-                    delay: 140,
-                    speed: 100
-                });
-                $('.ajax-button').click(function() {
+                 $('.ajax-button').click(function() {
                     $(this).parent().parent().hide();
                     if (global_report_loading) {
                         //TODO: use new growl app
@@ -199,11 +186,6 @@
                     return false;
                 });
 
-                {% if user.is_anonymous %}
-                    load_and_bind("#login_form_wrapper", ".login_panel_form", "{% url 'my_login' %}?next={% url 'my_login' %}");
-                {% else %}
-                    load_and_bind("#login_form_wrapper", ".login_panel_form", "{% url 'my_password_change' %}");
-                {% endif %}
             });
         </script>
         {% block javascript %}{% endblock %}
@@ -211,14 +193,9 @@
 
         <title>{% project_name %}{% block title %}{% endblock %}</title>
 
-    </head>
-    <body>
-        <form><input id="current_report" type="hidden" value="" /></form>
-    <div id="jgrowl-container" class="top-right" style="top: 50px;"></div>
-    <!-- Login -->
-    <div id="toppanel">
-        <div id="panel">
+    {% endblock web_theme_head %}
 
+    {% comment %}
             <div class="content clearfix">
                 {% if not user.is_anonymous %}
                     <div class="left right">
@@ -251,24 +228,9 @@
                     </div>
                 {% endif %}
 
-                    <div class="left right">
-                        <br />
-                        <h1>{% trans "Language" %}</h1>
-                        <h2>
-                    {% ifequal LANGUAGE_CODE "es" %}
-                        <a href="{% url 'set_language' %}?language=en"><img src="{% static 'images/flag-us.png' %}" alt="US-flag" /> {% trans "English" %}</a>
-                        &nbsp;/&nbsp;<img src="{% static 'images/flag-pr.png' %}" alt="PR-flag" /> {% trans "Spanish" %}
-                    {% else %}
-                        <a href="{% url 'set_language' %}?language=es"><img src="{% static 'images/flag-pr.png' %}" alt="PR-flag" /> {% trans "Spanish" %}</a>
-                        &nbsp;/&nbsp;<img src="{% static 'images/flag-us.png' %}" alt="US-flag" /> {% trans "English" %}
-                    {% endifequal %}
-                    </h2>
-
-                    </div>
             </div>
         </div>
         <!-- /login -->
-
         <!-- The tab on top -->
 
         <div class="tab">
@@ -284,16 +246,10 @@
                     <input type="hidden" id="auth_user" value="{{ user }}" />
                 {% endif %}
                 </li>
-
-                <li class="sep">|</li>
-                <li id="toggle">
-                    <a id="open" class="open" href="#">{% trans "Open panel" %}</a>
-                    <a id="close" style="display: none;" class="close" href="#">{% trans "Close panel" %}</a>
-                </li>
-                <li class="right">&nbsp;</li>
             </ul>
         </div> <!-- / top -->
     </div> <!--panel -->
+
         <div id="loading">
             {% trans "Loading" %}...<img src="{% static 'images/loading.gif' %}" alt="" width="16" height="16" />
         </div>
@@ -364,6 +320,9 @@
                 {% endfor %}
             </ul>
         </div>
+    {% endcomment %}
+
+    {% block web_theme_content %}
 
         <div class="colmask leftmenu" style="z-index:0; position:relative; ">
         {% block dashboard %} {% endblock %}
@@ -396,5 +355,5 @@
             </div>
         </div>
         </div>
-    </body>
-</html>
+
+    {% endblock web_theme_content %}
