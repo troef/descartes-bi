@@ -370,16 +370,6 @@
             <div class="colleft" >
                 <div class="col1" style="background: white; color: black;">
                     <!-- Column 1 start -->
-                    <script type="text/javascript">
-                    </script>
-
-                    <noscript>
-                        <div id="js_noscript">
-                            <img src="{% static 'images/dialog-warning.png' %}" alt="" />
-                            {% trans "This software uses a technology known as Javascript, make sure that your browser supports it, and that it is properly enabled." %}
-                        </div>
-                    </noscript>
-
                     {% if messages %}
                         <ul id="flashmessages">
                             {% for message in messages %}
