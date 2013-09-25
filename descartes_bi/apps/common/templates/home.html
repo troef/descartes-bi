@@ -11,27 +11,20 @@
         .col1 {  overflow: auto; }
     </style>
 {% endblock %}
-{% block javascript %}
-<script type="text/javascript">
-$(document).ready(function() {
-});
-</script>
-{% endblock %}
-
 
 {% block content %}
-<div class='tc'>
-    <script type="text/javascript">
-        var itemList = new Array();
-        {% get_root_menu %}
-        {% for root in root_menu %}
-            itemList.push({title:"{{ root.label }}", icon:"{{ STATIC_URL }}packages/dashMenu/img/" + "{{ root.icon }}", hyperlink: "get_dash_menu/{{ root.pk }}"});
-        {% endfor %}
+    <div class='tc'>
+        <script type="text/javascript">
+            var itemList = new Array();
+            {% get_root_menu %}
+            {% for root in root_menu %}
+                itemList.push({title:"{{ root.label }}", icon:"{{ STATIC_URL }}packages/dashMenu/img/" + "{{ root.icon }}", hyperlink: "get_dash_menu/{{ root.pk }}"});
+            {% endfor %}
 
-        $(document).ready(function(e) {
-            fillDashMenu(itemList, ".tc");
-        });
-    </script>
-</div>
+            $(document).ready(function(e) {
+                fillDashMenu(itemList, ".tc");
+            });
+        </script>
+    </div>
 {% endblock %}
 
