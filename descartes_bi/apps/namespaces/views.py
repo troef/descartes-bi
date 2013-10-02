@@ -22,6 +22,7 @@ import re
 
 from django import http
 from django.conf import settings
+from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import loader, RequestContext
@@ -71,7 +72,7 @@ def node_view(request, node_pk=None):
                         for index in range(len(values)):
                             get_form += filterform[index].name + "=" + values[index] + "&"
 
-                    lk = "reports/ajax/report/" + str(sp.rep_id.id) + "/?" + get_form + "output_type=" + sp.visual_type
+                    lk = reverse('reports:ajax_report_view', args=[sp.rep_id.id])# + "/?" + get_form + "output_type=" + sp.visual_type
                     links[str(sp.id)] = lk
                 if sp.website:
                     query = sp.website.series.query

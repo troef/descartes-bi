@@ -1,5 +1,6 @@
 import logging
 
+from django.core.urlresolvers import reverse
 from django.shortcuts import render, get_object_or_404
 
 from dashboard.models import Dash
@@ -15,7 +16,7 @@ def display(request, dash_id):
     logger.debug('Create Links list')
 
     for sp in selected_reports:
-        links.append("reports/ajax/report/" + sp.rep_id.id)
+        links.append(reverse('reports:ajax_report_view', args=[sp.rep_id.id]))
 
     logger.debug('links: %s' % links)
 

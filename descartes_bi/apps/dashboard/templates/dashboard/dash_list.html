@@ -42,7 +42,7 @@
                 {% else %}
                     $("#dashboard").append('<div class="widget"><div class="widget-header"><i class="icon-bookmark"></i><h3>Chart</h3></div><div class="widget-content"><div id="test{{ key }}"><div></div>');
                 //function rep{{ key }}(){
-                $("#test{{ key }}").load("{% url 'home_view' %}{{ value }}");
+                $("#test{{ key }}").load("{{ value }}");
                 //}
                 //{% endif %}
             {% endfor %}
