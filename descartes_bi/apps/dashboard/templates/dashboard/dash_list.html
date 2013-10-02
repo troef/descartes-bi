@@ -23,12 +23,6 @@
             margin-right:3%;
             height:70%;
         }
-        svg {
-            /*display: block;*/
-            /*min-height: 45em;*/
-            /*min-width: 50em;*/
-            /*padding-bottom: 20px;*/
-        }
     </style>
 {% endblock %}
 
@@ -41,32 +35,13 @@
                     $("#dashboard").append('<div class="widget"><div class="widget-header"><i class="icon-bookmark"></i><h3>Important Shortcuts</h3></div><div class="widget-content"><div class="mapdiv"><h1 id="{{ key }}">Map</h1><iframe src="{{ value }}" class="map" ></iframe></div></div></div>');
                 {% else %}
                     $("#dashboard").append('<div class="widget"><div class="widget-header"><i class="icon-bookmark"></i><h3>Chart</h3></div><div class="widget-content"><div id="test{{ key }}"><div></div>');
-                //function rep{{ key }}(){
-                $("#test{{ key }}").load("{{ value }}");
-                //}
-                //{% endif %}
+                    $("#test{{ key }}").load("{{ value }}");
+                {% endif %}
             {% endfor %}
-
-            {% comment %}
-                {% for sp in selected_reports %}
-                    {% if not sp.website.id %}
-                        rep{{ sp.id }}();
-                        setInterval( rep{{ sp.id }} , {{ sp.refresh_rate }} * 1000 );
-                    {% else %}
-                        $("#mapdiv{{ sp.id }}").text("{{ sp.website.label }}");
-                    {% endif %}
-                {% endfor %}
-            {% endcomment %}
-
-            window.onresize = function(){
-                //var zoom = d3.behavior.zoom();
-                //svg.call(zoom.on("zoom", redraw));
-            };
-
          });
     </script>
 {% endblock %}
 
-{% block dashboard %}
+{% block content %}
     <div id="dashboard"></div>
 {% endblock %}

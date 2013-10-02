@@ -181,7 +181,7 @@
 
     {% endblock web_theme_head %}
 
-    {% comment %}
+{% comment %}
             <div class="content clearfix">
                 {% if not user.is_anonymous %}
                     <div class="left right">
@@ -306,40 +306,21 @@
                 {% endfor %}
             </ul>
         </div>
-    {% endcomment %}
+{% endcomment %}
 
-    {% block web_theme_content %}
-        {% block dashboard %}{% endblock %}
+{% block web_theme_content %}
+{% comment %}
+    {% if messages %}
+        <ul id="flashmessages">
+            {% for message in messages %}
+                <li id="flashmessage"><a href="#" onclick="$(this).parent().fadeOut(); return false;">{% trans "Ok" %}</a>
+                    <img src="{% static 'images/internet-group-chat.png' %}" alt="message"/>&nbsp;&quot;{{ message }}&quot;
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+{% endcomment %}
 
-        <div class="colmask leftmenu" style="z-index:0; position:relative; ">
-            <div class="colleft" >
-                <div class="col1" style="background: white; color: black;">
-                    <!-- Column 1 start -->
-                    {% if messages %}
-                        <ul id="flashmessages">
-                            {% for message in messages %}
-                                <li id="flashmessage"><a href="#" onclick="$(this).parent().fadeOut(); return false;">{% trans "Ok" %}</a>
-                                    <img src="{% static 'images/internet-group-chat.png' %}" alt="message"/>&nbsp;&quot;{{ message }}&quot;
-                                </li>
-                            {% endfor %}
-                        </ul>
-                    {% endif %}
+    {% block content %}{% endblock %}
 
-                    <div id="please-wait">
-                    </div>
-
-                    <div id="chart_wrapper" >
-                        {% block content %}{% endblock %}
-                        {% block dash_menu %}{% endblock %}
-                    </div>
-
-                </div>
-                <div class="col2" style="height: 100%;">
-                    <div id="parameters_wrapper">{% block column2 %} {% endblock %}</div>
-                    <div id="tab-wrapper"></div>
-                <!-- Column 2 end -->
-                </div>
-            </div>
-        </div>
-
-    {% endblock web_theme_content %}
+{% endblock web_theme_content %}

@@ -6,8 +6,8 @@ from reports.forms import FilterForm
 
 def get_website(request, website):
     context = {}
-    context['website'] = website.filterset.exists()
-    context['label'] = website.label
+    context['exists'] = website.filterset.exists()
+    context['website'] = website
 
     #Compose the URL to create LQL queries
     if website.series:
