@@ -1,3 +1,4 @@
+from __future__ import absolute_import
 #
 #    Copyright (C) 2010  Roberto Rosario
 #    This file is part of descartes-bi.
@@ -16,14 +17,17 @@
 #    along with descartes-bi.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-from django import template
-from django.conf import settings
-from django.template import Library
+from django.contrib import admin
+from mptt.admin import MPTTModelAdmin
 
-register = Library()
+from .models import Namespace
+from .forms import NamespaceForm
 
 
-@register.simple_tag
-def project_name():
-    """Tag to return the current project's title"""
-    return settings.PROJECT_TITLE
+class NamespaceAdmin(MPTTModelAdmin):
+    form = NamespaceForm
+    list_display = ('label', 'parent', 'icon', 'view_type')
+    filter_horizontal = ('view_menu', 'view_website')
+    radio_fields = {'view_type': admin.HORIZONTAL}
+
+admin.site.register(Namespace, NamespaceAdmin)

@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block content %}
+    <div class="row">
+        <div class="span12">
+            <div class="widget">
+                <div class="widget-header"> <i class="icon-bookmark"></i>
+                    <h3>{{ node.label|default:"No title" }}</h3>
+                </div>
+                <!-- /widget-header -->
+                <div class="widget-content">
+                    <div class="shortcuts">
+                        {% for child_node in child_nodes %}
+                            <a href="{{ child_node.get_absolute_url }}" class="shortcut">
+                                <i class="shortcut-icon icon-list-alt"></i>
+                                <span class="shortcut-label">{{ child_node.label }}</span>
+                            </a>
+                        {% endfor %}
+                    </div>
+                  <!-- /widget-content -->
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block menu %}
+    {% for menu in menus %}
+        <li>
+            <a href="#">{{ menu }}</a>
+            <ul>
+                {% for report in menu.reports.all %}
+                    <li><a class="report-button" href="{{ report.id }}">{{ report }}</a></li>
+                {% endfor %}
+            </ul>
+        </li>
+    {% endfor %}
+{% endblock %}

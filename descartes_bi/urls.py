@@ -24,12 +24,12 @@ admin.autodiscover()
 
 handler500 = 'common.views.error500'
 urlpatterns = patterns('',
+    (r'^', include('common.urls')),
     (r'^admin/', include(admin.site.urls)),
     (r'^dashboard/', include('dashboard.urls', namespace='dashboard')),
-
     (r'^reports/', include('reports.urls', namespace='reports')),
     (r'^grappelli/', include('grappelli.urls')),
-    (r'^', include('common.urls')),
+    (r'^', include('namespaces.urls')),
 
     url(r'^login/$', 'django.contrib.auth.views.login', {'template_name': 'login.html'}, name='my_login'),
     url(r'^logout/$', 'django.contrib.auth.views.logout', {'next_page': '/'}, name='user_logout'),

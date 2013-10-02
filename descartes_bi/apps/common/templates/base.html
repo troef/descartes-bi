@@ -3,51 +3,37 @@
 {% load static %}
 {% load menubuilder %}
 {% load project_tags %}
-{% load compress %}
 
 {% block web_theme_head %}
-        {% block keywords %}{% endblock %}
-        <link rel="shortcut icon" type="image/png" href="{% static 'images/favicon.ico' %}" />
+    {% block keywords %}{% endblock %}
+    <link rel="shortcut icon" type="image/png" href="{% static 'images/favicon.ico' %}" />
+    {% block web_theme_css %}
+        <link type="text/css" rel="stylesheet" href="{% static 'packages/novus-nvd3/src/nv.d3.css' %}"/>
 
-        {% compress css %}
-            {#<link type="text/css" href="{% static 'css/layout.css' %}" rel="stylesheet" media="screen"/>#}
-            {#<link type="text/css" href="{% static 'css/theme_screen.css' %}" rel="stylesheet" media="screen" />#}
-            {#<link type="text/css" href="{% static 'css/theme_print.css' %}" rel="stylesheet" media="print" />#}
-            {#<link type="text/css" rel="stylesheet" href="{% static 'packages/jquery-ui-1.10.3/themes/smoothness/jquery-ui-1.10.3.custom.css' %}" />#}
-            {#<link type="text/css" rel="stylesheet" href="{% static 'packages/superfish-1.7.2/css/superfish.css' %}" media="screen" />#}
-            {#<link type="text/css" rel="stylesheet" href="{% static 'packages/Sliding_login_panel_jquery/css/slide.css' %}" media="screen" />#}
-            {#<link type="text/css" rel="stylesheet" href="{% static 'packages/jGrowl-1.2.0/jquery.jgrowl.css' %}" media="screen" />#}
-            {#<link type="text/css" href="{% static 'css/artemisMod.css' %}" rel="stylesheet" media="screen"/>#}
-            {#<link type="text/css" rel="stylesheet" href="{% static 'packages/dashMenu/dashMenu.css' %}" media="screen"/>#}
-            <link type="text/css" rel="stylesheet" href="{% static 'packages/novus-nvd3/src/nv.d3.css' %}"/>
+        {% block stylesheets %}{% endblock %}
 
-            {% block stylesheets %}{% endblock %}
+        {# Add CSS Debugging #}
+        {% if 0 %}
+            <style type="text/css">
+               *:hover { border:2px solid #ffffff }
+               * *:hover { border:2px solid #89A81E }
+               * * *:hover { border:2px solid #F34607 }
+               * * * *:hover { border:2px solid #5984C3 }
+               * * * * *:hover { border:2px solid #CD1821 }
+               * * * * * *:hover { border:2px dotted #89A81E }
+               * * * * * * *:hover { border:2px dotted #F34607 }
+               * * * * * * * *:hover { border:2px dotted #5984C3 }
+               * * * * * * * * *:hover { border:2px dotted #CD1821 }
+            </style>
+        {% endif %}
 
-            {# Add CSS Debugging #}
-            {% if 0 %}
-                <style type="text/css">
-                   *:hover { border:2px solid #ffffff }
-                   * *:hover { border:2px solid #89A81E }
-                   * * *:hover { border:2px solid #F34607 }
-                   * * * *:hover { border:2px solid #5984C3 }
-                   * * * * *:hover { border:2px solid #CD1821 }
-                   * * * * * *:hover { border:2px dotted #89A81E }
-                   * * * * * * *:hover { border:2px dotted #F34607 }
-                   * * * * * * * *:hover { border:2px dotted #5984C3 }
-                   * * * * * * * * *:hover { border:2px dotted #CD1821 }
-                </style>
-            {% endif %}
-        {% endcompress %}
+        <style>
+            .navbar-inner { background: #101010; !important; moz-border-radius: 0;}
+        </style>
+    {% endblock web_theme_css %}
 
-        {% compress js %}
+    {% block web_theme_javascript %}
         <script type="text/javascript" src="{% static 'packages/jquery-1.10.2.min.js' %}"></script>
-        <script type="text/javascript" src="{% static 'packages/jquery-ui-1.10.3/ui/jquery-ui.js' %}"></script>
-        <script type="text/javascript" src="{% static 'packages/superfish-1.7.2/js/hoverIntent.js' %}"></script>
-        <script type="text/javascript" src="{% static 'packages/superfish-1.7.2/js/superfish.js' %}"></script>
-        <script type="text/javascript" src="{% static 'packages/superfish-1.7.2/js/supersubs.js' %}"></script>
-        <script type="text/javascript" src="{% static 'packages/Sliding_login_panel_jquery/js/slide-min.js' %}"></script>
-        <script type="text/javascript" src="{% static 'packages/jGrowl-1.2.0/jquery.jgrowl_minimized.js' %}"></script>
-        <script type="text/javascript" src="{% static 'packages/dashMenu/dashMenu.js' %}"></script>
         <script type="text/javascript" src="{% static 'packages/novus-nvd3/lib/d3.v3.js' %}"></script>
         <script type="text/javascript" src="{% static 'packages/novus-nvd3/nv.d3.js' %}"></script>
         <script type="text/javascript" src="{% static 'packages/novus-nvd3/src/tooltip.js' %}"></script>
@@ -189,9 +175,9 @@
             });
         </script>
         {% block javascript %}{% endblock %}
-        {% endcompress %}
+    {% endblock web_theme_javascript %}
 
-        <title>{% project_name %}{% block title %}{% endblock %}</title>
+    <title>{% project_name %}{% block title %}{% endblock %}</title>
 
     {% endblock web_theme_head %}
 
@@ -323,9 +309,9 @@
     {% endcomment %}
 
     {% block web_theme_content %}
+        {% block dashboard %}{% endblock %}
 
         <div class="colmask leftmenu" style="z-index:0; position:relative; ">
-        {% block dashboard %} {% endblock %}
             <div class="colleft" >
                 <div class="col1" style="background: white; color: black;">
                     <!-- Column 1 start -->
@@ -343,8 +329,8 @@
                     </div>
 
                     <div id="chart_wrapper" >
-                        {% block content %} {% endblock %}
-                        {% block dash_menu %} {% endblock %}
+                        {% block content %}{% endblock %}
+                        {% block dash_menu %}{% endblock %}
                     </div>
 
                 </div>
@@ -352,8 +338,8 @@
                     <div id="parameters_wrapper">{% block column2 %} {% endblock %}</div>
                     <div id="tab-wrapper"></div>
                 <!-- Column 2 end -->
+                </div>
             </div>
-        </div>
         </div>
 
     {% endblock web_theme_content %}

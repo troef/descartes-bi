@@ -1,12 +1,15 @@
 from __future__ import absolute_import
 
 import json
+import logging
 
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.utils.translation import ugettext_lazy as _
 
 from .base import ChartBackend
+
+logger = logging.getLogger(__name__)
 
 
 class NovusD3(ChartBackend):
@@ -32,6 +35,8 @@ class NovusD3(ChartBackend):
             'report': report,
             'chart_type': 'LI',
         }
+
+        logger.debug('context: %s' % context)
 
         return render_to_response('charts/novus/merged.html', context,
             context_instance=RequestContext(request))

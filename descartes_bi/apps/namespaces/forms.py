@@ -1,3 +1,4 @@
+from __future__ import absolute_import
 #
 #    Copyright (C) 2010  Roberto Rosario
 #    This file is part of descartes-bi.
@@ -17,7 +18,8 @@
 #
 
 from django import forms
-from common.models import Namespace, TYPE_MENU, TYPE_WIDGETS, TYPE_WEBSITES
+
+from .models import Namespace, TYPE_MENU, TYPE_WIDGETS, TYPE_WEBSITES
 
 
 class UploadFileForm(forms.Form):

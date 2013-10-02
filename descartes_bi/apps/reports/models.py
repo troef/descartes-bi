@@ -250,20 +250,25 @@ class Report(models.Model):
         deferred_list = []
         params, special_params = self.get_parameter_values(request)
 
-        for report_series in self.report_series.all():
-            # Launch all serie queries in parallel
-            pipe_a, pipe_b = Pipe()
-            process = Process(
-                target=report_series.series.execute,
-                kwargs={'pipe': pipe_a, 'params': params, 'special_params': special_params})
-            process.start()
-            deferred_list.append({'series': report_series.series, 'pipe': pipe_b, 'process': process})
+        if False:
+            for report_series in self.report_series.all():
+                series_results.append(report_series.series.execute(params=params, special_params=special_params).fetchall())
+        else:
+            for report_series in self.report_series.all():
+                # Launch all serie queries in parallel
+                pipe_a, pipe_b = Pipe()
+                process = Process(
+                    target=report_series.series.execute,
+                    kwargs={'pipe': pipe_a, 'params': params, 'special_params': special_params})
+                process.start()
+                deferred_list.append({'series': report_series.series, 'pipe': pipe_b, 'process': process})
 
-        for deferred in deferred_list:
-            # Collect the serires queries results
-            deferred['process'].join()
-            series_results.append(deferred['pipe'].recv())
+            for deferred in deferred_list:
+                # Collect the serires queries results
+                deferred['process'].join()
+                series_results.append(deferred['pipe'].recv())
 
+        logger.debug('report results: %s' % series_results)
         return series_results
 
     class Meta:

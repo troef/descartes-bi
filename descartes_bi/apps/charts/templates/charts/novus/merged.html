@@ -1,6 +1,30 @@
 {% load i18n %}
 
 {% if 0 %}
+    {% load static %}
+        <link type="text/css" rel="stylesheet" href="{% static 'packages/novus-nvd3/src/nv.d3.css' %}"/>
+
+        <script type="text/javascript" src="{% static 'packages/jquery-1.10.2.min.js' %}"></script>
+        <script type="text/javascript" src="{% static 'packages/novus-nvd3/lib/d3.v3.js' %}"></script>
+        <script type="text/javascript" src="{% static 'packages/novus-nvd3/nv.d3.js' %}"></script>
+        <script type="text/javascript" src="{% static 'packages/novus-nvd3/src/tooltip.js' %}"></script>
+        <script type="text/javascript" src="{% static 'packages/novus-nvd3/src/utils.js' %}"></script>
+        <script type="text/javascript" src="{% static 'packages/novus-nvd3/src/models/legend.js' %}"></script>
+        <script type="text/javascript" src="{% static 'packages/novus-nvd3/src/models/axis.js' %}"></script>
+        <script type="text/javascript" src="{% static 'packages/novus-nvd3/src/models/scatter.js' %}"></script>
+        <script type="text/javascript" src="{% static 'packages/novus-nvd3/src/models/line.js' %}"></script>
+        <script type="text/javascript" src="{% static 'packages/novus-nvd3/src/models/historicalBar.js' %}"></script>
+        <script type="text/javascript" src="{% static 'packages/novus-nvd3/src/models/linePlusBarChart.js' %}"></script>
+        <script type="text/javascript" src="{% static 'packages/novus-nvd3/src/models/lineWithFocusChart.js' %}"></script>
+        <script type="text/javascript" src="{% static 'packages/novus-nvd3/src/models/multiBar.js' %}"></script>
+        <script type="text/javascript" src="{% static 'packages/novus-nvd3/src/models/multiBarChart.js' %}"></script>
+        <script type="text/javascript" src="{% static 'packages/novus-nvd3/src/models/pie.js' %}"></script>
+        <script type="text/javascript" src="{% static 'packages/novus-nvd3/src/models/pieChart.js' %}"></script>
+        <script type="text/javascript" src="{% static 'packages/novus-nvd3/src/models/multiBarHorizontal.js' %}"></script>
+        <script type="text/javascript" src="{% static 'packages/novus-nvd3/src/models/multiBarHorizontalChart.js' %}"></script>
+{% endif %}
+
+{% if 0 %}
     QUERY: {{ query }}<br />
     PARAMS: {{ params }}<br />
     series_results: {{ series_results }}<br />
@@ -14,29 +38,22 @@
     {% endwith %}
 {% else %}
 
+    {% comment %}
     <style>
-        body {
-          overflow-y:scroll;
-          color: #666 !important;
-        }
-
-        text {
-          font: 12px sans-serif;
-        }
-
         #chart{{ report.id }} svg {
             height: 80%;
-            margin: 10px;
             min-width: 45em;
             min-height: 50em;
         }
     </style>
+    {% endcomment %}
+
     <body>
-        <div id="chart{{ report.id }}" style="margin:2px; color: #666; min-height:60em;">
+        <div id="chart{{ report.id }}">
             {% if report.title %}
                 <h1>{{ report.title }}</h1>
             {% endif %}
-            <svg> </svg>
+            <svg  style="height: 300px;"> </svg>
         </div>
         <script>
             // Get tick formats for x,y output formats ex: date/$
@@ -72,8 +89,6 @@
                 });
                 return series;
             });
-
-            console.debug(data);
 
             // Insert chart legends and set graph type into each series
             {% for report_series in report.report_series.all %}
@@ -111,8 +126,7 @@
 
               return chart;
             });
-            {% endif %}
-            {% if chart_type == 'SI' %}
+            {% elif chart_type == 'SI' %}
                 var chart;
                 nv.addGraph(function() {
                 chart = nv.models.multiBarChart()
@@ -149,9 +163,7 @@
 
                 return chart;
             });
-            {% endif %}
-
-            {% if chart_type == 'LI' %}
+            {% elif chart_type == 'LI' %}
                 var chart;
                 nv.addGraph(function() {
                     chart = nv.models.lineChart();
@@ -189,8 +201,7 @@
                     });
                     return chart;
                 });
-            {% endif %}
-            {% if chart_type == 'PI' %}
+            {% elif chart_type == 'PI' %}
                 nv.addGraph(function() {
                     var data = getData();
                     var chart = nv.models.pieChart()
@@ -221,9 +232,7 @@
                     });
                     return x;
                 }
-            {% endif %}
-
-            {% if chart.type == 'LF' %}
+            {% elif chart.type == 'LF' %}
                 nv.addGraph(function() {
                     var chart = nv.models.lineWithFocusChart();
                     chart.x(function(d, i) {
@@ -247,8 +256,7 @@
 
                     return chart;
                 });
-            {% endif %}
-            {% if chart.type == 'LB' %}
+            {% elif chart.type == 'LB' %}
                 var chart;
                 nv.addGraph(function() {
                     chart = nv.models.linePlusBarChart()

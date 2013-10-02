@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 #    Copyright (C) 2010  Roberto Rosario
 #    This file is part of descartes-bi.
@@ -17,16 +16,9 @@
 #    along with descartes-bi.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-from django.contrib import admin
-from mptt.admin import MPTTModelAdmin
+from django.conf.urls.defaults import include, patterns, url
 
-from common.models import Namespace
-from common.forms import NamespaceForm
-
-
-class NamespaceAdmin(MPTTModelAdmin):
-    form = NamespaceForm
-    list_display = ('label', 'parent', 'icon', 'view_type')
-    filter_horizontal = ('view_menu',)
-
-admin.site.register(Namespace, NamespaceAdmin)
+urlpatterns = patterns('namespaces.views',
+    url(r'^$', 'node_view', (), 'home_view'),
+    url(r'^node/(?P<node_pk>\d+)/$', 'node_view', (), 'node_view'),
+)
