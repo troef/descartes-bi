@@ -57,8 +57,6 @@ def node_view(request, node_pk=None):
         #view_type 1 - Menu, view_type 2 - Dashboard
         if node.view_type == 1:
             context['menus'] = node.view_menu.all()
-            return render_to_response('namespaces/node.html', context,
-                context_instance=RequestContext(request))
         elif node.view_type == 2:
             dashboard = get_object_or_404(Dashboard, pk=node.view_dash_id)
             return dashboard_view(request, dashboard.pk)
@@ -66,3 +64,6 @@ def node_view(request, node_pk=None):
         elif node.view_type == 3:
             website = node.view_website.all()[0]
             return get_website(request, website)
+
+    return render_to_response('namespaces/node.html', context,
+        context_instance=RequestContext(request))
