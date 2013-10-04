@@ -150,7 +150,7 @@ INSTALLED_APPS = (
     'db_drivers',
     'charts',
     'reports',
-    'dashboard',
+    'dashboards',
     'libre_driver',
     'website',
 )

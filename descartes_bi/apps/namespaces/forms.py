@@ -19,7 +19,7 @@ from __future__ import absolute_import
 
 from django import forms
 
-from .models import Namespace, TYPE_MENU, TYPE_WIDGETS, TYPE_WEBSITES
+from .models import Namespace, TYPE_MENU, TYPE_DASHBOARD, TYPE_WEBSITES
 
 
 class UploadFileForm(forms.Form):
@@ -42,7 +42,7 @@ class NamespaceForm(forms.ModelForm):
             if has_selected_type == TYPE_MENU and not has_selected_menu:
                 message = ("""View type is Menu. Please select Menu.""")
                 raise forms.ValidationError(message)
-            if has_selected_type == TYPE_WIDGETS and not has_selected_dash:
+            if has_selected_type == TYPE_DASHBOARD and not has_selected_dash:
                 message = ("""View type is Dashboard. Please select Dashboard.""")
                 raise forms.ValidationError(message)
             if has_selected_type == TYPE_WEBSITES and not has_selected_website:

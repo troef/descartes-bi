@@ -25,17 +25,17 @@ from django.utils.translation import ugettext_lazy as _
 
 from mptt.models import MPTTModel, TreeForeignKey
 
-from dashboard.models import Dash
+from dashboards.models import Dashboard
 from reports.models import Menuitem
 from website.models import Website
 
 TYPE_MENU = 1
-TYPE_WIDGETS = 2
+TYPE_DASHBOARD = 2
 TYPE_WEBSITES = 3
 
 TYPE_CHOICES = (
     (TYPE_MENU, _('Menus')),
-    (TYPE_WIDGETS, _('Dashboard')),
+    (TYPE_DASHBOARD, _('Dashboard')),
     (TYPE_WEBSITES, _('Websites')),
 )
 
@@ -45,7 +45,7 @@ class Namespace(MPTTModel):
     icon = models.CharField(max_length=32)
     view_type = models.PositiveIntegerField(choices=TYPE_CHOICES)
     view_menu = models.ManyToManyField(Menuitem, null=True, blank=True, verbose_name=_('menu item'), related_name='menus')
-    view_dash = models.ForeignKey(Dash, null=True, blank=True, verbose_name=_('dashboard item'), related_name='dashboard')
+    view_dash = models.ForeignKey(Dashboard, null=True, blank=True, verbose_name=_('dashboard item'), related_name='dashboard')
     view_website = models.ManyToManyField(Website, null=True, blank=True, verbose_name=_('website item'), related_name='websites')
 
     def __unicode__(self):

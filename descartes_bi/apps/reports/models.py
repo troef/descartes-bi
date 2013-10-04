@@ -25,6 +25,7 @@ import re
 
 from django.contrib.auth.models import User
 from django.contrib.auth.models import Group
+from django.core.urlresolvers import reverse
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
@@ -193,8 +194,7 @@ class Report(models.Model):
         return self.title
 
     def get_absolute_url(self):
-        return ('ajax_report_view', [str(self.id)])
-    get_absolute_url = models.permalink(get_absolute_url)
+        return reverse('reports:ajax_report_view', args=[self.pk])
 
     def get_parents(self):
         return ', '.join([mi.title for mi in self.menuitem_set.all()])

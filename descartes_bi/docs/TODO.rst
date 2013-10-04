@@ -1,3 +1,4 @@
+* Add chart widget support to dashboards
 * Add support for client side charting libraries:
 
     * jchartfx

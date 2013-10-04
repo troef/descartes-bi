@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block base_stylesheets %}
+{% comment %}
+    <style>
+        .mapdiv {
+            width:48%;
+            height:100%;
+            float:left;
+            margin-left:1%;
+            margin-right:1%;
+            margin-bottom:4.5%;
+            color:#666;
+            float:left;
+
+        }
+        .map {
+            width:95%;
+            height:100%;
+            border:0;
+            margin-top:1%;
+            margin-left:3%;
+            margin-right:3%;
+            height:70%;
+        }
+    </style>
+{% endcomment %}
+{% endblock base_stylesheets %}
+
+{% block base_javascript %}
+    <script type="text/javascript">
+         $(document).ready(function() {
+            {% for element in dashboard.elements.all %}
+                {% if element.load_url %}
+                    $("#chart{{ element.pk }}").load("{{ element.load_url }}");
+                {% endif %}
+            {% endfor %}
+         });
+    </script>
+{% endblock base_javascript %}
+
+{% block base_content %}
+    <div id="dashboard">
+        {% for element in dashboard.elements.all %}
+            {% if "mapdiv" in key %}
+                <div class="widget">
+                    <div class="widget-header">
+                        <i class="icon-bookmark"></i>
+                        <h3>{% trans 'Map' %}</h3>
+                    </div>
+                    <div class="widget-content">
+                        <div class="mapdiv">
+                            <h1 id="{{ element.pk }}">Map</h1>
+                            <iframe src="{{ element.load_url }}" class="map" ></iframe>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <div class="widget">
+                    <div class="widget-header">
+                        <i class="icon-bookmark"></i>
+                        <h3>{% trans 'Chart' %}</h3>
+                    </div>
+                    <div class="widget-content">
+                        <div id="chart{{ element.pk }}">
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+{% endblock base_content %}
