@@ -1,7 +1,6 @@
 {% extends "base.html" %}
 
-
-{% block stylesheets %}
+{% block base_stylesheets %}
     <style>
         .mapdiv {
             width:48%;
@@ -24,10 +23,9 @@
             height:70%;
         }
     </style>
-{% endblock %}
+{% endblock base_stylesheets %}
 
-
-{% block javascript %}
+{% block base_javascript %}
     <script type="text/javascript">
          $(document).ready(function() {
             {% for key,value in links.items %}
@@ -40,8 +38,8 @@
             {% endfor %}
          });
     </script>
-{% endblock %}
+{% endblock base_javascript %}
 
-{% block content %}
+{% block base_content %}
     <div id="dashboard"></div>
-{% endblock %}
+{% endblock base_content %}
