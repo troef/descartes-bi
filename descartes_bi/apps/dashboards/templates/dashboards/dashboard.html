@@ -42,6 +42,7 @@
 
 {% block base_content %}
     <div id="dashboard">
+        <div class="row">
         {% for element in dashboard.elements.all %}
             {% if "mapdiv" in key %}
                 <div class="widget">
@@ -57,17 +58,24 @@
                     </div>
                 </div>
             {% else %}
+
+                <!-- /span6 -->
+                <div class="span{{ element.span }}">
+
                 <div class="widget">
                     <div class="widget-header">
                         <i class="icon-bookmark"></i>
-                        <h3>{% trans 'Chart' %}</h3>
+                        <h3>{{ element }}</h3>
                     </div>
                     <div class="widget-content">
                         <div id="chart{{ element.pk }}">
                         </div>
                     </div>
                 </div>
+
+                </div>
             {% endif %}
         {% endfor %}
-    </div>
+    </div>            </div>
+
 {% endblock base_content %}
