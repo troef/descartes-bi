@@ -169,7 +169,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 GRAPPELLI_ADMIN_TITLE = PROJECT_TITLE
 #--------- Django -------------------
 LOGIN_URL = reverse_lazy('login_view')
-LOGIN_REDIRECT_URL = reverse_lazy('home')
+LOGIN_REDIRECT_URL = reverse_lazy('home_view')
 #---------- CSS compress ------------
 COMPRESS_PARSER = 'compressor.parser.HtmlParser'
 COMPRESS_CSS_FILTERS = ['compressor.filters.css_default.CssAbsoluteFilter', 'compressor.filters.cssmin.CSSMinFilter']
