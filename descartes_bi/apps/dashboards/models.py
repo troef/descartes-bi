@@ -26,7 +26,8 @@ class Dashboard(models.Model):
 
 class DashboardElement(models.Model):
     dashboard = models.ForeignKey(Dashboard, verbose_name=_(u'dashboard'), related_name='elements')
-    span = models.PositiveIntegerField(verbose_name=_(u'span'))
+    enabled = models.BooleanField(default=True, verbose_name=_('enabled'))
+    span = models.PositiveIntegerField(verbose_name=_(u'span'), help_text=_('The amount of columns in a 12 columns layout that this element should occupy.'))
     visual_type = models.PositiveIntegerField(choices=ELEMENT_CHOICES)
     report = models.ForeignKey(Report, verbose_name=_(u'report'), blank=True, null=True)
     website = models.ForeignKey(Website, verbose_name=_(u'website'), blank=True, null=True)
@@ -44,6 +45,8 @@ class DashboardElement(models.Model):
     def load_url(self):
         if self.report:
             return self.report.get_absolute_url()
+        elif self.website:
+            return self.website.url
 
     def __unicode__(self):
         return self.label

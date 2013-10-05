@@ -29,7 +29,7 @@ from django.template import loader, RequestContext
 
 from dashboards.models import Dashboard
 from dashboards.views import dashboard_view
-from website.views import get_website
+from website.views import website_view
 
 from .models import Namespace
 
@@ -63,7 +63,7 @@ def node_view(request, node_pk=None):
         #Check if the view_type is a website and call the website view
         elif node.view_type == 3:
             website = node.view_website.all()[0]
-            return get_website(request, website)
+            return website_view(request, website.pk)
 
     return render_to_response('namespaces/node.html', context,
         context_instance=RequestContext(request))

@@ -1,13 +1,20 @@
-from django.shortcuts import render_to_response
+from __future__ import absolute_import
+
+from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 
 from reports.forms import FilterForm
 
+from .models import Website
 
-def get_website(request, website):
-    context = {}
-    context['exists'] = website.filterset.exists()
-    context['website'] = website
+
+def website_view(request, website_pk):
+    website = get_object_or_404(Website, pk=website_pk)
+
+    context = {
+        'exists': website.filterset.exists(),
+        'website': website
+    }
 
     #Compose the URL to create LQL queries
     if website.series:

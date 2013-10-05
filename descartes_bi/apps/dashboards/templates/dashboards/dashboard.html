@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load i18n %}
+{% load static %}
 
 {% block base_stylesheets %}
 {% comment %}
@@ -31,7 +32,7 @@
 {% block base_javascript %}
     <script type="text/javascript">
          $(document).ready(function() {
-            {% for element in dashboard.elements.all %}
+            {% for element in elements %}
                 {% if element.load_url %}
                     $("#chart{{ element.pk }}").load("{{ element.load_url }}");
                 {% endif %}
@@ -42,23 +43,22 @@
 
 {% block base_content %}
     <div id="dashboard">
-        <div class="row">
-        {% for element in dashboard.elements.all %}
+        <div class="row-fluid">
+        {% for element in elements %}
             {% if "mapdiv" in key %}
                 <div class="widget">
                     <div class="widget-header">
                         <i class="icon-bookmark"></i>
-                        <h3>{% trans 'Map' %}</h3>
+                        <h3>{{ element }}</h3>
                     </div>
                     <div class="widget-content">
                         <div class="mapdiv">
-                            <h1 id="{{ element.pk }}">Map</h1>
+                            <h1 id="{{ element.pk }}">d{{ delement }}</h1>
                             <iframe src="{{ element.load_url }}" class="map" ></iframe>
                         </div>
                     </div>
                 </div>
             {% else %}
-
                 <!-- /span6 -->
                 <div class="span{{ element.span }}">
 
@@ -69,6 +69,13 @@
                     </div>
                     <div class="widget-content">
                         <div id="chart{{ element.pk }}">
+
+                            <div class="row-fluid">
+                                <div class="span12 pagination-centered">
+                                    <img src="{% static 'images/circle-thickbox.gif' %}" alt="{% trans 'loading' %}" width="100" height="100"/>
+                                </div>
+                            </div>
+
                         </div>
                     </div>
                 </div>
