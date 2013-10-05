@@ -46,7 +46,7 @@ class DashboardElement(models.Model):
         if self.report:
             return self.report.get_absolute_url()
         elif self.website:
-            return self.website.url
+            return self.website.get_url()
 
     def __unicode__(self):
         return self.label

@@ -2,39 +2,14 @@
 {% load i18n %}
 {% load static %}
 
-{% block base_stylesheets %}
-{% comment %}
-    <style>
-        .mapdiv {
-            width:48%;
-            height:100%;
-            float:left;
-            margin-left:1%;
-            margin-right:1%;
-            margin-bottom:4.5%;
-            color:#666;
-            float:left;
-
-        }
-        .map {
-            width:95%;
-            height:100%;
-            border:0;
-            margin-top:1%;
-            margin-left:3%;
-            margin-right:3%;
-            height:70%;
-        }
-    </style>
-{% endcomment %}
-{% endblock base_stylesheets %}
-
 {% block base_javascript %}
     <script type="text/javascript">
          $(document).ready(function() {
             {% for element in elements %}
-                {% if element.load_url %}
+                {% if element.report %}
                     $("#chart{{ element.pk }}").load("{{ element.load_url }}");
+                {% else %}
+                    $("#chart{{ element.pk }}").html('<iframe src="{{ element.load_url }}" style="height: 450px; width: 100%;"></iframe>');
                 {% endif %}
             {% endfor %}
          });
@@ -45,22 +20,7 @@
     <div id="dashboard">
         <div class="row-fluid">
         {% for element in elements %}
-            {% if "mapdiv" in key %}
-                <div class="widget">
-                    <div class="widget-header">
-                        <i class="icon-bookmark"></i>
-                        <h3>{{ element }}</h3>
-                    </div>
-                    <div class="widget-content">
-                        <div class="mapdiv">
-                            <h1 id="{{ element.pk }}">d{{ delement }}</h1>
-                            <iframe src="{{ element.load_url }}" class="map" ></iframe>
-                        </div>
-                    </div>
-                </div>
-            {% else %}
-                <!-- /span6 -->
-                <div class="span{{ element.span }}">
+            <div class="span{{ element.span }}">
 
                 <div class="widget">
                     <div class="widget-header">
@@ -68,6 +28,7 @@
                         <h3>{{ element }}</h3>
                     </div>
                     <div class="widget-content">
+
                         <div id="chart{{ element.pk }}">
 
                             <div class="row-fluid">
@@ -79,10 +40,9 @@
                         </div>
                     </div>
                 </div>
-
-                </div>
-            {% endif %}
+            </div>
         {% endfor %}
-    </div>            </div>
+        </div>
+    </div>
 
 {% endblock base_content %}

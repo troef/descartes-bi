@@ -18,10 +18,11 @@ from __future__ import absolute_import
 #
 
 from django.contrib import admin
+
 from mptt.admin import MPTTModelAdmin
 
-from .models import Namespace
 from .forms import NamespaceForm
+from .models import Namespace
 
 
 class NamespaceAdmin(MPTTModelAdmin):
@@ -29,5 +30,6 @@ class NamespaceAdmin(MPTTModelAdmin):
     list_display = ('label', 'parent', 'icon', 'view_type')
     filter_horizontal = ('view_menu', 'view_website')
     radio_fields = {'view_type': admin.HORIZONTAL}
+
 
 admin.site.register(Namespace, NamespaceAdmin)

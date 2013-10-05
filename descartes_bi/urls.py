@@ -18,7 +18,6 @@
 from django.conf.urls.defaults import include, patterns, url
 from django.conf import settings
 from django.contrib import admin
-from django.views.generic.base import RedirectView
 
 admin.autodiscover()
 
@@ -30,13 +29,6 @@ urlpatterns = patterns('',
     (r'^reports/', include('reports.urls', namespace='reports')),
     (r'^grappelli/', include('grappelli.urls')),
     (r'^', include('namespaces.urls')),
-
-    url(r'^login/$', 'django.contrib.auth.views.login', {'template_name': 'login.html'}, name='my_login'),
-    url(r'^logout/$', 'django.contrib.auth.views.logout', {'next_page': '/'}, name='user_logout'),
-    url(r'^myaccount/password_change/$', 'django.contrib.auth.views.password_change', {'template_name': 'password_change_form.html'}, name='my_password_change'),
-    url(r'^accounts/password_change_ok/$', 'django.contrib.auth.views.password_change_done', {'template_name': 'password_change_done.html'}),
-
-    (r'^favicon\.ico$', RedirectView.as_view(url='%simages/favicon.png' % settings.STATIC_URL)),
 )
 
 if settings.DEVELOPMENT:

@@ -7,17 +7,20 @@
 {% block title %} :: {% trans "About this program" %}{% endblock %}
 {% block banner %}{% trans "About this program" %}{% endblock %}
 
-{% block content %}
-    <div class="tc" style="overflow: auto;">
-    <img class="aboutLogo" src="{% static 'images/big_logo.png' %}" alt="About logo" />
-    <h1><strong>{% project_name %}</strong></h1>
-    <h2><strong>{% trans "A Web based business intelligence software" %}</strong></h2></br />
-    <a style="color: blue;" href="http://github.com/rosarior/descartes-bi">http://github.com/rosarior/descartes-bi</a><br />
-    Copyright (C) 2010  Roberto Rosario<br />
-    roberto.rosario.gonzalez@gmail.com<br />
-    {% trans "Released under the GPL V3" %}<br />
+{% block base_content %}
+    <div class="row-fluid">
+        <div class="span12 pagination-centered">
+
+        <img class="aboutLogo" src="{% static 'images/big_logo.png' %}" alt="{% trans 'About logo' %}" />
+        <h1><strong>{% project_name %}</strong></h1>
+        <h2><strong>{% trans 'A Web based business intelligence software' %}</strong></h2>
+        <a style="color: blue;" href="http://github.com/rosarior/descartes-bi">{% trans 'http://github.com/rosarior/descartes-bi' %}</a><br />
+        {% trans 'Copyright (C) 2010-2013 Roberto Rosario' %}<br />
+        {% trans 'roberto.rosario.gonzalez@gmail.com' %}<br />
+        {% trans 'Released under the GPL V3' %}<br />
+        </div>
     </div>
-{% endblock %}
+{% endblock base_content %}
 
 
 

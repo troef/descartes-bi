@@ -43,21 +43,13 @@ class Namespace(MPTTModel):
     parent = TreeForeignKey('self', null=True, blank=True, related_name='children')
     label = models.CharField(max_length=32)
     icon = models.CharField(max_length=32)
-    view_type = models.PositiveIntegerField(choices=TYPE_CHOICES)
+    view_type = models.PositiveIntegerField(choices=TYPE_CHOICES, null=True, blank=True)
     view_menu = models.ManyToManyField(Menuitem, null=True, blank=True, verbose_name=_('menu item'), related_name='menus')
     view_dash = models.ForeignKey(Dashboard, null=True, blank=True, verbose_name=_('dashboard item'), related_name='dashboard')
     view_website = models.ManyToManyField(Website, null=True, blank=True, verbose_name=_('website item'), related_name='websites')
 
     def __unicode__(self):
         return self.label
-
-    def clean(self):
-        node_parent = self.parent
-        #if parent has menu/dash, the child should not be created.
-        if node_parent:
-            if node_parent.view_type:
-                raise ValidationError("""Parent has a menu, dashboard or website.
-                    Please select a new parent or no parent.""")
 
     def get_absolute_url(self):
         return reverse('node_view', args=[str(self.pk)])

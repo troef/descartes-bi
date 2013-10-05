@@ -10,21 +10,24 @@
         <div class="widget-content">
 
             <div class="row-fluid">
-
-                {% if filter_form %}
+                {% if website.filterset.exists %}
                     <div class="span4">
-                        <form method="get" action="">
-                            {{ filter_form }}
-                            <br />
-                            <button type="submit">{% trans 'Submit' %}</button>
+                        <form method="get" action="" class="well">
+                            <fieldset>
+                                {{ form }}
+                                <br />
+
+                                <div class="form-actions">
+                                    <button type="submit" class="btn btn-primary">{% trans 'Submit' %}</button>
+                                </div>
+                            </fieldset>
                         </form>
                     </div>
                     <div class="span8">
                 {% else %}
                     <div class="span12">
                 {% endif %}
-
-                    <iframe src="{{ url }}" style="height: 450px; width: 100%;"></iframe>
+                    <iframe src="{{ url|default:'' }}" style="height: 450px; width: 100%;"></iframe>
                 </div>
             </div>
 

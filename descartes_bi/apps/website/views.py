@@ -8,40 +8,25 @@ from reports.forms import FilterForm
 from .models import Website
 
 
-def website_view(request, website_pk):
+def website_view(request, website_pk, extra_context=None):
     website = get_object_or_404(Website, pk=website_pk)
 
     context = {
-        'exists': website.filterset.exists(),
         'website': website
     }
 
-    #Compose the URL to create LQL queries
-    if website.series:
-        url = website.series.data_source.load_backend().cursor().url
-        query = website.series.query
+    if extra_context:
+        context.update(extra_context)
 
-        if request.method == 'GET' and website.filterset.exists():
-            filtersets = website.filterset
-
-            if request.GET:
-                filter_form = FilterForm(filtersets, request.user, request.GET)
-                query = query % get_dict(filter_form)
-                context['url'] = url + "/?" + query
-            else:
-                filter_form = FilterForm(filtersets, request.user)
-
-            context['filter_form'] = filter_form
-        else:
-            context['url'] = url + "/?" + query
-
-    #Display the website in base_URL
+    if request.GET:
+        form = FilterForm(website.filterset, request.user, request.GET)
+        context['url'] = website.get_url(data=get_dict(form))
     else:
-        context['url'] = website.base_URL
+        form = FilterForm(website.filterset, request.user)
+        context['url'] = website.get_url()
 
-    page = 'website/website.html'
-
-    return render_to_response(page, context,
+    context['form'] = form
+    return render_to_response('website/website.html', context,
                               context_instance=RequestContext(request))
 
 

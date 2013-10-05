@@ -23,6 +23,15 @@ from django.utils.translation import ugettext_lazy as _
 
 from .literals import FILTER_TYPE_DATE, FILTER_TYPE_COMBO, FILTER_TYPE_MONTH
 
+MONTH_CHOICES = (
+    ('1', _(u'January')), ('2', _(u'February')),
+    ('3', _(u'March')), ('4', _(u'April')),
+    ('5', _(u'May')), ('6', _(u'June')),
+    ('7', _(u'July')), ('8', _(u'August')),
+    ('9', _(u'September')), ('10', _(u'October')),
+    ('11', _(u'November')), ('12', _(u'December'))
+)
+
 
 class FilterForm(forms.Form):
     def __init__(self, filtersets, user, *args, **kwargs):
@@ -61,17 +70,7 @@ class FilterForm(forms.Form):
                 elif f.filter.type == FILTER_TYPE_MONTH:
                     self.fields[f.filter.name] = forms.ChoiceField(initial=f.filter.default, required=False,
                                                                    label=f.filter.label,
-                                                                   choices=(('1', _(u'January')), ('2', _(u'February')),
-                                                                            ('3', _(u'March')), ('4', _(u'April')),
-                                                                            ('5', _(u'May')), ('6', _(u'June')),
-                                                                            ('7', _(u'July')), ('8', _(u'August')),
-                                                                            ('9', _(u'September')), ('10', _(u'October')),
-                                                                            ('11', _(u'November')), ('12', _(u'December'))))
-
-        self.fields['output_type'] = forms.ChoiceField(initial='chart',
-                                                       required=False, label=_(u'Format'),
-                                                       choices=(('chart', _(u'Chart')),
-                                                                ('grid', _(u'Table'))))
+                                                                   choices=MONTH_CHOICES)
 
     class Media:
         js = ('js/filterform.js',)
