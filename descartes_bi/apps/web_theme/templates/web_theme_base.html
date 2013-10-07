@@ -29,6 +29,10 @@
                 }
 
                 .navbar-inner { background: #101010; !important; moz-border-radius: 0;}
+
+                .subnavbar .container > ul > li.active > a { color: white; border-bottom: 3px solid white; }
+
+                body { background: #202020;}
             </style>
             {% block web_theme_css %}{% endblock web_theme_css %}
             {# Add CSS Debugging #}
@@ -52,7 +56,7 @@
     <body>
         <div class="navbar navbar-fixed-top">
             <div class="navbar-inner">
-                <div class="container" >
+                <div class="container">
                      <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
