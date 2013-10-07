@@ -38,20 +38,8 @@
     {% endwith %}
 {% else %}
 
-    {% comment %}
-    <style>
-        #chart{{ report.id }} svg {
-            height: 80%;
-            min-width: 45em;
-            min-height: 50em;
-        }
-    </style>
-    {% endcomment %}
-
     <body>
-        <div id="chart{{ report.id }}">
-            <svg  style="height: 300px;"> </svg>
-        </div>
+        <svg id="chart{{ report.id }}" style="min-height: 100%;"></svg>
         <script>
             // Get tick formats for x,y output formats ex: date/$
             var bool1 = true;
@@ -112,7 +100,7 @@
               chart.yAxis
                   .tickFormat(d3.format(',.2f'));
                 console.log(data);
-              d3.select('#chart{{ report.id }} svg')
+              d3.select('#chart{{ report.id }}')
                   .datum(data)
                   .transition().duration(500)
                   .call(chart);
@@ -142,12 +130,12 @@
 
                 chart.yAxis.showMaxMin(false);
 
-                d3.select('#chart{{ report.id }} svg')
+                d3.select('#chart{{ report.id }}')
                     .datum(data)
                     .transition().duration(500)
                     .call(chart);
 
-                d3.select('#chart{{ report.id }} svg')
+                d3.select('#chart{{ report.id }}')
                     .selectAll('.nv-x.nv-axis > g')
                     .selectAll('g')
                     .selectAll('text')
@@ -187,7 +175,7 @@
                 });
                     chart.showXAxis(true);
 
-                    d3.select('#chart{{ report.id }} svg')
+                    d3.select('#chart{{ report.id }}')
                         .datum(data)
                         .transition().duration(500)
                         .call(chart);
@@ -208,7 +196,7 @@
                         .values(function(d) { return d })
                         .color(d3.scale.category10().range())
                     chart.showLegend(true);
-                    d3.select('#chart{{ report.id }} svg')
+                    d3.select('#chart{{ report.id }}')
                         .datum([data])
                         .transition()
                         //.duration(1200)
@@ -245,7 +233,7 @@
                         return d;
                     });
 
-                    d3.select('#chart{{ report.id }} svg')
+                    d3.select('#chart{{ report.id }}')
                         .datum(data)
                         .transition().duration(500)
                         .call(chart);
@@ -276,7 +264,7 @@
                         .tickFormat(function(d) { return d; });
                     chart.bars.forceY([0]).padData(false);
 
-                    d3.select('#chart{{ report.id }} svg')
+                    d3.select('#chart{{ report.id }}')
                         .datum(data)
                         .transition().duration(500).call(chart);
 

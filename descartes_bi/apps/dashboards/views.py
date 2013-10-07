@@ -18,12 +18,12 @@ def dashboard_view(request, dashboard_pk, extra_context=None):
     spans = 0
     for element in dashboard.active_elements():
         spans += element.span
-        if spans <= 12:
-            row.append(element)
-        else:
+        if spans > 12:
             rows.append(row)
             spans = element.span
-            row = [element]
+            row = []
+
+        row.append(element)
 
     if row:
         rows.append(row)

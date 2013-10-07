@@ -11,6 +11,7 @@ ELEMENT_CHOICES = (
     (ELEMENT_CHART, _('chart')),
     (ELEMENT_WEBSITE, _('website'))
 )
+DEFAULT_ELEMENT_HEIGHT = 300
 
 
 class Dashboard(models.Model):
@@ -31,6 +32,7 @@ class DashboardElement(models.Model):
     dashboard = models.ForeignKey(Dashboard, verbose_name=_(u'dashboard'), related_name='elements')
     enabled = models.BooleanField(default=True, verbose_name=_('enabled'))
     span = models.PositiveIntegerField(verbose_name=_(u'span'), help_text=_('The amount of columns in a 12 columns layout that this element should occupy.'))
+    height = models.PositiveIntegerField(verbose_name=_(u'height'), default=DEFAULT_ELEMENT_HEIGHT)
     visual_type = models.PositiveIntegerField(choices=ELEMENT_CHOICES)
     report = models.ForeignKey(Report, verbose_name=_(u'report'), blank=True, null=True)
     website = models.ForeignKey(Website, verbose_name=_(u'website'), blank=True, null=True)
