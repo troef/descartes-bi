@@ -19,6 +19,9 @@ class Dashboard(models.Model):
     def __unicode__(self):
         return self.label
 
+    def active_elements(self):
+        return self.elements.filter(enabled=True)
+
     class Meta:
         verbose_name = _('dashboard')
         verbose_name_plural = _('dashboards')

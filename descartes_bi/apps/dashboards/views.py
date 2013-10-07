@@ -13,7 +13,22 @@ logger = logging.getLogger(__name__)
 def dashboard_view(request, dashboard_pk, extra_context=None):
     dashboard = get_object_or_404(Dashboard, pk=dashboard_pk)
 
-    context = {'dashboard': dashboard, 'elements': dashboard.elements.filter(enabled=True)}
+    rows = []
+    row = []
+    spans = 0
+    for element in dashboard.active_elements():
+        spans += element.span
+        if spans <= 12:
+            row.append(element)
+        else:
+            rows.append(row)
+            spans = element.span
+            row = [element]
+
+    if row:
+        rows.append(row)
+
+    context = {'dashboard': dashboard, 'rows': rows}
 
     if extra_context:
         context.update(extra_context)
