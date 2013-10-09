@@ -1,0 +1,88 @@
+{% load i18n %}
+
+{% if 0 %}
+    {% load static %}
+        <link type="text/css" rel="stylesheet" href="{% static 'packages/novus-nvd3/src/nv.d3.css' %}"/>
+
+        <script type="text/javascript" src="{% static 'packages/jquery-1.10.2.min.js' %}"></script>
+        <script type="text/javascript" src="{% static 'packages/novus-nvd3/lib/d3.v3.js' %}"></script>
+        <script type="text/javascript" src="{% static 'packages/novus-nvd3/nv.d3.js' %}"></script>
+        <script type="text/javascript" src="{% static 'packages/novus-nvd3/src/tooltip.js' %}"></script>
+        <script type="text/javascript" src="{% static 'packages/novus-nvd3/src/utils.js' %}"></script>
+        <script type="text/javascript" src="{% static 'packages/novus-nvd3/src/models/legend.js' %}"></script>
+        <script type="text/javascript" src="{% static 'packages/novus-nvd3/src/models/axis.js' %}"></script>
+        <script type="text/javascript" src="{% static 'packages/novus-nvd3/src/models/scatter.js' %}"></script>
+        <script type="text/javascript" src="{% static 'packages/novus-nvd3/src/models/line.js' %}"></script>
+        <script type="text/javascript" src="{% static 'packages/novus-nvd3/src/models/historicalBar.js' %}"></script>
+        <script type="text/javascript" src="{% static 'packages/novus-nvd3/src/models/linePlusBarChart.js' %}"></script>
+        <script type="text/javascript" src="{% static 'packages/novus-nvd3/src/models/lineWithFocusChart.js' %}"></script>
+        <script type="text/javascript" src="{% static 'packages/novus-nvd3/src/models/multiBar.js' %}"></script>
+        <script type="text/javascript" src="{% static 'packages/novus-nvd3/src/models/multiBarChart.js' %}"></script>
+        <script type="text/javascript" src="{% static 'packages/novus-nvd3/src/models/pie.js' %}"></script>
+        <script type="text/javascript" src="{% static 'packages/novus-nvd3/src/models/pieChart.js' %}"></script>
+        <script type="text/javascript" src="{% static 'packages/novus-nvd3/src/models/multiBarHorizontal.js' %}"></script>
+        <script type="text/javascript" src="{% static 'packages/novus-nvd3/src/models/multiBarHorizontalChart.js' %}"></script>
+{% endif %}
+
+{% if 0 %}
+    QUERY: {{ query }}<br />
+    PARAMS: {{ params }}<br />
+    series_results: {{ series_results }}<br />
+{% endif %}
+
+{% if not series_results %}
+    {% with 'Attention' as title %}
+    {% with 'There are no results for the selected parameters, choose other values.' as message %}
+    {% include "messagebox-attention.html" %}
+    {% endwith %}
+    {% endwith %}
+{% else %}
+
+    <body>
+        <svg id="chart{{ report.id }}" style="min-height: 100%;"></svg>
+        <script>
+            // Get data
+            (function() {
+                var data = {{ series_results|safe }};
+                console.log(data);
+                var chart;
+                nv.addGraph(function() {
+                     //TODO self calling function returning new chart
+                    chart = nv.models.multiBarChart()
+                        .x(function(d) { return d.x })
+                        .y(function(d) { return d.y })
+                        .margin({top: 30, right: 20, bottom: 115, left: 75})
+                        .barColor(d3.scale.category10().range())
+                        .showLegend(false)
+                        .showControls(false);
+                        //.height("300");
+
+                    chart.multibar
+                        .hideable(true);
+
+                    chart.reduceXTicks(false).staggerLabels(true);
+
+                    chart.yAxis.showMaxMin(false);
+
+                    d3.select('#chart{{ report.id }}')
+                        .datum(data)
+                        .transition().duration(500)
+                        .call(chart);
+
+                    d3.select('#chart{{ report.id }}')
+                        .selectAll('.nv-x.nv-axis > g')
+                        .selectAll('g')
+                        .selectAll('text')
+                        .style("text-anchor", "end")
+                        .attr('transform', function(d) { return 'translate (0, 0) rotate(-65 -5,10)' });
+
+                    nv.utils.windowResize(chart.update);
+
+                    chart.dispatch.on('stateChange', function(e) { nv.log('New State:', JSON.stringify(e)); });
+
+                    return chart;
+                });
+            })();
+        </script>
+    </body>
+{% endif %}

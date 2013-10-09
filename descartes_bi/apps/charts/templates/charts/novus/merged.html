@@ -24,7 +24,7 @@
         <script type="text/javascript" src="{% static 'packages/novus-nvd3/src/models/multiBarHorizontalChart.js' %}"></script>
 {% endif %}
 
-{% if 0 %}
+{% if 1 %}
     QUERY: {{ query }}<br />
     PARAMS: {{ params }}<br />
     series_results: {{ series_results }}<br />
@@ -74,6 +74,8 @@
                 });
                 return series;
             });
+
+            var data = {{ series_results|safe }}
 
             // Insert chart legends and set graph type into each series
             {% for report_series in report.report_series.all %}

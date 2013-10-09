@@ -28,15 +28,29 @@ class NovusD3(ChartBackend):
         )
     }]
 
+    def process_data(self, report, series_results):
+        serie = []
+
+        #TODO: Improve
+        for series_result in series_results:
+            for i in series_result:
+                for k, v in i.iteritems():
+                    serie.append({"x": k, "y": v})
+
+        series_chart_data = [{"values": serie, "key": report.title, "bar": "true"}]
+
+        return series_chart_data
+
     def render(self, request):
         series_results = self.report.execute()
-        context = {
-            'series_results': [json.dumps(result) for result in series_results],
-            'report': self.report,
-            'chart_type': 'LI',
-        }
+        series_chart_data = self.process_data(report, series_results)
 
+        context = {
+            'series_results': """%s;\n""" % json.dumps(series_chart_data),
+            'chart_type': 'SI',
+            'report': self.report,
+        }
         logger.debug('context: %s' % context)
 
-        return render_to_response('charts/novus/merged.html', context,
+        return render_to_response('charts/novus/multiBarChart.html', context,
             context_instance=RequestContext(request))
