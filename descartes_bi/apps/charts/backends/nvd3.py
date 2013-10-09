@@ -15,20 +15,34 @@ logger = logging.getLogger(__name__)
 class NovusD3(ChartBackend):
     label = _('Novus D3')
 
-    options = [{
-        'name': 'chart_type',
-        'label': _('chart type'),
-        'choices': (
-            ('SI', _('Standard X,Y')),
-            ('SH', _('Horizontal X,Y')),
-            ('PI', _('Pie chart')),
-            ('LB', _('Line Plus Bar Chart')),
-            ('LI', _('Line chart')),
-            ('LF', _('Line chart with Focus')),
-        )
-    }]
+    options = [
+        {
+            'name': 'chart_type',
+            'label': _('chart type'),
+            'choices': (
+                ('SI', _('Standard X,Y')),
+                ('SH', _('Horizontal X,Y')),
+                ('PI', _('Pie chart')),
+                ('LB', _('Line Plus Bar Chart')),
+                ('LI', _('Line chart')),
+                ('LF', _('Line chart with Focus')),
+            )
+        },
+        {
+            'name': 'chart_options',
+            'label': _('chart options'),
+        }
+    ]
 
-    def process_data(self, report, series_results):
+    chart_template = {
+        'SI': 'charts/novus/multiBarChart.html',  # 'Standard X,Y'
+        'LI': 'charts/novus/lineChart.html',  # Line chart
+        'PI': 'charts/novus/pieChart.html',  # Pie chart
+    }
+
+    def process_data(self):
+        series_results = self.report.execute()
+
         serie = []
 
         #TODO: Improve
@@ -37,20 +51,22 @@ class NovusD3(ChartBackend):
                 for k, v in i.iteritems():
                     serie.append({"x": k, "y": v})
 
-        series_chart_data = [{"values": serie, "key": report.title, "bar": "true"}]
+        series_chart_data = [{"values": serie}]
 
         return series_chart_data
 
     def render(self, request):
-        series_results = self.report.execute()
-        series_chart_data = self.process_data(report, series_results)
-
+        #TODO: Error handling
         context = {
-            'series_results': """%s;\n""" % json.dumps(series_chart_data),
-            'chart_type': 'SI',
+            'series_results': """%s;\n""" % json.dumps(self.process_data()),
+            'id': report.id,
+            'chart_options': chart_options,
             'report': self.report,
         }
+
         logger.debug('context: %s' % context)
 
-        return render_to_response('charts/novus/multiBarChart.html', context,
-            context_instance=RequestContext(request))
+        #Select template. Default to standard bar chart.
+        page = self.chart_template.get(self.chart_options.get('chart','SI'))
+
+        return render_to_response(page, context, context_instance=RequestContext(request))
