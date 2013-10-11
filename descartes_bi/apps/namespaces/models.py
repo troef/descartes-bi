@@ -27,26 +27,21 @@ from mptt.models import MPTTModel, TreeForeignKey
 
 from dashboards.models import Dashboard
 from reports.models import Menuitem
-from website.models import Website
 
-TYPE_MENU = 1
-TYPE_DASHBOARD = 2
-TYPE_WEBSITES = 3
+from .literals import TYPE_CHOICES
 
-TYPE_CHOICES = (
-    (TYPE_MENU, _('Menus')),
-    (TYPE_DASHBOARD, _('Dashboard')),
-    (TYPE_WEBSITES, _('Websites')),
-)
 
 class Namespace(MPTTModel):
     parent = TreeForeignKey('self', null=True, blank=True, related_name='children')
     label = models.CharField(max_length=32)
     icon = models.CharField(max_length=32)
+    # TODO: rename fields
+    # 'view_type' to 'node_type'
+    # 'view_menu' to 'menu'
+    # 'view_dash' to 'dashboard'
     view_type = models.PositiveIntegerField(choices=TYPE_CHOICES, null=True, blank=True)
     view_menu = models.ManyToManyField(Menuitem, null=True, blank=True, verbose_name=_('menu item'), related_name='menus')
     view_dash = models.ForeignKey(Dashboard, null=True, blank=True, verbose_name=_('dashboard item'), related_name='dashboard')
-    view_website = models.ManyToManyField(Website, null=True, blank=True, verbose_name=_('website item'), related_name='websites')
 
     def __unicode__(self):
         return self.label

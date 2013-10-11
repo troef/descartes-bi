@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 class NovusD3(ChartBackend):
     label = _('Novus D3')
 
-    options = {
+    options = [{
         'name': 'chart_type',
         'label': _('chart type'),
         'choices': (
@@ -26,13 +26,13 @@ class NovusD3(ChartBackend):
             ('LI', _('Line chart')),
             ('LF', _('Line chart with Focus')),
         )
-    }
+    }]
 
-    def render(self, report, request):
-        series_results = report.execute(request)
+    def render(self, request):
+        series_results = self.report.execute()
         context = {
             'series_results': [json.dumps(result) for result in series_results],
-            'report': report,
+            'report': self.report,
             'chart_type': 'LI',
         }
 

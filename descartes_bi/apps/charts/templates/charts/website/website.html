@@ -1,0 +1,23 @@
+{% load i18n %}
+<div class="row-fluid">
+    {% if form %}
+        <div class="span4">
+            <form method="get" action="" class="well">
+                <fieldset>
+                    {{ form }}
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">{% trans 'Submit' %}</button>
+                    </div>
+                </fieldset>
+            </form>
+        </div>
+        <div class="span8">
+    {% else %}
+        <div class="span12">
+    {% endif %}
+        <div id='widget-element'>
+            <iframe src="data:text/html;base64,{{ content|safe }}" style="width: 100%; min-height: 100%"></iframe>
+        </div>
+    </div>
+</div>
+

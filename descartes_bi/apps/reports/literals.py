@@ -1,8 +1,7 @@
 from django.utils.translation import ugettext_lazy as _
 
-FILTER_TYPE_DATE = 'DA'
-FILTER_TYPE_COMBO = 'DR'
-FILTER_TYPE_MONTH = 'MO'
+FILTER_TYPE_COMBO = 1
+FILTER_TYPE_DATE = 2
 
 FILTER_FIELD_CHOICES = (
     (FILTER_TYPE_DATE, _('Date field')),

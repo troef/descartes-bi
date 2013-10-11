@@ -34,11 +34,7 @@
     <script type="text/javascript">
          $(document).ready(function() {
             {% for element in dashboard.active_elements %}
-                {% if element.report %}
-                    $("#chart{{ element.pk }}").load("{{ element.load_url }}");
-                {% else %}
-                    $("#chart{{ element.pk }}").html('<iframe src="{{ element.load_url }}" style="min-height: 100%; width: 100%;"></iframe>');
-                {% endif %}
+                $("#chart{{ element.pk }}").load("{{ element.report.get_absolute_url }}?{{ query_string|safe }}");
             {% endfor %}
          });
     </script>

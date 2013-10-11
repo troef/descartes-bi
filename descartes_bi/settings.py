@@ -152,7 +152,6 @@ INSTALLED_APPS = (
     'reports',
     'dashboards',
     'libre_driver',
-    'website',
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (

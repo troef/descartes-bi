@@ -31,8 +31,8 @@ from django.utils.translation import ugettext_lazy as _
 
 from dashboards.models import Dashboard
 from dashboards.views import dashboard_view
-from website.views import website_view
 
+from .literals import TYPE_CHOICES, TYPE_DASHBOARD, TYPE_MENU
 from .models import Namespace
 
 logger = logging.getLogger(__name__)
@@ -59,16 +59,11 @@ def node_view(request, node_pk=None):
     context['node'] = node
 
     if node:
-        #view_type 1 - Menu, view_type 2 - Dashboard
-        if node.view_type == 1:
+        if node.view_type == TYPE_MENU:
             context['menus'] = node.view_menu.all()
-        elif node.view_type == 2:
+        elif node.view_type == TYPE_DASHBOARD:
             dashboard = get_object_or_404(Dashboard, pk=node.view_dash_id)
             return dashboard_view(request, dashboard.pk, extra_context=context)
-        #Check if the view_type is a website and call the website view
-        elif node.view_type == 3:
-            website = node.view_website.all()[0]
-            return website_view(request, website.pk, extra_context=context)
 
     return render_to_response('namespaces/node.html', context,
         context_instance=RequestContext(request))

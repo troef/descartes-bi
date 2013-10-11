@@ -25,60 +25,10 @@ from django.template import RequestContext
 from django.utils.translation import ugettext as _
 
 from .exceptions import SeriesError
-from .forms import FilterForm
 from .models import Report
 from .utils import get_allowed_object_for_user
 
-
 logger = logging.getLogger(__name__)
-
-
-def ajax_filter_form(request, report_id):
-    #TODO: access control
-    if request.method == 'GET':
-        query = request.GET
-
-    report = get_object_or_404(Report, pk=report_id)
-
-    if report not in get_allowed_object_for_user(request.user)['reports']:
-        return render_to_response('messagebox-error.html',
-                                  {'title': _(u'Permission error'),
-                                   'message': _(u"Insufficient permissions to access this area.")})
-
-    if query:
-        filter_form = FilterForm(report.filtersets.all(), request.user, query)
-    else:
-        filter_form = FilterForm(report.filtersets.all(), request.user)
-
-    return render_to_response('filter_form_subtemplate.html', {'filter_form': filter_form},
-        context_instance=RequestContext(request))
-
-
-def ajax_report_description(request, report_id):
-    report = get_object_or_404(Report, pk=report_id)
-
-    result = "<strong>%s</strong><br />%s" % (report.title, report.description or '')
-    return HttpResponse(result)
-
-
-def ajax_report_validation(request, report_id):
-    report = get_object_or_404(Report, pk=report_id)
-
-    result = ''
-
-    for s in report.series.all():
-        if s.validated:
-
-            result += "<li>'%s' validated on %s" % (s.label or unicode(s),
-                                                    s.validated_date)
-            if s.validated_person:
-                result += " by %s" % s.validated_person
-            result += '</li><br />'
-
-    if result:
-        return HttpResponse('<ul>%s</ul>' % result)
-    else:
-        return HttpResponse(_(u'No element of this report has been validates.'))
 
 
 def ajax_report(request, report_id):

@@ -3,7 +3,8 @@ from __future__ import absolute_import
 import logging
 
 from django.core.urlresolvers import reverse
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render_to_response, get_object_or_404
+from django.template import RequestContext
 
 from .models import Dashboard
 
@@ -28,9 +29,10 @@ def dashboard_view(request, dashboard_pk, extra_context=None):
     if row:
         rows.append(row)
 
-    context = {'dashboard': dashboard, 'rows': rows}
+    context = {'dashboard': dashboard, 'rows': rows, 'query_string': request.META['QUERY_STRING']}
 
     if extra_context:
         context.update(extra_context)
 
-    return render(request, 'dashboards/dashboard.html', context)
+    return render_to_response('dashboards/dashboard.html', context,
+        context_instance=RequestContext(request))

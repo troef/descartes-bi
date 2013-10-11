@@ -35,19 +35,20 @@ from db_drivers.models import DataSource
 
 from .exceptions import SeriesError
 from .forms import FilterForm
-from .literals import FILTER_FIELD_CHOICES, SERIES_TYPE_CHOICES, UNION_CHOICES, FILTER_TYPE_DATE, FILTER_TYPE_COMBO
-
+from .literals import (FILTER_FIELD_CHOICES, SERIES_TYPE_CHOICES, UNION_CHOICES,
+    FILTER_TYPE_DATE, FILTER_TYPE_COMBO)
 
 logger = logging.getLogger(__name__)
+SERIES_TIMEOUT = None
 
 
 class Filter(models.Model):
+    label = models.CharField(max_length=32, help_text=_('Text label that will be presented to the user.'), verbose_name=_('label'))
     name = models.CharField(max_length=48, help_text=_('Name of the parameter to be used in the queries.  Do not use spaces or special symbols.'), verbose_name=_('name'))
-    description = models.CharField(max_length=32, blank=True, null=True, verbose_name=_('description'))
-    type = models.CharField(max_length=2, choices=FILTER_FIELD_CHOICES, verbose_name=_('type'))
-    label = models.CharField(max_length=32, help_text='Text label that will be presented to the user.', verbose_name=_('label'))
-    default = models.CharField(max_length=32, blank=True, null=True, help_text='Defautl value or one the special functions [this_day, this_month, this_year].', verbose_name=_('default'))
-    options = models.TextField(blank=True, null=True, verbose_name=_('options'))
+    description = models.CharField(max_length=32, blank=True, verbose_name=_('description'))
+    filter_type = models.PositiveIntegerField(choices=FILTER_FIELD_CHOICES, verbose_name=_('filter type'))
+    default = models.CharField(max_length=32, blank=True, help_text=_('Default value or one the special functions [this_day, this_month, this_year].'), verbose_name=_('default'))
+    options = models.TextField(blank=True, verbose_name=_('options'))
 
     def __unicode__(self):
         if self.description:
@@ -55,11 +56,8 @@ class Filter(models.Model):
         else:
             return self.name
 
-    def get_parents(self):
-        return ', '.join(['"%s"' % p.name for p in self.filterset_set.all()])
-    get_parents.short_description = _('used by filter sets')
-
     def execute_function(self):
+        # TODO: don't hardcode functions, move elsewhere
         today = datetime.date.today()
         if self.default == 'function:this_day':
             self.default = today
@@ -77,15 +75,11 @@ class Filter(models.Model):
 
 
 class Filterset(models.Model):
+    # TODO: rename 'name' field to 'label'
     name = models.CharField(max_length=64, verbose_name=_('name'), help_text=_('A simple name for your convenience.'))
-    filters = models.ManyToManyField(Filter, through='FilterExtra', verbose_name=_('filters'))
 
     def __unicode__(self):
         return self.name
-
-    def get_parents(self):
-        return ', '.join(['"%s"' % r.title for r in self.report_set.all()])
-    get_parents.short_description = _('used by reports')
 
     class Meta:
         ordering = ['name']
@@ -93,8 +87,8 @@ class Filterset(models.Model):
         verbose_name_plural = _('filters sets')
 
 
-class FilterExtra(models.Model):
-    filterset = models.ForeignKey(Filterset)
+class FiltersetFilters(models.Model):
+    filterset = models.ForeignKey(Filterset, verbose_name=_('filterset'), related_name='filterset_filters')
     filter = models.ForeignKey(Filter, verbose_name=_('filter'))
     order = models.IntegerField(default=0, verbose_name=_('order'))
 
@@ -102,8 +96,9 @@ class FilterExtra(models.Model):
         return unicode(self.filter)
 
     class Meta:
-        verbose_name = _('filter')
-        verbose_name_plural = _('filters')
+        ordering = ['order']
+        verbose_name = _('filterset filter')
+        verbose_name_plural = _('filterset filters')
 
 
 class Serie(models.Model):
@@ -111,6 +106,8 @@ class Serie(models.Model):
 
     name = models.CharField(max_length=64, help_text='Internal name.  Do not use spaces or special symbols.', verbose_name=_('name'))
     label = models.CharField(max_length=24, null=True, blank=True, help_text='Label to be shown to the user and to be used for the legend.', verbose_name=_('label'))
+
+    # TODO: Remove these, move them to the specific chart backend
     tick_format1 = models.CharField(max_length=8, choices=SERIES_TYPE_CHOICES, verbose_name=_('tick format 1'))
     tick_format2 = models.CharField(max_length=8, choices=SERIES_TYPE_CHOICES, verbose_name=_('tick format 2'))
 
@@ -125,36 +122,11 @@ class Serie(models.Model):
     def __unicode__(self):
         return self.name
 
-    def get_reports(self):
-        return ', '.join(['"%s"' % report_series.report for report_series in ReportSeries.objects.filter(series=self)])
-    get_reports.short_description = _('used by reports')
-
-    def get_params(self):
-        return '(%s)' % ', '.join([p for p in re.compile(r'%\((.*?)\)').findall(self.query)])
-    get_params.short_description = _('parameters')
-
-    def get_filters(self):
-        filters = []
-        for report in self.report_set.all():
-            for set in report.filtersets.all():
-                for filter in set.filters.all():
-                    if filter not in filters:
-                        filters.append(filter)
-        return ' ,'.join(['%s' % f for f in filters])
-    get_filters.short_description = _('filters')
-
     def execute(self, **kwargs):
         params = kwargs.get('params')
-        special_params = kwargs.get('special_params')
         pipe = kwargs.get('pipe')
 
-        if special_params:
-            for sp in special_params.keys():
-                query = re.compile(r'%\(' + sp + r'\)s').sub(special_params[sp], self.query)
-        else:
-            query = self.query
-
-        if re.compile(r'[^%]%[^%(]').search(query):
+        if re.compile(r'[^%]%[^%(]').search(self.query):
             SeriesError(_('Single \'%\'found, replace with double \'%%\' to properly escape the SQL wildcard caracter \'%\'.'))
 
         cursor = self.data_source.load_backend().cursor()
@@ -162,8 +134,8 @@ class Serie(models.Model):
             params = {}
 
         try:
-            logger.debug('self.query: %s, params: %s' % (query, params))
-            cursor.execute(query, params)
+            logger.debug('self.query: %s, params: %s' % (self.query, params))
+            cursor.execute(self.query, params)
         except Exception as exception:
             raise SeriesError('Cursor error: %s' % exception)
 
@@ -180,15 +152,15 @@ class Serie(models.Model):
 
 class Report(models.Model):
     # Base properties
-    title = models.CharField(max_length=128, help_text=_('Chart title.'), verbose_name=_('title'))
-    description = models.TextField(null=True, blank=True, help_text=_('A description of the report.  This description will also be presented to the user.'), verbose_name=_('description'))
+    title = models.CharField(max_length=128, verbose_name=_('title'), help_text=_('Chart title.'))
+    description = models.TextField(blank=True, verbose_name=_('description'), help_text=_('A description of the report. This description will also be presented to the user.'))
 
     # Data
-    filtersets = models.ManyToManyField(Filterset, null=True, blank=True, verbose_name=_('filter sets'))
+    filterset = models.ForeignKey(Filterset, null=True, blank=True, verbose_name=_('filterset'))
 
     # Renderer properties
     renderer = models.PositiveIntegerField(choices=BACKEND_CHOICES, verbose_name=_('renderer'))
-    renderer_options = models.TextField(blank=True, verbose_name=_('renderer options'))
+    renderer_options = models.TextField(blank=True, verbose_name=_('renderer options'), help_text=_('Python dictionary of options.'))
 
     def __unicode__(self):
         return self.title
@@ -196,77 +168,45 @@ class Report(models.Model):
     def get_absolute_url(self):
         return reverse('reports:ajax_report_view', args=[self.pk])
 
-    def get_parents(self):
-        return ', '.join([mi.title for mi in self.menuitem_set.all()])
-    get_parents.short_description = _('used by menus')
-
-    def get_series(self):
-        return ', '.join(['"%s"' % report_series.series for report_series in self.report_series.all()])
-    get_series.short_description = _('series')
-
     def get_backend(self):
         return import_backend(self.renderer)
 
-    def get_parameter_values(self, request):
-        params = {}
-        special_params = {}
-
-        if self.filtersets.all():
-            filtersets = self.filtersets
-            if request.method == 'GET':
-                filter_form = FilterForm(filtersets, request.user, request.GET)
-            else:
-                filter_form = FilterForm(filtersets, request.user)
-
-            for set in filtersets.all():
-                for filter in set.filters.all():
-
-                    if filter_form.is_valid():
-                        value = filter_form.cleaned_data[filter.name]
-                        if not value:
-                            filter.execute_function()
-                            value = filter.default
-
-                    else:
-                        filter.execute_function()
-                        value = filter.default
-
-                    if filter.type == FILTER_TYPE_DATE:
-                        params[filter.name] = value.strftime('%Y%m%d')
-                    elif filter.type == FILTER_TYPE_COMBO:
-                        special_params[filter.name] = '(' + ((''.join(['%s'] * len(value)) % tuple(value))) + ')'
-                    else:
-                        params[filter.name] = value
-
-        return params, special_params
-
     def render(self, request):
         backend_class = self.get_backend()
-        backend = backend_class()
-        return backend.render(self, request)
+        backend = backend_class(self)
+        return backend.render(request)
 
-    def execute(self, request):
+    def execute(self, params=None, deferred=True):
+        """
+        The 'deferred' boolean control whether or not the series will be
+        execute concurrently as subprocesses
+        """
         series_results = []
         deferred_list = []
-        params, special_params = self.get_parameter_values(request)
 
-        if False:
-            for report_series in self.report_series.all():
-                series_results.append(report_series.series.execute(params=params, special_params=special_params).fetchall())
-        else:
+        logger.debug('params: %s' % params)
+
+        if deferred:
             for report_series in self.report_series.all():
                 # Launch all serie queries in parallel
                 pipe_a, pipe_b = Pipe()
                 process = Process(
                     target=report_series.series.execute,
-                    kwargs={'pipe': pipe_a, 'params': params, 'special_params': special_params})
+                    kwargs={'pipe': pipe_a, 'params': params})
                 process.start()
                 deferred_list.append({'series': report_series.series, 'pipe': pipe_b, 'process': process})
 
             for deferred in deferred_list:
-                # Collect the serires queries results
-                deferred['process'].join()
-                series_results.append(deferred['pipe'].recv())
+                try:
+                    # Collect the serires queries results
+                    deferred['process'].join(SERIES_TIMEOUT)
+                except Exception as exception:
+                    logger.error('Series subprocess exception; %s' % exception)
+                else:
+                    series_results.append(deferred['pipe'].recv())
+        else:
+            for report_series in self.report_series.all():
+                series_results.append(report_series.series.execute(params=params).fetchall())
 
         logger.debug('report results: %s' % series_results)
         return series_results
@@ -292,7 +232,6 @@ class ReportSeries(models.Model):
 
 
 class Menuitem(models.Model):
-    #TODO: reports display order
     title = models.CharField(max_length=64, verbose_name=_('title'))
     reports = models.ManyToManyField(Report, verbose_name=_('chart'), blank=True, null=True)
     order = models.IntegerField(default=0, verbose_name=_('order'))
@@ -305,17 +244,12 @@ class Menuitem(models.Model):
         verbose_name = _('menu item')
         verbose_name_plural = _('menu items')
 
-    def get_reports(self):
-        return ', '.join(['"%s"' % r.title for r in self.reports.all()])
-    get_reports.short_description = _('charts')
-
 
 class UserPermission(models.Model):
+    # TODO: access_unpublished_reports = models.BooleanField(default = False)
     user = models.ForeignKey(User, unique=True)
-    #access_unpublished_reports = models.BooleanField(default = False)
     union = models.CharField(max_length=1, choices=UNION_CHOICES, default='I', verbose_name=_('Group/user permissions union type'), help_text=_('Determines how the user permissions interact with the group permissions of this user.'))
     reports = models.ManyToManyField(Report, blank=True, null=True, verbose_name=_('charts'))
-    filters = models.ManyToManyField(Filter, through='UserPermissionFilterValues', verbose_name=_('filters'))
 
     def get_reports(self):
         return ', '.join(['"%s"' % r.title for r in self.reports.all()])
@@ -329,25 +263,10 @@ class UserPermission(models.Model):
         verbose_name_plural = _('user permissions')
 
 
-class UserPermissionFilterValues(models.Model):
-    userpermission = models.ForeignKey(UserPermission, verbose_name=_('user permissions'))
-    filter = models.ForeignKey(Filter, verbose_name=_('filter'))
-    options = models.TextField(blank=True, null=True, verbose_name=_('options'))
-    default = models.CharField(max_length=32, blank=True, null=True, help_text='Defautl value or one the special functions [this_day, this_month, this_year].', verbose_name=_('default'))
-
-    def __unicode__(self):
-        return '%s = %s' % (self.filter, self.options)
-
-    class Meta:
-        verbose_name = _('user filter values limit')
-        verbose_name_plural = _('user filter values limits')
-
-
 class GroupPermission(models.Model):
+    # TODO: access_unpublished_reports = models.BooleanField(default = False)
     group = models.ForeignKey(Group, unique=True, verbose_name=_('group'))
-    #access_unpublished_reports = models.BooleanField(default = False)
     reports = models.ManyToManyField(Report, blank=True, null=True, verbose_name=_('reports'))
-    filters = models.ManyToManyField(Filter, through='GroupPermissionFilterValues', verbose_name=_('filters'))
 
     def __unicode__(self):
         return unicode(self.group)
@@ -359,17 +278,3 @@ class GroupPermission(models.Model):
     def get_reports(self):
         return ', '.join(['"%s"' % r.title for r in self.reports.all()])
     get_reports.short_description = _('charts')
-
-
-class GroupPermissionFilterValues(models.Model):
-    grouppermission = models.ForeignKey(GroupPermission, verbose_name=_('group permissions'))
-    filter = models.ForeignKey(Filter, verbose_name=_('filter'))
-    options = models.TextField(blank=True, null=True, verbose_name=_('options'))
-    default = models.CharField(max_length=32, blank=True, null=True, help_text='Defautl value or one the special functions [this_day, this_month, this_year].', verbose_name=_('default'))
-
-    def __unicode__(self):
-        return '%s = %s' % (self.filter, self.options)
-
-    class Meta:
-        verbose_name = _('group filter values limit')
-        verbose_name_plural = _('group filter values limits')

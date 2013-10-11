@@ -19,11 +19,7 @@ from __future__ import absolute_import
 
 from django import forms
 
-from .models import Namespace, TYPE_MENU, TYPE_DASHBOARD, TYPE_WEBSITES
-
-
-class UploadFileForm(forms.Form):
-    file = forms.FileField()
+from .models import Namespace
 
 
 class NamespaceForm(forms.ModelForm):
