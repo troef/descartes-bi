@@ -63,7 +63,7 @@
             var data = [
                 {% for series_result in series_results %}
                     {
-                        "values" : JSON.parse('{{ series_result|safe }}'),
+                        "values" : JSON.parse('{{ series_result|safe }}')
                     },
                 {% endfor %}
             ].map(function(series) {

@@ -17,6 +17,24 @@ class Dashboard(models.Model):
     def active_elements(self):
         return self.elements.filter(enabled=True)
 
+    def get_element_rows(self):
+        rows = []
+        row = []
+        spans = 0
+        for element in self.active_elements():
+            spans += element.span
+            if spans > 12:
+                rows.append(row)
+                spans = element.span
+                row = []
+
+            row.append(element)
+
+        if row:
+            rows.append(row)
+
+        return rows
+
     class Meta:
         verbose_name = _('dashboard')
         verbose_name_plural = _('dashboards')

@@ -34,7 +34,13 @@
     <script type="text/javascript">
          $(document).ready(function() {
             {% for element in dashboard.active_elements %}
-                $("#chart{{ element.pk }}").load("{{ element.report.get_absolute_url }}?{{ query_string|safe }}");
+                //$.ajax({
+                //    url: "{{ element.report.get_absolute_url }}?{{ query_string|safe }}",
+                //    cache: false,
+                //}).success(function( data ) {
+                //    $( "#chart{{ element.pk }}" ).html( data );
+                //});
+                    $("#chart{{ element.pk }}").load("{{ element.report.get_absolute_url }}?{{ query_string|safe }}");
             {% endfor %}
          });
     </script>
