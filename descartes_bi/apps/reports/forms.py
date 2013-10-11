@@ -19,7 +19,6 @@ from __future__ import absolute_import
 #
 
 from django import forms
-from django.utils.translation import ugettext_lazy as _
 
 from .literals import FILTER_TYPE_DATE, FILTER_TYPE_COMBO
 
@@ -40,7 +39,6 @@ class FilterForm(forms.Form):
                     label=filterset_filter.filter.label, widget=forms.DateInput(attrs={'size': '10'})
                 )
             elif filterset_filter.filter.filter_type == FILTER_TYPE_COMBO:
-                results = []
                 try:
                     choices = []
                     for choice in eval(filterset_filter.filter.options, {}):

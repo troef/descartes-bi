@@ -34,9 +34,7 @@ from charts.utils import import_backend
 from db_drivers.models import DataSource
 
 from .exceptions import SeriesError
-from .forms import FilterForm
-from .literals import (FILTER_FIELD_CHOICES, SERIES_TYPE_CHOICES, UNION_CHOICES,
-    FILTER_TYPE_DATE, FILTER_TYPE_COMBO)
+from .literals import (FILTER_FIELD_CHOICES, SERIES_TYPE_CHOICES, UNION_CHOICES)
 
 logger = logging.getLogger(__name__)
 SERIES_TIMEOUT = None

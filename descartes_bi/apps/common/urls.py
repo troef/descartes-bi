@@ -17,7 +17,7 @@
 #
 
 from django.conf import settings
-from django.conf.urls.defaults import include, patterns, url
+from django.conf.urls.defaults import patterns, url
 from django.views.generic.base import RedirectView
 
 urlpatterns = patterns('common.views',

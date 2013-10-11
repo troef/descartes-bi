@@ -1,10 +1,11 @@
+from __future__ import absolute_import
+
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
-from reports.models import Report, Filterset
-from website.models import Website
+from reports.models import Report
 
-DEFAULT_ELEMENT_HEIGHT = 300
+from .literals import DEFAULT_ELEMENT_HEIGHT
 
 
 class Dashboard(models.Model):

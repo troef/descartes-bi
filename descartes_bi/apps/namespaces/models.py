@@ -19,7 +19,6 @@ from __future__ import absolute_import
 #
 
 from django.db import models
-from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext_lazy as _
 

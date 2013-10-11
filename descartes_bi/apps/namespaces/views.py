@@ -17,22 +17,16 @@ from __future__ import absolute_import
 #    along with descartes-bi.  If not, see <http://www.gnu.org/licenses/>.
 #
 import logging
-import os
-import re
 
-from django import http
-from django.conf import settings
-from django.core.urlresolvers import reverse
 from django.contrib import messages
-from django.http import HttpResponseRedirect
 from django.shortcuts import render_to_response, get_object_or_404
-from django.template import loader, RequestContext
+from django.template import RequestContext
 from django.utils.translation import ugettext_lazy as _
 
 from dashboards.models import Dashboard
 from dashboards.views import dashboard_view
 
-from .literals import TYPE_CHOICES, TYPE_DASHBOARD, TYPE_MENU
+from .literals import TYPE_DASHBOARD, TYPE_MENU
 from .models import Namespace
 
 logger = logging.getLogger(__name__)

@@ -16,7 +16,6 @@
 #    along with descartes-bi.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-from django import template
 from django.conf import settings
 from django.template import Library
 

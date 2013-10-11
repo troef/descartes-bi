@@ -140,9 +140,11 @@ INSTALLED_APPS = (
     'django.contrib.humanize',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # 3rd party
     'compressor',
     'mptt',
     'south',
+    # Descates BI
     'common',
     'web_theme',
     'namespaces',

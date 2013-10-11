@@ -22,7 +22,7 @@ import re
 from django import http
 from django.conf import settings
 from django.http import HttpResponseRedirect
-from django.shortcuts import render_to_response, get_object_or_404
+from django.shortcuts import render_to_response
 from django.template import loader, RequestContext
 
 logger = logging.getLogger(__name__)

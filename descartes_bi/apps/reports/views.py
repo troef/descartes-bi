@@ -19,7 +19,6 @@ from __future__ import absolute_import
 #
 import logging
 
-from django.http import HttpResponse
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.utils.translation import ugettext as _
@@ -42,4 +41,5 @@ def ajax_report(request, report_id):
     try:
         return report.render(request)
     except SeriesError as exception:
-        return render_to_response('messagebox-error.html', {'title': _('Series error'), 'message': exception})
+        return render_to_response('messagebox-error.html', {'title': _('Series error'), 'message': exception},
+            context_instance=RequestContext(request))
