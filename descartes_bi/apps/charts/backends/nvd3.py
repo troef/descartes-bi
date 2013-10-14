@@ -41,32 +41,42 @@ class NovusD3(ChartBackend):
     }
 
     def process_data(self):
-        series_results = self.report.execute()
+        chart_type = chart_options.get('chart','SI')
 
         serie = []
+        for s in self.report.execute():
+            for k, v in s.iteritems():
+                serie.append({"x": k, "y": v})
 
-        #TODO: Improve
-        for series_result in series_results:
-            for i in series_result:
-                for k, v in i.iteritems():
-                    serie.append({"x": k, "y": v})
+        if chart_type == 'PI':
+            return serie
+        else:
+            series_chart_data = {"values": serie}
 
-        series_chart_data = [{"values": serie}]
+       series_chart_data = []
+
+        # Get chart type, default to bar chart
+
+        for serie_result in series_results:
+            if not chart_type == 'PI':
+                series_chart_data.append(self.process_data(serie_result, chart_type))
+            else:
+                series_chart_data = self.process_data(serie_result, chart_type)
 
         return series_chart_data
+
 
     def render(self, request):
         #TODO: Error handling
         context = {
             'series_results': """%s;\n""" % json.dumps(self.process_data()),
-            'id': report.id,
             'chart_options': chart_options,
             'report': self.report,
         }
 
         logger.debug('context: %s' % context)
 
-        #Select template. Default to standard bar chart.
-        page = self.chart_template.get(self.chart_options.get('chart','SI'))
+        #Select template.
+        page = self.chart_template.get(chart_type)
 
         return render_to_response(page, context, context_instance=RequestContext(request))
