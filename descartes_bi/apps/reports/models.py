@@ -192,7 +192,7 @@ class Report(models.Model):
                     target=report_series.series.execute,
                     kwargs={'pipe': pipe_a, 'params': params})
                 process.start()
-                deferred_list.append({'series': report_series.series, 'pipe': pipe_b, 'process': process})
+                deferred_list.append({'report_series': report_series, 'pipe': pipe_b, 'process': process})
 
             for deferred in deferred_list:
                 try:
@@ -201,10 +201,20 @@ class Report(models.Model):
                 except Exception as exception:
                     logger.error('Series subprocess exception; %s' % exception)
                 else:
-                    series_results.append(deferred['pipe'].recv())
+                    series_results.append(
+                        {
+                            'results': deferred['pipe'].recv(),
+                            'report_series': deferred['report_series'],
+                        }
+                    )
         else:
             for report_series in self.report_series.all():
-                series_results.append(report_series.series.execute(params=params).fetchall())
+                series_results.append(
+                    {
+                        'results': report_series.series.execute(params=params).fetchall(),
+                        'report_series': report_series
+                    }
+                )
 
         logger.debug('report results: %s' % series_results)
         return series_results
