@@ -11,6 +11,21 @@ from .base import ChartBackend
 
 logger = logging.getLogger(__name__)
 
+CHART_TYPE_STANDARD_X_Y = 'SI'
+CHART_TYPE_LINE_CHART = 'LI'
+CHART_TYPE_PIE_CHART = 'PI'
+
+CHART_TYPE_CHOICES = (
+    (CHART_TYPE_STANDARD_X_Y, _('Standard X, Y')),
+    (CHART_TYPE_LINE_CHART, _('Line chart')),
+    (CHART_TYPE_PIE_CHART, _('Pie chart')),
+)
+
+# TODO: Add support for the remaining chart types
+# ('SH', _('Horizontal X,Y')),
+# ('LB', _('Line Plus Bar Chart')),
+# ('LF', _('Line chart with Focus')),
+
 
 class NovusD3(ChartBackend):
     label = _('Novus D3')
@@ -19,14 +34,8 @@ class NovusD3(ChartBackend):
         {
             'name': 'chart_type',
             'label': _('chart type'),
-            'choices': (
-                ('SI', _('Standard X,Y')),
-                ('SH', _('Horizontal X,Y')),
-                ('PI', _('Pie chart')),
-                ('LB', _('Line Plus Bar Chart')),
-                ('LI', _('Line chart')),
-                ('LF', _('Line chart with Focus')),
-            )
+            'choices': CHART_TYPE_CHOICES,
+            'default': CHART_TYPE_LINE_CHART,
         },
         {
             'name': 'chart_options',
@@ -35,48 +44,40 @@ class NovusD3(ChartBackend):
     ]
 
     chart_template = {
-        'SI': 'charts/novus/multiBarChart.html',  # 'Standard X,Y'
-        'LI': 'charts/novus/lineChart.html',  # Line chart
-        'PI': 'charts/novus/pieChart.html',  # Pie chart
+        CHART_TYPE_STANDARD_X_Y: 'charts/novus/multiBarChart.html',  # 'Standard X,Y'
+        CHART_TYPE_LINE_CHART: 'charts/novus/lineChart.html',  # Line chart
+        CHART_TYPE_PIE_CHART: 'charts/novus/pieChart.html',  # Pie chart
     }
 
+    def process_series(self, series):
+        result = []
+        for data_element in series:
+            result.append({'x': data_element[0], 'y': data_element[1]})
+
+        return result
+
     def process_data(self):
-        chart_type = chart_options.get('chart','SI')
+        report_series_all = self.report.execute()
 
-        serie = []
-        for s in self.report.execute():
-            for k, v in s.iteritems():
-                serie.append({"x": k, "y": v})
-
-        if chart_type == 'PI':
-            return serie
+        if self.chart_type == CHART_TYPE_PIE_CHART:
+            # Pie chart needs a single flat list of dictionary values
+            return self.process_series(report_series.series)
         else:
-            series_chart_data = {"values": serie}
+            # The other charts needs nested flat list of series' values
+            result = []
+            for report_series in report_series_all:
+                result.append({'values': self.process_series(report_series['results'])})
 
-       series_chart_data = []
-
-        # Get chart type, default to bar chart
-
-        for serie_result in series_results:
-            if not chart_type == 'PI':
-                series_chart_data.append(self.process_data(serie_result, chart_type))
-            else:
-                series_chart_data = self.process_data(serie_result, chart_type)
-
-        return series_chart_data
-
+        return result
 
     def render(self, request):
-        #TODO: Error handling
+        # TODO: Error handling
         context = {
             'series_results': """%s;\n""" % json.dumps(self.process_data()),
-            'chart_options': chart_options,
+            'chart_options': self.chart_options,
             'report': self.report,
         }
 
         logger.debug('context: %s' % context)
 
-        #Select template.
-        page = self.chart_template.get(chart_type)
-
-        return render_to_response(page, context, context_instance=RequestContext(request))
+        return render_to_response(self.chart_template.get(self.chart_type), context, context_instance=RequestContext(request))
