@@ -15,13 +15,13 @@ class ChartBackend(object):
     def __init__(self, report):
         self.report = report
         try:
-            self.options = literal_eval(report.renderer_options)
+            self.option_values = literal_eval(report.renderer_options)
         except Exception as exception:
             logger.error('Exception while evaluating renderer_options; %s' % exception)
-            self.options = {}
+            self.option_values = {}
 
         for option in self.__class__.options:
-            setattr(self, option['name'], self.options.get(option['name']))
+            setattr(self, option['name'], self.option_values.get(option['name'], option.get('default')))
 
     def render(self, request):
         """Each backend must override this method. Method must return an
