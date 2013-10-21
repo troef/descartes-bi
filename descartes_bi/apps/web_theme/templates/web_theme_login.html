@@ -68,10 +68,23 @@
             <h1>{% trans 'User Login' %}</h1>
 
             <div class="login-fields">
+                {{ form.non_field_errors }}
 
                 <p>{% trans 'Please provide your details' %}</p>
 
-                {% block web_theme_content %}{% endblock web_theme_content %}
+                <div class="field">
+                    <label for="username">{% trans 'Username' %}</label>
+                    {{ form.username.errors }}
+                    <input type="text" id="username" name="username" value="" placeholder="{% trans 'Username' %}" class="login username-field" />
+                </div> <!-- /field -->
+
+                <div class="field">
+                    {{ form.password.errors }}
+                    <label for="password">{% trans 'Password:' %}</label>
+                    <input type="password" id="password" name="password" value="" placeholder="{% trans 'Password' %}" class="login password-field"/>
+                </div> <!-- /password -->
+
+
             </div> <!-- /login-fields -->
 
             <div class="login-actions">
