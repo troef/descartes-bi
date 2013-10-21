@@ -20,3 +20,5 @@
 * Add use of Django suit for admin
 * Togglable fullscreen for widgets
 * User selectable data entry filter form position
+* Dashboard widget ordering
+* Add support to website widget to pass custom header keys
