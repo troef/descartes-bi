@@ -3,6 +3,8 @@ import logging
 
 from django.utils.translation import ugettext_lazy as _
 
+from ..exceptions import ChartError
+
 logger = logging.getLogger(__name__)
 
 
@@ -17,8 +19,9 @@ class ChartBackend(object):
         try:
             self.option_values = literal_eval(report.renderer_options)
         except Exception as exception:
-            logger.error('Exception while evaluating renderer_options; %s' % exception)
-            self.option_values = {}
+            error_messagse = 'Exception while evaluating renderer_options; %s' % exception
+            logger.error(error_messagse)
+            raise ChartError(error_messagse)
 
         for option in self.__class__.options:
             setattr(self, option['name'], self.option_values.get(option['name'], option.get('default')))

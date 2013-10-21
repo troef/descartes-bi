@@ -23,6 +23,8 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.utils.translation import ugettext as _
 
+from charts.exceptions import ChartError
+
 from .exceptions import SeriesError
 from .models import Report
 from .utils import get_allowed_object_for_user
@@ -40,6 +42,9 @@ def ajax_report(request, report_id):
 
     try:
         return report.render(request)
+    except ChartError as exception:
+        return render_to_response('messagebox-error.html', {'title': _('Chart error'), 'message': exception},
+            context_instance=RequestContext(request))
     except SeriesError as exception:
         return render_to_response('messagebox-error.html', {'title': _('Series error'), 'message': exception},
             context_instance=RequestContext(request))
