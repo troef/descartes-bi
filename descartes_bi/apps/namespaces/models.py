@@ -32,13 +32,13 @@ from .literals import TYPE_CHOICES
 
 class Namespace(MPTTModel):
     parent = TreeForeignKey('self', null=True, blank=True, related_name='children')
-    label = models.CharField(max_length=32)
-    icon = models.CharField(max_length=32)
+    label = models.CharField(max_length=32, verbose_name=_('label'))
+    icon = models.CharField(max_length=32, blank=True, verbose_name=_('icon class'), help_text=_('CSS icon class to assign to this namespace node.'))
     # TODO: rename fields
     # 'view_type' to 'node_type'
     # 'view_menu' to 'menu'
     # 'view_dash' to 'dashboard'
-    view_type = models.PositiveIntegerField(choices=TYPE_CHOICES, null=True, blank=True)
+    view_type = models.PositiveIntegerField(choices=TYPE_CHOICES, null=True, blank=True, verbose_name=_('node type'))
     view_menu = models.ManyToManyField(Menuitem, null=True, blank=True, verbose_name=_('menu item'), related_name='menus')
     view_dash = models.ForeignKey(Dashboard, null=True, blank=True, verbose_name=_('dashboard item'), related_name='dashboard')
 
@@ -48,6 +48,6 @@ class Namespace(MPTTModel):
     def get_absolute_url(self):
         return reverse('node_view', args=[str(self.pk)])
 
-    class MPTTMeta:
-        verbose_name = 'namespace'
-        verbose_name_plural = _('namespaces')
+    class Meta:
+        verbose_name = 'node'
+        verbose_name_plural = _('nodes')
