@@ -61,7 +61,7 @@ class NovusD3(ChartBackend):
 
         if self.chart_type == CHART_TYPE_PIE_CHART:
             # Pie chart needs a single flat list of dictionary values
-            return self.process_series(report_series.series)
+            return self.process_series(report_series_all[0]['results'])
         else:
             # The other charts needs nested flat list of series' values
             result = []
