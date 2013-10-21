@@ -29,7 +29,7 @@ class NamespaceAdmin(MPTTModelAdmin):
     form = NamespaceForm
     list_display = ('label', 'parent', 'icon', 'view_type')
     filter_horizontal = ('view_menu',)
-    radio_fields = {'view_type': admin.HORIZONTAL}
+    radio_fields = {'view_type': admin.VERTICAL}
 
 
 admin.site.register(Namespace, NamespaceAdmin)
