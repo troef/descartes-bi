@@ -6,7 +6,7 @@ from django.db import models
 
 class Migration(DataMigration):
     depends_on = (
-        ("common", "0003_auto"),
+        ('common', '0003_auto'),
     )
 
     def forwards(self, orm):

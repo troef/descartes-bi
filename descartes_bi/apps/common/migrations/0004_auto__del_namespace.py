@@ -7,6 +7,10 @@ from django.db import models
 
 class Migration(SchemaMigration):
 
+    depends_on = (
+        ('namespaces', '0002_move_data'),
+    )
+
     def forwards(self, orm):
         # Deleting model 'Namespace'
         db.delete_table(u'common_namespace')
@@ -54,7 +58,7 @@ class Migration(SchemaMigration):
 
 
     models = {
-        
+
     }
 
     complete_apps = ['common']
