@@ -16,12 +16,15 @@ class ChartBackend(object):
 
     def __init__(self, report):
         self.report = report
-        try:
-            self.option_values = literal_eval(report.renderer_options)
-        except Exception as exception:
-            error_messagse = 'Exception while evaluating renderer_options; %s' % exception
-            logger.error(error_messagse)
-            raise ChartError(error_messagse)
+        if report.renderer_options:
+            try:
+                self.option_values = literal_eval(report.renderer_options)
+            except Exception as exception:
+                error_messagse = 'Exception while evaluating renderer_options; %s' % exception
+                logger.error(error_messagse)
+                raise ChartError(error_messagse)
+        else:
+            self.option_values = {}
 
         for option in self.__class__.options:
             setattr(self, option['name'], self.option_values.get(option['name'], option.get('default')))
