@@ -1,19 +1,19 @@
 {% load i18n %}
-<div class="row-fluid">
-    {% if form %}
 
-                <form method="get" action="" style="padding: 0px; margin: 0px;">
-                        {% for field in form %}
-                        <div class="span3">
-                            {{ field }}
-                        </div>
-                        {% endfor %}
-                            <button type="submit" class="btn btn-primary">{% trans 'Submit' %}</button>
+{% if form %}
+    <div class="row-fluid">
+        <form method="get" action="" style="padding: 0px; margin: 0px;">
+            {% for field in form %}
+            <div class="span3">
+                {{ field }}
+            </div>
+            {% endfor %}
+                <button type="submit" class="btn btn-primary">{% trans 'Submit' %}</button>
+        </form>
+    </div>
 
-                </form>
-
-</div>
     {% endif %}
+
 {% comment %}
         <div class="span4">
             <form method="get" action="" class="well">
