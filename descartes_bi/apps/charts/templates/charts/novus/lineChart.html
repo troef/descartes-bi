@@ -27,6 +27,13 @@
                 chart.x(function(d,i) { return i });
                 chart.color(d3.scale.category10().range());
 
+                chart.xAxis.tickFormat(function(d) {
+                    // TODO: Don't asume all series have the same x values
+                    return data[0].values[d].x;
+                }).showMaxMin(false);
+
+                chart.xAxis.tickPadding(10);
+
                 chart.showXAxis(true);
 
                 d3.select('#chart{{ report.id }}')
