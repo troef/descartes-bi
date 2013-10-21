@@ -38,6 +38,8 @@ class Website(ChartBackend):
             if request.GET:
                 form = FilterForm(self.report.filterset, request.user, request.GET)
                 if form.is_valid():
+                    logger.debug('self.base_url: %s' % self.base_url)
+                    logger.debug('form.cleaned_data: %s' % form.cleaned_data)
                     website_url = self.base_url % form.cleaned_data
                 else:
                     website_url = ''
@@ -54,6 +56,7 @@ class Website(ChartBackend):
                 response = requests.get(website_url, auth=(self.username, self.password))
             else:
                 response = requests.get(website_url)
+
             content = response.content.encode('base64')
         else:
             content = ''
