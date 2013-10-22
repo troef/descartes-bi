@@ -40,43 +40,38 @@ class NovusD3(ChartBackend):
         'PI': 'charts/novus/pieChart.html',  # Pie chart
     }
 
-    def process_data(self):
-        chart_type = chart_options.get('chart','SI')
+    def process_data(self, series_results):
 
-        serie = []
-        for s in self.report.execute():
-            for k, v in s.iteritems():
-                serie.append({"x": k, "y": v})
+        series = []
 
-        if chart_type == 'PI':
-            return serie
-        else:
-            series_chart_data = {"values": serie}
+        for serie in series_results:
+            for k, v in serie.iteritems():
+                series.append(dict(x=k, y=v))
 
-       series_chart_data = []
-
-        # Get chart type, default to bar chart
-
-        for serie_result in series_results:
-            if not chart_type == 'PI':
-                series_chart_data.append(self.process_data(serie_result, chart_type))
-            else:
-                series_chart_data = self.process_data(serie_result, chart_type)
-
-        return series_chart_data
-
+        return series
 
     def render(self, request):
+
+        # Get data
+        series_results = self.report.execute(request)
+        # chart_options = report.renderer_options
+
+        chart_data = []
+
+        for result in series_results:
+            chart_data.append([dict(values=self.process_data(result['results'])),
+                               dict(key=result['report_series'].series.label)])
+
         #TODO: Error handling
         context = {
-            'series_results': """%s;\n""" % json.dumps(self.process_data()),
-            'chart_options': chart_options,
+            'series_results': """%s;\n""" % json.dumps(chart_data),
+            #'chart_options': chart_options,
             'report': self.report,
         }
 
         logger.debug('context: %s' % context)
 
         #Select template.
-        page = self.chart_template.get(chart_type)
+        page = self.chart_template.get('LI')
 
         return render_to_response(page, context, context_instance=RequestContext(request))
