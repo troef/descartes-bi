@@ -3,4 +3,5 @@ distribute==0.6.10
 wsgiref==0.1.2
 django-grappelli==2.4.4
 South==0.8.1
-
+requests==2.2.1
+django-mptt==0.6.0
